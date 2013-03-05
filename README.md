@@ -11,14 +11,12 @@ To integrate into your app:
 
 1. Add this to your .pro file
 
-        LIBS   += -lbbsystem
-        LIBS   += -lbbdata
+        LIBS   += -lbbsystem -lbbdata
 
 2. In your main class, after:
 
         QmlDocument *qml = QmlDocument::create("asset:///main.qml").parent(this);
 Add:
 
-        m_datasource = new ODataSource(this);
-        qml->setContextProperty("_datasource", m_datasource);
+        qml->setContextProperty("_datasource", new ODataSource(this));
 
