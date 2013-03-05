@@ -2,13 +2,15 @@
 import bb.cascades 1.0
 
 Container {
+    property alias listItemComponents: odataList.listItemComponents
+    property variant odatasource: null 
     layout: DockLayout {
     }
     horizontalAlignment: HorizontalAlignment.Fill
     verticalAlignment: VerticalAlignment.Fill
     ListView {
         id: odataList
-        dataModel: _datasource.oDataModel
+        dataModel: odatasource.oDataModel
         attachedObjects: [
             ListScrollStateHandler {
                 onAtEndChanged: {
@@ -19,21 +21,9 @@ Container {
                         }
 
                         // Update the lists for infinite scroll
-                        _datasource.loadMoreItems();
+                        odatasource.loadMoreItems();
                         odataList.scrollToPosition(ScrollPosition.End, ScrollAnimation.Smooth);
                     }
-                }
-            }
-        ]
-        listItemComponents: [
-            ListItemComponent {
-                type: "loadItem"
-                LoadingListItem {
-                }
-            },
-            ListItemComponent {
-                StandardListItem { // TODO: Allow user to specify custom layout
-                    title: ListItemData.Name
                 }
             }
         ]
@@ -52,7 +42,7 @@ Container {
         loadingIndicator.start();
         loadingIndicator.running = true;
         loadingIndicator.visible = true;
-        _datasource.oDataListLoaded.connect(onListLoaded);
+        odatasource.oDataListLoaded.connect(onListLoaded);
     }
     function onListLoaded() {
         loadingIndicator.stop();
