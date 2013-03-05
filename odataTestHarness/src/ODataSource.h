@@ -13,6 +13,8 @@
 
 /**
  * Class that provides generic access to the odata service
+ * It implements infinite scrolling using $skip and $top, so those parameters must not be
+ * used in requestURL.
  */
 class ODataSource: public QObject {
 Q_OBJECT
@@ -30,6 +32,11 @@ public Q_SLOTS:
     Q_INVOKABLE
     void fetchData(const QString& requestURL);
 
+    // Load more items in the data model
+    // Used for infinite scrolling
+    Q_INVOKABLE
+    void loadMoreItems();
+
     Q_INVOKABLE
     void onODataReveived();
 
@@ -41,10 +48,16 @@ private:
     int onDataListReceived(QNetworkReply* reply, bb::cascades::ArrayDataModel* dataModel);
     int fillDataModelItems(QByteArray result, bb::cascades::ArrayDataModel* dataModel);
     int parseItemList(QVariantMap& root, bb::cascades::ArrayDataModel* dataModel);
+    void addLoadItem(bb::cascades::ArrayDataModel* dataModel);
+    void removeLoadItem(bb::cascades::ArrayDataModel* dataModel);
 
 private:
     bb::cascades::ArrayDataModel* m_oDataModel;  // data model for passing entries to QML
     QNetworkAccessManager* m_netManager;
+
+    int m_nPage;          // The last requested page
+    bool m_bEndReached;   // True if the end of the data is reached
+    QString m_requestURL; // Current request URL
 };
 
 #endif /* ODATASOURCE_H_ */

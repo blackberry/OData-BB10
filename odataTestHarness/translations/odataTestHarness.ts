@@ -2,6 +2,14 @@
 <!DOCTYPE TS>
 <TS version="2.0">
 <context>
+    <name>LoadingListItem</name>
+    <message>
+        <location filename="../assets/LoadingListItem.qml" line="17"/>
+        <source>Loading...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>main</name>
     <message>
         <location filename="../assets/main.qml" line="7"/>
