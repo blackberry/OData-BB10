@@ -19,6 +19,7 @@ OdataTestHarness::OdataTestHarness(bb::cascades::Application *app) :
     // Set the Data source object so it can be accessed from QML
     qml->setContextProperty("_datasourceNetflix", new ODataSource(this));
     qml->setContextProperty("_datasourceODataServices", new ODataSource(this));
+    qml->setContextProperty("_datasourceDrilldown", new ODataSource(this));
 
     // create root object for the UI
     AbstractPane *root = qml->createRootObject<AbstractPane>();

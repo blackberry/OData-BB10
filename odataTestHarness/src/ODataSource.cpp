@@ -183,9 +183,11 @@ int ODataSource::parseItemList(QVariantMap& root, ArrayDataModel* dataModel) {
         QVariant resultVal = rootVal["EntitySets"];
         list = resultVal.value<QVariantList>();
     }
-    else {
+    else if (rootVal.contains("results")) {
         QVariant resultVal = rootVal["results"]; // TODO: This seems to be feed specific
         list = resultVal.value<QVariantList>();
+    } else {
+        list = root["d"].value<QVariantList>();
     }
 
     // add the data to the model

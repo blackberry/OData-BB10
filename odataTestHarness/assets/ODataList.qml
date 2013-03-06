@@ -2,8 +2,10 @@
 import bb.cascades 1.0
 
 Container {
+    id: odataContainer
     property alias listItemComponents: odataList.listItemComponents
-    property variant odatasource: null 
+    property variant odatasource: null
+    signal triggered(variant indexPath)
     layout: DockLayout {
     }
     horizontalAlignment: HorizontalAlignment.Fill
@@ -29,6 +31,9 @@ Container {
         ]
         function itemType(data, indexPath) {
             return (data.loadItem == true ? 'loadItem' : '');
+        }
+        onTriggered: {
+            odataContainer.triggered(indexPath);
         }
     }
     ActivityIndicator {
