@@ -22,9 +22,6 @@ public:
     OdataTestHarness(bb::cascades::Application *app);
     virtual ~OdataTestHarness() {
     }
-
-private:
-    ODataSource* m_datasource;
 };
 
 #endif /* OdataTestHarness_HPP_ */

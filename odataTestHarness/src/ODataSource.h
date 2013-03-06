@@ -30,7 +30,7 @@ public:
 public Q_SLOTS:
     // Fetch the data from the network
     Q_INVOKABLE
-    void fetchData(const QString& requestURL);
+    void fetchData(const QString& requestURL, bool paging = false);
 
     // Load more items in the data model
     // Used for infinite scrolling
@@ -58,6 +58,7 @@ private:
     int m_nPage;          // The last requested page
     bool m_bEndReached;   // True if the end of the data is reached
     QString m_requestURL; // Current request URL
+    bool m_pagingEnabled; // True if paging mode is enabled
 };
 
 #endif /* ODATASOURCE_H_ */

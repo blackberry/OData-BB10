@@ -21,7 +21,7 @@ using namespace bb::cascades;
 using namespace bb::data;
 using bb::system::SystemToast;
 
-const int ITEMS_PER_PAGE = 12;  // MUST be more than what fits in a page else onAtEndChanged is not triggered
+const int ITEMS_PER_PAGE = 12; // MUST be more than what fits in a page else onAtEndChanged is not triggered
 
 // TODO: Support read of ATOM sources as: http://services.odata.org/OData/OData.svc/
 // For JSON: http://services.odata.org/OData/OData.svc/?$format=json
@@ -30,10 +30,12 @@ const int ITEMS_PER_PAGE = 12;  // MUST be more than what fits in a page else on
 // TODO: Implement sorting using $orderby desc/asc
 // TODO: Implement filters
 // TODO: Should $format=json be a parameter?
+// TODO: Should we support jsonverbose? http://www.odata.org/media/30002/OData%20JSON%20Verbose%20Format.html
 ODataSource::ODataSource(QObject *parent) :
                 QObject(parent),
                 m_nPage(0),
-                m_bEndReached(false) {
+                m_bEndReached(false),
+                m_pagingEnabled(false) {
     m_oDataModel = new ArrayDataModel(this);
     m_netManager = new QNetworkAccessManager();
 }
@@ -41,17 +43,24 @@ ODataSource::ODataSource(QObject *parent) :
 ODataSource::~ODataSource() {
 }
 
-void ODataSource::fetchData(const QString& requestURL) {
+void ODataSource::fetchData(const QString& requestURL, bool paging) {
 
     m_nPage = 0;
     m_bEndReached = false;
     m_oDataModel->clear();
     m_requestURL = requestURL;
+    m_pagingEnabled = paging;
 
     QNetworkRequest request;
 
-    // TODO: If there is no param in requestURL add ? instead of &
-    QString pagedRequestURL = requestURL + QString("&$top=%1").arg(ITEMS_PER_PAGE);
+    QString pagedRequestURL = requestURL;
+    if (m_pagingEnabled) {
+        // TODO: If there is no param in requestURL add ? instead of &
+        pagedRequestURL = requestURL + QString("&$top=%1").arg(ITEMS_PER_PAGE);
+    }
+    else {
+        m_bEndReached = true;
+    }
     LOGGER::log("ODataSource::fetchData - pagedRequestURL:", pagedRequestURL);
     request.setUrl(pagedRequestURL);
 
@@ -67,7 +76,8 @@ void ODataSource::fetchData(const QString& requestURL) {
 
 void ODataSource::loadMoreItems() {
     if (m_bEndReached) {
-        LOGGER::log("ODataSource::loadMoreItems - End reached ignore, count:", m_oDataModel->childCount(QVariantList()));
+        LOGGER::log("ODataSource::loadMoreItems - End reached ignore, count:",
+                m_oDataModel->childCount(QVariantList()));
         return;
     }
 
@@ -76,7 +86,10 @@ void ODataSource::loadMoreItems() {
     }
 
     m_nPage++;
-    QString requestURL = m_requestURL + QString("&$top=%1&$skip=%2").arg(ITEMS_PER_PAGE).arg(ITEMS_PER_PAGE*m_nPage);
+    QString requestURL = m_requestURL;
+    if (m_pagingEnabled) {
+        requestURL = m_requestURL + QString("&$top=%1&$skip=%2").arg(ITEMS_PER_PAGE).arg(ITEMS_PER_PAGE * m_nPage);
+    }
     LOGGER::log("ODataSource::loadMoreItems - requestURL:", requestURL);
 
     QNetworkRequest request;
@@ -99,7 +112,9 @@ void ODataSource::onODataReveived() {
 
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
     int countAdded = onDataListReceived(reply, m_oDataModel);
-    m_bEndReached = countAdded <= 0;
+    if (m_pagingEnabled) {
+        m_bEndReached = countAdded <= 0;
+    }
     emit oDataListLoaded();
 
     // Memory management
@@ -162,8 +177,16 @@ int ODataSource::fillDataModelItems(QByteArray result, ArrayDataModel* dataModel
 int ODataSource::parseItemList(QVariantMap& root, ArrayDataModel* dataModel) {
     // TODO: Is this generic to all odata services?
     QVariantMap rootVal = root["d"].value<QVariantMap>();
-    QVariant resultVal = rootVal["results"]; // TODO: This seems to be feed specific
-    QVariantList list = resultVal.value<QVariantList>();
+
+    QVariantList list;
+    if (rootVal.contains("EntitySets")) {
+        QVariant resultVal = rootVal["EntitySets"];
+        list = resultVal.value<QVariantList>();
+    }
+    else {
+        QVariant resultVal = rootVal["results"]; // TODO: This seems to be feed specific
+        list = resultVal.value<QVariantList>();
+    }
 
     // add the data to the model
     dataModel->append(list);

@@ -12,14 +12,13 @@ using namespace bb::cascades;
 OdataTestHarness::OdataTestHarness(bb::cascades::Application *app) :
                 QObject(app) {
 
-    m_datasource = new ODataSource(this);
-
     // create scene document from main.qml asset
     // set parent to created document to ensure it exists for the whole application lifetime
     QmlDocument *qml = QmlDocument::create("asset:///main.qml").parent(this);
 
     // Set the Data source object so it can be accessed from QML
-    qml->setContextProperty("_datasource", m_datasource);
+    qml->setContextProperty("_datasourceNetflix", new ODataSource(this));
+    qml->setContextProperty("_datasourceODataServices", new ODataSource(this));
 
     // create root object for the UI
     AbstractPane *root = qml->createRootObject<AbstractPane>();
