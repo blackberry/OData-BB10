@@ -2,26 +2,15 @@
 import bb.cascades 1.0
 
 TabbedPane {
-    showTabsOnActionBar: true
+    showTabsOnActionBar: false
     Tab {
-        title: qsTr("Tab 1")
+        title: qsTr("Netflix")
         OdataViewerTab {
         }
     }
     Tab {
-        title: qsTr("Tab 2")
-        Page {
-            id: tab2
-            Container {
-                // define tab content here
-                Label {
-                    text: qsTr("Tab 2 title")
-                    horizontalAlignment: HorizontalAlignment.Center
-                    textStyle {
-                        base: SystemDefaults.TextStyles.TitleText
-                    }
-                }
-            }
+        title: qsTr("OData")
+        ODataServiceTab {
         }
     }
     Tab {
