@@ -31,6 +31,7 @@ public Q_SLOTS:
     // Fetch the data from the network
     Q_INVOKABLE
     void fetchData(const QString& requestURL, bool paging = false);
+    void orderBy(const QString& requestURL, const QString& fieldAndOrientation ,bool paging = false);
 
     // Load more items in the data model
     // Used for infinite scrolling
