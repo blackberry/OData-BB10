@@ -25,6 +25,6 @@ Page {
     }
     onTitleChanged: {
         // title is not set at creation time, so wait until it is set before we fetch the list
-        _datasourceDrilldown.fetchData("http://services.odata.org/OData/OData.svc/" + drilldownPage.title + "?$format=json");
+       _datasourceDrilldown.fetchData("http://services.odata.org/OData/OData.svc/" + drilldownPage.title + "?$format=json", 20, 10);
     }
 }

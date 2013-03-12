@@ -3,6 +3,7 @@
 	<name>odataTestHarness</name>
 	<comment></comment>
 	<projects>
+		<project>oDataLib</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

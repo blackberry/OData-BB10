@@ -47,7 +47,10 @@ Container {
         loadingIndicator.start();
         loadingIndicator.running = true;
         loadingIndicator.visible = true;
-        odatasource.oDataListLoaded.connect(onListLoaded);
+        
+        console.log("ODataList onCreationCompleted " );
+        
+        odatasource.dataFetched.connect(onListLoaded);
     }
     function onListLoaded() {
         loadingIndicator.stop();

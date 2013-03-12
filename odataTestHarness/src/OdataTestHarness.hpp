@@ -20,8 +20,7 @@ class OdataTestHarness: public QObject {
 Q_OBJECT
 public:
     OdataTestHarness(bb::cascades::Application *app);
-    virtual ~OdataTestHarness() {
-    }
+    virtual ~OdataTestHarness();
 };
 
 #endif /* OdataTestHarness_HPP_ */

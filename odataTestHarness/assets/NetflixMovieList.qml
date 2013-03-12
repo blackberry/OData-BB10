@@ -1,4 +1,5 @@
 import bb.cascades 1.0
+//import ODataLib 1.0
 
 /**
  * Example of how to use ODataList to display Catalog content from NetFlix
@@ -21,6 +22,6 @@ ODataList {
         }
     ]
     onCreationCompleted: {
-        _datasourceNetflix.fetchData("http://odata.netflix.com/Catalog/Titles?$filter=ReleaseYear%20le%201989%20and%20ReleaseYear%20ge%201980%20and%20AverageRating%20gt%204&$expand=Awards&$format=json", true);
+        _datasourceNetflix.fetchData("http://odata.netflix.com/Catalog/Titles?$filter=ReleaseYear%20le%201989%20and%20ReleaseYear%20ge%201980%20and%20AverageRating%20gt%204&$expand=Awards&$format=json", 0, 20, true);
     }
 }

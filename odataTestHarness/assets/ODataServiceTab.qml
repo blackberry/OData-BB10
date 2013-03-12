@@ -24,7 +24,7 @@ NavigationPane {
                 }
             ]
             onCreationCompleted: {
-                _datasourceODataServices.fetchData("http://services.odata.org/OData/OData.svc/?$format=json");
+               // _datasourceODataServices.fetchData("http://services.odata.org/OData/OData.svc/?$format=json");
             }
             onTriggered: {
                 var selectedItem = _datasourceODataServices.oDataModel.data(indexPath);
