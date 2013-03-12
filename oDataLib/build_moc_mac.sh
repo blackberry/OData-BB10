@@ -10,7 +10,7 @@ do
  b=$(basename $h .h)
  if grep -q Q_OBJECT $h
  then
-  "moc.exe" $h -o moc_${b}.cpp
+  "/Applications/bbndk/host_10_0_10_536/darwin/x86/usr/bin/moc" $h -o moc_${b}.cpp
  fi
 
  if [ -f $b ]
