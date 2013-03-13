@@ -24,8 +24,9 @@ NavigationPane {
                 }
             ]
             onCreationCompleted: {
-               // _datasourceODataServices.fetchData("http://services.odata.org/OData/OData.svc/?$format=json");
+                _datasourceODataServices.fetchData("http://services.odata.org/OData/OData.svc/?$format=json",20,12);
             }
+            
             onTriggered: {
                 var selectedItem = _datasourceODataServices.oDataModel.data(indexPath);
                 var newPage = drilldownList.createObject();

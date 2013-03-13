@@ -7,12 +7,14 @@ INCLUDEPATH +=  \
     $$BASEDIR/src
 
 SOURCES +=  \
+	$$BASEDIR/src/OrderByQueryCollection.cpp \
     $$BASEDIR/src/ODataSource.cpp \
     $$BASEDIR/src/cODataLib.cpp \
     $$BASEDIR/src/moc_ODataSource.cpp \
     $$BASEDIR/src/moc_cODataLib.cpp
 
 HEADERS +=  \
+	$$BASEDIR/src/OrderByQueryCollection.h \
     $$BASEDIR/src/LOGGER.h \
     $$BASEDIR/src/ODataLib.h \
     $$BASEDIR/src/ODataSource.h \

@@ -7,6 +7,7 @@
 
 #include "ODataSource.h"
 #include "cODataLib.h"
+#include "LOGGER.h"
 
 using namespace bb::cascades;
 
@@ -18,6 +19,14 @@ cODataLib::cODataLib(QObject *parent) :
 
 cODataLib::~cODataLib()
 {
+}
+
+void cODataLib::orderByCollection(const QString& requestURL, int nIndex, int nSize, QObject *  queryObject ,bool paging ) {
+    ((ODataSource*)m_datasource)->orderByCollection(requestURL, nIndex, nSize, (OrderByQueryCollection *) queryObject , paging);
+}
+
+void cODataLib::orderBy(const QString& requestURL, int nIndex, int nSize, const QString& fieldAndOrientation ,bool paging)  {
+    ((ODataSource*)m_datasource)->orderBy(requestURL, nIndex, nSize, fieldAndOrientation, paging);
 }
 
 void cODataLib::fetchData(const QString& requestURL, int nIndex, int nSize, bool paging)

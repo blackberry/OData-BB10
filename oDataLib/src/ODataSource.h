@@ -11,6 +11,9 @@
 #include <QObject>
 #include <bb/cascades/ArrayDataModel>
 
+#include "OrderByQueryObject.h"
+#include "OrderByQueryCollection.h"
+
 /**
  * Class that provides generic access to the odata service
  * It implements infinite scrolling using $skip and $top, so those parameters must not be
@@ -34,7 +37,8 @@ public:
 
     bb::cascades::DataModel* getDataModel() const;
 
-    void orderBy(const QString& requestURL, const QString& fieldAndOrientation ,bool paging = false);
+    void orderByCollection(const QString& requestURL, int nIndex, int nSize,  OrderByQueryCollection* queryObject ,bool paging = false);
+    void orderBy(const QString& requestURL, int nIndex, int nSize, const QString& fieldAndOrientation ,bool paging = false);
 
     // Fetch the data from the network
     void fetchData(const QString& requestURL, int nIndex, int nSize, bool paging = false);

@@ -21,6 +21,8 @@
 #include <QObject>
 #include <bb/cascades/ArrayDataModel>
 
+#include "OrderByQueryCollection.h"
+
 // class ODataSource;
 class /* ODATALIB_EXPORT*/ cODataLib : public QObject /* inheritance from QObject is necessary for signal to work. */
 {
@@ -35,6 +37,9 @@ public:
     bb::cascades::DataModel* oDataModel() const;
 
 	// Access methods
+
+    Q_INVOKABLE void orderByCollection(const QString& requestURL, int nIndex, int nSize,   QObject * queryObject ,bool paging = false);
+    Q_INVOKABLE void orderBy(const QString& requestURL, int nIndex, int nSize, const QString& fieldAndOrientation, bool paging = false);
     Q_INVOKABLE void fetchData(const QString& url, int nIndex, int nSize, bool paged = false);
     Q_INVOKABLE void loadMoreItems();
 
