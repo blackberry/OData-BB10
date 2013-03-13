@@ -59,7 +59,7 @@ void ODataSource::orderBy(const QString& requestURL, const QString& fieldAndOrie
     QString queryRequest(requestURL);
     queryRequest.append("&$orderby=");
     queryRequest.append(fieldAndOrientation);
-    this->fetchData(queryRequest, paging);
+    this->fetchData(queryRequest, 0, 0, paging);
 }
 
 void ODataSource::fetchData(const QString& requestURL, int nIndex, int nSize, bool paging) {
