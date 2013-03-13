@@ -34,6 +34,8 @@ public:
 
     bb::cascades::DataModel* getDataModel() const;
 
+    void orderBy(const QString& requestURL, const QString& fieldAndOrientation ,bool paging = false);
+
     // Fetch the data from the network
     void fetchData(const QString& requestURL, int nIndex, int nSize, bool paging = false);
 

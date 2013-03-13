@@ -54,6 +54,14 @@ ODataSource& ODataSource::operator=( const ODataSource &other ) {
 	return *this;
 }*/
 
+// fieldAndOrientation querys options separated by comma ',', for example 'ReleaseDate asc, Rating desc'
+void ODataSource::orderBy(const QString& requestURL, const QString& fieldAndOrientation ,bool paging)  {
+    QString queryRequest(requestURL);
+    queryRequest.append("&$orderby=");
+    queryRequest.append(fieldAndOrientation);
+    this->fetchData(queryRequest, paging);
+}
+
 void ODataSource::fetchData(const QString& requestURL, int nIndex, int nSize, bool paging) {
 
 	Q_UNUSED(nIndex); // not used yet
