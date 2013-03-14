@@ -12,6 +12,8 @@
 
 #include "OrderByQueryObject.h"
 
+//TODO: Extract Model information and leave these class as a Controller
+
 class OrderByQueryCollection: public QObject {
 
     Q_OBJECT
