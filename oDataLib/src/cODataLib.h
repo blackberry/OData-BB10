@@ -37,7 +37,7 @@ public:
     bb::cascades::DataModel* oDataModel() const;
 
 	// Access methods
-
+    Q_INVOKABLE void filter(const QString& requestURL, int nIndex, int nSize, const QString& filterQuery ,bool paging = false);
     Q_INVOKABLE void orderByCollection(const QString& requestURL, int nIndex, int nSize,   QObject * queryObject ,bool paging = false);
     Q_INVOKABLE void orderBy(const QString& requestURL, int nIndex, int nSize, const QString& fieldAndOrientation, bool paging = false);
     Q_INVOKABLE void fetchData(const QString& url, int nIndex, int nSize, bool paged = false);

@@ -37,6 +37,9 @@ public:
 
     bb::cascades::DataModel* getDataModel() const;
 
+    void filter(const QString& requestURL, int nIndex, int nSize, const QString& fieldAndOrientation ,bool paging = false);
+
+
     void orderByCollection(const QString& requestURL, int nIndex, int nSize,  OrderByQueryCollection* queryObject ,bool paging = false);
     void orderBy(const QString& requestURL, int nIndex, int nSize, const QString& fieldAndOrientation ,bool paging = false);
 

@@ -21,6 +21,11 @@ cODataLib::~cODataLib()
 {
 }
 
+void cODataLib::filter(const QString& requestURL, int nIndex, int nSize, const QString& filterQuery ,bool paging) {
+    ((ODataSource*)m_datasource)->filter(requestURL, nIndex, nSize, filterQuery , paging);
+}
+
+
 void cODataLib::orderByCollection(const QString& requestURL, int nIndex, int nSize, QObject *  queryObject ,bool paging ) {
     ((ODataSource*)m_datasource)->orderByCollection(requestURL, nIndex, nSize, (OrderByQueryCollection *) queryObject , paging);
 }

@@ -27,9 +27,7 @@ const int ITEMS_PER_PAGE = 12; // MUST be more than what fits in a page else onA
 
 // TODO: Support read of ATOM sources as: http://services.odata.org/OData/OData.svc/
 // For JSON: http://services.odata.org/OData/OData.svc/?$format=json
-// TODO: Move to a odata library
 // TODO: Make the class generic so any odata service may be read
-// TODO: Implement sorting using $orderby desc/asc
 // TODO: Implement filters
 // TODO: Should $format=json be a parameter?
 // TODO: Should we support jsonverbose? http://www.odata.org/media/30002/OData%20JSON%20Verbose%20Format.html
@@ -54,10 +52,23 @@ ODataSource& ODataSource::operator=( const ODataSource &other ) {
 	return *this;
 }*/
 
+/* Filter querys */
+
+void ODataSource::filter(const QString& requestURL, int nIndex, int nSize, const QString& filterQuery ,bool paging) {
+    QString queryRequest(requestURL);
+    (queryRequest.contains("?")) ? queryRequest.append("&") : queryRequest.append("?");
+    queryRequest.append("$filter=");
+    queryRequest.append(filterQuery);
+    this->fetchData(queryRequest, nIndex, nSize, paging);
+}
+
+/* Order By querys */
+
 // fieldAndOrientation querys options separated by comma ',', for example 'ReleaseDate asc, Rating desc'
 void ODataSource::orderBy(const QString& requestURL, int nIndex, int nSize, const QString& fieldAndOrientation ,bool paging)  {
     QString queryRequest(requestURL);
-    queryRequest.append("&$orderby=");
+    (queryRequest.contains("?")) ? queryRequest.append("&") : queryRequest.append("?");
+    queryRequest.append("$orderby=");
     queryRequest.append(fieldAndOrientation);
     this->fetchData(queryRequest, nIndex, nSize, paging);
 }
@@ -82,11 +93,16 @@ void ODataSource::fetchData(const QString& requestURL, int nIndex, int nSize, bo
     QString pagedRequestURL = requestURL;
     if (m_pagingEnabled) {
         // TODO: If there is no param in requestURL add ? instead of &
-        pagedRequestURL = requestURL + QString("&$top=%1").arg(ITEMS_PER_PAGE);
+        pagedRequestURL = requestURL;
+        pagedRequestURL.contains("?") ? pagedRequestURL.append("&") : pagedRequestURL.append("?");
+        pagedRequestURL = pagedRequestURL.append(QString("$top=%1").arg(ITEMS_PER_PAGE));
+
+
     }
     else {
         m_bEndReached = true;
     }
+
     LOGGER::log("ODataSource::fetchData - pagedRequestURL:", pagedRequestURL);
     request.setUrl(pagedRequestURL);
 
