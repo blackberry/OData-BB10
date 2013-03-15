@@ -75,6 +75,7 @@ private:
     bool m_bEndReached;   // True if the end of the data is reached
     QString m_requestURL; // Current request URL
     bool m_pagingEnabled; // True if paging mode is enabled
+    bool m_JSONEnabled;
 };
 
 #endif /* ODATASOURCE_H_ */
