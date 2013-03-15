@@ -34,9 +34,9 @@ void cODataLib::orderBy(const QString& requestURL, int nIndex, int nSize, const 
     ((ODataSource*)m_datasource)->orderBy(requestURL, nIndex, nSize, fieldAndOrientation, paging);
 }
 
-void cODataLib::fetchData(const QString& requestURL, int nIndex, int nSize, bool paging)
+void cODataLib::fetchData(const QString& requestURL, bool paging)
 {
-	((ODataSource*)m_datasource)->fetchData(requestURL, nIndex, nSize, paging);
+	((ODataSource*)m_datasource)->fetchData(requestURL, paging);
 }
 
 void cODataLib::loadMoreItems()

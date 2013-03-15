@@ -40,19 +40,19 @@ Page {
 
         //test.testFilterObject();
 
-       _datasourceDrilldown.fetchData("http://services.odata.org/OData/OData.svc/" + drilldownPage.title + "?$format=json", 20, 10);
+       _datasourceDrilldown.fetchData("http://services.odata.org/OData/OData.svc/" + drilldownPage.title + "?$format=json");
        
        // FILTER
-       //_datasourceDrilldown.filter("http://services.odata.org/OData/OData.svc/" + drilldownPage.title + "?$format=json", 20, 10, test.testFilterObject());    
+       //_datasourceDrilldown.filter("http://services.odata.org/OData/OData.svc/" + drilldownPage.title + "?$format=json", test.testFilterObject());    
        
        // ORDERBY: This examples works only for Products tab
        
        // Example using a collection
        /*collection.addQuery("Rating",false);
        collection.addQuery("Name",true);
-       _datasourceDrilldown.orderByCollection("http://services.odata.org/OData/OData.svc/" + drilldownPage.title + "?$format=json", 20, 10, collection);*/
+       _datasourceDrilldown.orderByCollection("http://services.odata.org/OData/OData.svc/" + drilldownPage.title + "?$format=json", collection);*/
 
        // Example using a query string
-       //_datasourceDrilldown.orderBy("http://services.odata.org/OData/OData.svc/" + drilldownPage.title + "?$format=json", 20, 10, "Rating asc, Name desc");    
+       //_datasourceDrilldown.orderBy("http://services.odata.org/OData/OData.svc/" + drilldownPage.title + "?$format=json", "Rating asc, Name desc");    
     }
 }

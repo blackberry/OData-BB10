@@ -43,7 +43,7 @@ public:
     void orderBy(const QString& requestURL, int nIndex, int nSize, const QString& fieldAndOrientation ,bool paging = false);
 
     // Fetch the data from the network
-    void fetchData(const QString& requestURL, int nIndex, int nSize, bool paging = false);
+    void fetchData(const QString& requestURL, bool paging = false);
 
     // Load more items in the data model
     // Used for infinite scrolling
