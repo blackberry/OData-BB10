@@ -59,7 +59,7 @@ void ODataSource::filter(const QString& requestURL, int nIndex, int nSize, const
     (queryRequest.contains("?")) ? queryRequest.append("&") : queryRequest.append("?");
     queryRequest.append("$filter=");
     queryRequest.append(filterQuery);
-    this->fetchData(queryRequest, nIndex, nSize, paging);
+    this->fetchData(queryRequest, paging);
 }
 
 /* Order By querys */
@@ -70,17 +70,14 @@ void ODataSource::orderBy(const QString& requestURL, int nIndex, int nSize, cons
     (queryRequest.contains("?")) ? queryRequest.append("&") : queryRequest.append("?");
     queryRequest.append("$orderby=");
     queryRequest.append(fieldAndOrientation);
-    this->fetchData(queryRequest, nIndex, nSize, paging);
+    this->fetchData(queryRequest, paging);
 }
 
 void ODataSource::orderByCollection(const QString& requestURL, int nIndex, int nSize, OrderByQueryCollection* queryObject ,bool paging) {
     this->orderBy(requestURL, nIndex, nSize, queryObject->getQueryText(),paging);
 }
 
-void ODataSource::fetchData(const QString& requestURL, int nIndex, int nSize, bool paging) {
-
-	Q_UNUSED(nIndex); // not used yet
-	Q_UNUSED(nSize);  // not used yet
+void ODataSource::fetchData(const QString& requestURL, bool paging) {
 
     m_nPage = 0;
     m_bEndReached = false;
