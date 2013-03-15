@@ -14,13 +14,18 @@ TabbedPane {
         }
     }
     Tab {
-        title: qsTr("Tab 3")
+        title: qsTr("OrderBy")
+        OrderByTab {
+        }
+    }
+    Tab {
+        title: qsTr("Tab 4")
         Page {
-            id: tab3
+            id: tab4
             Container {
                 // define tab content here
                 Label {
-                    text: qsTr("Tab 3 title")
+                    text: qsTr("Tab 4 title")
                     horizontalAlignment: HorizontalAlignment.Center
                     textStyle {
                         base: SystemDefaults.TextStyles.TitleText
@@ -35,7 +40,7 @@ TabbedPane {
                     verticalAlignment: VerticalAlignment.Fill
                     horizontalAlignment: HorizontalAlignment.Fill
                     Label {
-                        text: qsTr("Tab 3 content")
+                        text: qsTr("Tab 4 content")
                         verticalAlignment: VerticalAlignment.Center
                         horizontalAlignment: HorizontalAlignment.Center
                         textStyle {

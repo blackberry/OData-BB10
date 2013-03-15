@@ -11,11 +11,9 @@
 #include "../LOGGER.h"
 
 FilterQueryTestObject::FilterQueryTestObject() {
-    // TODO Auto-generated constructor stub
 }
 
 FilterQueryTestObject::~FilterQueryTestObject() {
-    // TODO Auto-generated destructor stub
 }
 
 QString FilterQueryTestObject::testFilterObject() {

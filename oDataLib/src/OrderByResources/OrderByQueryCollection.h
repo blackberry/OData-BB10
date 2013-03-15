@@ -27,7 +27,7 @@ class OrderByQueryCollection: public QObject {
 
         Q_INVOKABLE void addQuery (const QString& field, bool ascending) ;
 
-        QString getQueryText() const;
+        Q_INVOKABLE QString getQueryText() const;
 };
 
 #endif /* ORDERBYQUERYCOLLECTION_H_ */

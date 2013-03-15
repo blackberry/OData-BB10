@@ -14,6 +14,7 @@ using namespace bb::cascades;
 cODataLib *objToDataLib = NULL;
 cODataLib *objToDataLibSvcs = NULL;
 cODataLib *objToDataLibDDown = NULL;
+cODataLib *objToDataLibOrderBy = NULL;
 
 OdataTestHarness::OdataTestHarness(bb::cascades::Application *app) :
                 QObject(app) {
@@ -34,6 +35,10 @@ OdataTestHarness::OdataTestHarness(bb::cascades::Application *app) :
     qml->setContextProperty("_datasourceODataServices", objToDataLibSvcs);
     objToDataLibDDown = new cODataLib(this);
     qml->setContextProperty("_datasourceDrilldown", objToDataLibDDown);
+
+    objToDataLibOrderBy = new cODataLib(this);
+    qml->setContextProperty("_datasourceOrderBy", objToDataLibOrderBy);
+
 
     // create root object for the UI
     AbstractPane *root = qml->createRootObject<AbstractPane>();
