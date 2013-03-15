@@ -18,7 +18,7 @@ public:
     FilterQueryObject();
     virtual ~FilterQueryObject();
 
-    Q_INVOKABLE void testLogicalFilterObject ();
+    Q_INVOKABLE QString testLogicalFilterObject ();
 
 };
 

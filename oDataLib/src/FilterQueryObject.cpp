@@ -20,7 +20,7 @@ FilterQueryObject::~FilterQueryObject() {
     // TODO Auto-generated destructor stub
 }
 
-void FilterQueryObject::testLogicalFilterObject() {
+QString FilterQueryObject::testLogicalFilterObject() {
 
     //TODO: Make real test, these ones are unfinished and they are only to see de coherence of the '()'
     LOGGER::log("Testing");
@@ -35,13 +35,25 @@ void FilterQueryObject::testLogicalFilterObject() {
     LOGGER::log("C: "+ cObject.getQueryText());
     LOGGER::log("D: "+ dObject.getQueryText());
 
-
     LogicalFilterQueryObject test = dObject.orOperator( (bObject.andOperator(cObject.andOperator(aObject))));
     LOGGER::log("Test 1: "+test.getQueryText());
 
-    test = (dObject.andOperator(aObject)).orOperator( bObject.andOperator(cObject));
+    test = (dObject.andOperator(aObject)).orOperator( bObject.andOperator(cObject).notOperator());
     LOGGER::log("Test 2: "+test.getQueryText());
 
+    test = (dObject * aObject) + (bObject * cObject);
+    LOGGER::log("Test 3: "+test.getQueryText());
+
+    test = (dObject + cObject) * aObject;
+    LOGGER::log("Test 4: "+test.getQueryText());
+
+    test = (dObject || aObject) || (bObject && cObject);
+    LOGGER::log("Test 5: "+test.getQueryText());
+
+    test = (dObject || cObject) * !aObject;
+    LOGGER::log("Test 6: "+test.getQueryText());
 
     LOGGER::log("End Testing");
+
+    return test.getQueryText();
 }
