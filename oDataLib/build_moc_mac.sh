@@ -5,7 +5,9 @@ echo $n
 
 cd src
 
-for h in *.h
+headerFiles=$(find . -name "*.h")
+
+for h in $headerFiles
 do
  b=$(basename $h .h)
  if grep -q Q_OBJECT $h
