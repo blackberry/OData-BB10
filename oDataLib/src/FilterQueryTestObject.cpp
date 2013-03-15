@@ -1,0 +1,57 @@
+/*
+ * FilterQueryTestObject.cpp
+ *
+ *  Created on: 15/03/2013
+ *      Author: adrian
+ */
+
+#include "FilterQueryTestObject.h"
+
+#include "FilterQueryObject.h"
+#include "LOGGER.h"
+
+FilterQueryTestObject::FilterQueryTestObject() {
+    // TODO Auto-generated constructor stub
+}
+
+FilterQueryTestObject::~FilterQueryTestObject() {
+    // TODO Auto-generated destructor stub
+}
+
+QString FilterQueryTestObject::testFilterObject() {
+
+    //TODO: Make real test, these ones are unfinished and they are only to see de coherence of the '()'
+    LOGGER::log("Testing");
+
+    FilterQueryObject aObject("Name", "eq", "Milk");
+    FilterQueryObject bObject("Price", "sub", 5);
+    FilterQueryObject cObject(bObject, "gt", 14);
+    FilterQueryObject dObject("Name", "eq", "Bread");
+
+    LOGGER::log("A: "+ aObject.getQueryText());
+    LOGGER::log("B: "+ bObject.getQueryText());
+    LOGGER::log("C: "+ cObject.getQueryText());
+    LOGGER::log("D: "+ dObject.getQueryText());
+
+    FilterQueryObject test = dObject.orOperator( (bObject.andOperator(cObject.andOperator(aObject))));
+    LOGGER::log("Test 1: "+test.getQueryText());
+
+    test = (dObject.andOperator(aObject)).orOperator( bObject.andOperator(cObject).notOperator());
+    LOGGER::log("Test 2: "+test.getQueryText());
+
+    test = (dObject * aObject) + (bObject * cObject);
+    LOGGER::log("Test 3: "+test.getQueryText());
+
+    test = (dObject + cObject) * aObject;
+    LOGGER::log("Test 4: "+test.getQueryText());
+
+    test = (dObject || aObject) || (bObject && cObject);
+    LOGGER::log("Test 5: "+test.getQueryText());
+
+    test = (dObject || cObject) * !aObject;
+    LOGGER::log("Test 6: "+test.getQueryText());
+
+    LOGGER::log("End Testing");
+
+    return test.getQueryText();
+}

@@ -23,6 +23,8 @@
 
 #include "OrderByQueryCollection.h"
 
+#include "FilterQueryTestObject.h"
+
 // class ODataSource;
 class /* ODATALIB_EXPORT*/ cODataLib : public QObject /* inheritance from QObject is necessary for signal to work. */
 {

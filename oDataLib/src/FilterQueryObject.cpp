@@ -7,53 +7,86 @@
 
 #include "FilterQueryObject.h"
 
-#include "LogicalFilterQueryObject.h"
-
 #include "LOGGER.h"
 
-FilterQueryObject::FilterQueryObject() {
-    // TODO Auto-generated constructor stub
+FilterQueryObject::FilterQueryObject(const QString& field, const QString& op, const QString& value) :
+    queryText ("(" + field + " " + op + " '" + value + "')")
+{
+}
 
+FilterQueryObject::FilterQueryObject(const QString& field, const QString& op, int value) :
+    queryText (QString("(" + field + " " + op + " %1)").arg(value))
+{
+}
+
+FilterQueryObject::FilterQueryObject(const FilterQueryObject& anotherFilter, const QString& op, const QString& value) :
+    queryText ("(" + anotherFilter.getQueryText() + " " + op + " '" + value + "')")
+{
+}
+
+FilterQueryObject::FilterQueryObject(const FilterQueryObject& anotherFilter, const QString& op, int value) :
+    queryText (QString("(" + anotherFilter.getQueryText() + " " + op + " %1)").arg(value))
+{
+}
+
+FilterQueryObject::FilterQueryObject(const QString &anotherQuery) :
+    queryText (anotherQuery)
+{
 }
 
 FilterQueryObject::~FilterQueryObject() {
-    // TODO Auto-generated destructor stub
 }
 
-QString FilterQueryObject::testLogicalFilterObject() {
+QString FilterQueryObject::getQueryText() const {
+    return queryText;
+}
 
-    //TODO: Make real test, these ones are unfinished and they are only to see de coherence of the '()'
-    LOGGER::log("Testing");
+const FilterQueryObject FilterQueryObject::notOperator() const {
+    QString fullText = "not (";
+    fullText.append(queryText);
+    fullText.append(")");
 
-    LogicalFilterQueryObject aObject("Name", "eq", "Milk");
-    LogicalFilterQueryObject bObject("Price", "sub", 5);
-    LogicalFilterQueryObject cObject(bObject, "gt", 14);
-    LogicalFilterQueryObject dObject("Name", "eq", "Bread");
+    FilterQueryObject returnValue (fullText);
+    return returnValue;
+}
 
-    LOGGER::log("A: "+ aObject.getQueryText());
-    LOGGER::log("B: "+ bObject.getQueryText());
-    LOGGER::log("C: "+ cObject.getQueryText());
-    LOGGER::log("D: "+ dObject.getQueryText());
+const FilterQueryObject FilterQueryObject::customOperator(QString op, const FilterQueryObject &anotherObject) const {
+    QString fullText = "(";
+    fullText.append(queryText);
+    fullText.append(" ");
+    fullText.append(op);
+    fullText.append(" ");
+    fullText.append(anotherObject.getQueryText());
+    fullText.append(")");
 
-    LogicalFilterQueryObject test = dObject.orOperator( (bObject.andOperator(cObject.andOperator(aObject))));
-    LOGGER::log("Test 1: "+test.getQueryText());
+    FilterQueryObject returnValue (fullText);
+    return returnValue;
+}
 
-    test = (dObject.andOperator(aObject)).orOperator( bObject.andOperator(cObject).notOperator());
-    LOGGER::log("Test 2: "+test.getQueryText());
+const FilterQueryObject FilterQueryObject::andOperator(const FilterQueryObject &anotherObject) const {
+    return this->customOperator("and", anotherObject);
+}
 
-    test = (dObject * aObject) + (bObject * cObject);
-    LOGGER::log("Test 3: "+test.getQueryText());
+const FilterQueryObject FilterQueryObject::orOperator(const FilterQueryObject &anotherObject) const {
+    return this->customOperator("or", anotherObject);
+}
 
-    test = (dObject + cObject) * aObject;
-    LOGGER::log("Test 4: "+test.getQueryText());
+const FilterQueryObject FilterQueryObject::operator+ (const FilterQueryObject &anotherObject) const {
+    return this->orOperator(anotherObject);
+}
 
-    test = (dObject || aObject) || (bObject && cObject);
-    LOGGER::log("Test 5: "+test.getQueryText());
+const FilterQueryObject FilterQueryObject::operator* (const FilterQueryObject &anotherObject) const {
+    return this->andOperator(anotherObject);
+}
 
-    test = (dObject || cObject) * !aObject;
-    LOGGER::log("Test 6: "+test.getQueryText());
+const FilterQueryObject FilterQueryObject::operator||(const FilterQueryObject &anotherObject) const {
+    return this->orOperator(anotherObject);
+}
 
-    LOGGER::log("End Testing");
+const FilterQueryObject FilterQueryObject::operator&&(const FilterQueryObject &anotherObject) const {
+    return this->andOperator(anotherObject);
+}
 
-    return test.getQueryText();
+const FilterQueryObject FilterQueryObject::operator! () const {
+    return this->notOperator();
 }

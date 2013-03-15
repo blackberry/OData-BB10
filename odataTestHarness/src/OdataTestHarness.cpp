@@ -20,6 +20,7 @@ OdataTestHarness::OdataTestHarness(bb::cascades::Application *app) :
 	// You must add this for class registration for use in the qml View and/or Container
     qmlRegisterType<cODataLib>("ODataLib", 1, 0, "cODataLib");
     qmlRegisterType<OrderByQueryCollection>("ODataLib", 1, 0, "OrderByQueryCollection");
+    qmlRegisterType<FilterQueryTestObject>("ODataLib", 1, 0, "FilterQueryTestObject");
 
     // create scene document from main.qml asset
     // set parent to created document to ensure it exists for the whole application lifetime

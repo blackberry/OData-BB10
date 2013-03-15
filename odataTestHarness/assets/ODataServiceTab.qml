@@ -24,7 +24,7 @@ NavigationPane {
                 }
             ]
             onCreationCompleted: {
-                _datasourceODataServices.fetchData("http://services.odata.org/OData/OData.svc/?$format=json",20,12);
+                _datasourceODataServices.fetchData("http://services.odata.org/OData/OData.svc/?$format=json",20,0);
             }
             
             onTriggered: {
