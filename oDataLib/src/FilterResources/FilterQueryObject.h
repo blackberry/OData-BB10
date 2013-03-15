@@ -21,11 +21,11 @@ private:
 
 public:
     FilterQueryObject(const QString &, const QString &, const QString &);
-    FilterQueryObject(const QString &, const QString &, int);
+    FilterQueryObject(const QString &, const QString &, float);
 
     // Used when applying Arithmetic Operators, for example: /Products?$filter=Price add 5 gt 10
     FilterQueryObject(const FilterQueryObject&, const QString&, const QString&);
-    FilterQueryObject(const FilterQueryObject&, const QString&, int);
+    FilterQueryObject(const FilterQueryObject&, const QString&, float);
 
     virtual ~FilterQueryObject();
 

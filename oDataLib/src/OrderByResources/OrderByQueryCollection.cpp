@@ -7,8 +7,6 @@
 
 #include "OrderByQueryCollection.h"
 
-#include "LOGGER.h"
-
 OrderByQueryCollection::OrderByQueryCollection(QObject *parent):
     QObject(parent),
     queryObjects (QList<OrderByQueryObject>())
@@ -30,8 +28,6 @@ QString OrderByQueryCollection::getQueryText() const {
         if (i < size -1) queryRequest.append(",");
         i++;
     }
-
-    LOGGER::log("Query collection request: ",queryRequest);
 
     return queryRequest;
 }

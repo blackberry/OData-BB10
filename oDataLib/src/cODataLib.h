@@ -21,9 +21,9 @@
 #include <QObject>
 #include <bb/cascades/ArrayDataModel>
 
-#include "OrderByQueryCollection.h"
+#include "OrderByResources/OrderByQueryCollection.h"
 
-#include "FilterQueryTestObject.h"
+#include "FilterResources/FilterQueryTestObject.h"
 
 // class ODataSource;
 class /* ODATALIB_EXPORT*/ cODataLib : public QObject /* inheritance from QObject is necessary for signal to work. */

@@ -8,7 +8,7 @@
 #include "FilterQueryTestObject.h"
 
 #include "FilterQueryObject.h"
-#include "LOGGER.h"
+#include "../LOGGER.h"
 
 FilterQueryTestObject::FilterQueryTestObject() {
     // TODO Auto-generated constructor stub
@@ -51,7 +51,10 @@ QString FilterQueryTestObject::testFilterObject() {
     test = (dObject || cObject) * !aObject;
     LOGGER::log("Test 6: "+test.getQueryText());
 
-    LOGGER::log("End Testing");
+    FilterQueryObject eObject("Price", "le", 200);
+    FilterQueryObject fObject("Price", "gt", 3.5);
+
+    test = eObject && fObject;
 
     return test.getQueryText();
 }

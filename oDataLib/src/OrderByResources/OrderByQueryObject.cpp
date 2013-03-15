@@ -6,7 +6,6 @@
  */
 
 #include "OrderByQueryObject.h"
-#include "LOGGER.h"
 
 OrderByQueryObject::OrderByQueryObject():
     field (" "),
@@ -51,6 +50,5 @@ void OrderByQueryObject::setField(const QString & field) {
 QString OrderByQueryObject::getQueryText() const {
     QString queryText = QString(this->field);
     (this->ascending) ? queryText.append(" asc") :  queryText.append(" desc");
-    LOGGER::log(queryText);
     return queryText;
 }

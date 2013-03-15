@@ -11,8 +11,8 @@
 #include <QObject>
 #include <bb/cascades/ArrayDataModel>
 
-#include "OrderByQueryObject.h"
-#include "OrderByQueryCollection.h"
+#include "OrderByResources/OrderByQueryObject.h"
+#include "OrderByResources/OrderByQueryCollection.h"
 
 /**
  * Class that provides generic access to the odata service

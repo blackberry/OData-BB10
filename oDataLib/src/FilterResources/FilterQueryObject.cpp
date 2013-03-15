@@ -7,14 +7,12 @@
 
 #include "FilterQueryObject.h"
 
-#include "LOGGER.h"
-
 FilterQueryObject::FilterQueryObject(const QString& field, const QString& op, const QString& value) :
     queryText ("(" + field + " " + op + " '" + value + "')")
 {
 }
 
-FilterQueryObject::FilterQueryObject(const QString& field, const QString& op, int value) :
+FilterQueryObject::FilterQueryObject(const QString& field, const QString& op, float value) :
     queryText (QString("(" + field + " " + op + " %1)").arg(value))
 {
 }
@@ -24,7 +22,7 @@ FilterQueryObject::FilterQueryObject(const FilterQueryObject& anotherFilter, con
 {
 }
 
-FilterQueryObject::FilterQueryObject(const FilterQueryObject& anotherFilter, const QString& op, int value) :
+FilterQueryObject::FilterQueryObject(const FilterQueryObject& anotherFilter, const QString& op, float value) :
     queryText (QString("(" + anotherFilter.getQueryText() + " " + op + " %1)").arg(value))
 {
 }
