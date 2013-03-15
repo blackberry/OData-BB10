@@ -13,6 +13,8 @@ SOURCES +=  \
     $$BASEDIR/src/cODataLib.cpp \
     $$BASEDIR/src/moc_ODataSource.cpp \
     $$BASEDIR/src/moc_cODataLib.cpp
+	$$BASEDIR/src/FilterResources/moc_FilterQueryTestObject.cpp \
+	$$BASEDIR/src/OrderByResources/moc_OrderByQueryCollection.cpp 
 
 HEADERS +=  \
 	$$BASEDIR/src/FilterResources/FilterQueryTestObject.h \
