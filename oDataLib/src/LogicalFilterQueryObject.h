@@ -16,11 +16,8 @@ private:
 
     QString queryText;
 
-    LogicalFilterQueryObject  customOperator(QString, const LogicalFilterQueryObject &);
-
-    /* Used internally */
     LogicalFilterQueryObject(const QString &);
-
+    LogicalFilterQueryObject  customOperator(QString, const LogicalFilterQueryObject &);
 
 public:
     LogicalFilterQueryObject(const QString &, const QString &, const QString &);
@@ -36,7 +33,10 @@ public:
 
     LogicalFilterQueryObject  andOperator(const LogicalFilterQueryObject &);
     LogicalFilterQueryObject  orOperator(const LogicalFilterQueryObject &);
+    LogicalFilterQueryObject  notOperator();
 
+     LogicalFilterQueryObject operator+(const LogicalFilterQueryObject &) ;
+     LogicalFilterQueryObject operator*(const LogicalFilterQueryObject &) ;
 
 };
 

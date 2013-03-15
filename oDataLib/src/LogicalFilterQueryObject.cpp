@@ -42,6 +42,15 @@ QString LogicalFilterQueryObject::getQueryText() const {
     return queryText;
 }
 
+LogicalFilterQueryObject LogicalFilterQueryObject::notOperator() {
+    QString fullText = "not (";
+    fullText.append(queryText);
+    fullText.append(")");
+
+    LogicalFilterQueryObject returnValue (fullText);
+    return returnValue;
+}
+
 LogicalFilterQueryObject LogicalFilterQueryObject::customOperator(QString op, const LogicalFilterQueryObject &anotherObject) {
     QString fullText = "(";
     fullText.append(queryText);
@@ -63,3 +72,10 @@ LogicalFilterQueryObject LogicalFilterQueryObject::orOperator(const LogicalFilte
     return this->customOperator("or", anotherObject);
 }
 
+LogicalFilterQueryObject LogicalFilterQueryObject::operator+(const LogicalFilterQueryObject &anotherObject) {
+    return this->orOperator(anotherObject);
+}
+
+LogicalFilterQueryObject LogicalFilterQueryObject::operator*(const LogicalFilterQueryObject &anotherObject) {
+    return this->andOperator(anotherObject);
+}
