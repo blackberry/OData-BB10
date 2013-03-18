@@ -47,7 +47,7 @@ ODataSource::~ODataSource() {
 
 /* Filter querys */
 
-void ODataSource::filter(const QString& requestURL, int nIndex, int nSize, const QString& filterQuery ,bool paging) {
+void ODataSource::filter(const QString& requestURL, const QString& filterQuery ,bool paging) {
     QString queryRequest(requestURL);
     (queryRequest.contains("?")) ? queryRequest.append("&") : queryRequest.append("?");
     queryRequest.append("$filter=");
@@ -58,7 +58,7 @@ void ODataSource::filter(const QString& requestURL, int nIndex, int nSize, const
 /* Order By querys */
 
 // fieldAndOrientation querys options separated by comma ',', for example 'ReleaseDate asc, Rating desc'
-void ODataSource::orderBy(const QString& requestURL, int nIndex, int nSize, const QString& fieldAndOrientation ,bool paging)  {
+void ODataSource::orderBy(const QString& requestURL, const QString& fieldAndOrientation ,bool paging)  {
     QString queryRequest(requestURL);
     (queryRequest.contains("?")) ? queryRequest.append("&") : queryRequest.append("?");
     queryRequest.append("$orderby=");
@@ -66,8 +66,8 @@ void ODataSource::orderBy(const QString& requestURL, int nIndex, int nSize, cons
     this->fetchData(queryRequest, paging);
 }
 
-void ODataSource::orderByCollection(const QString& requestURL, int nIndex, int nSize, OrderByQueryCollection* queryObject ,bool paging) {
-    this->orderBy(requestURL, nIndex, nSize, queryObject->getQueryText(),paging);
+void ODataSource::orderByCollection(const QString& requestURL, OrderByQueryCollection* queryObject ,bool paging) {
+    this->orderBy(requestURL, queryObject->getQueryText(), paging);
 }
 
 void ODataSource::fetchData(const QString& requestURL, bool paging) {

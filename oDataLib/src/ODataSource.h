@@ -37,10 +37,10 @@ public:
 
     bb::cascades::DataModel* getDataModel() const;
 
-    void filter(const QString& requestURL, int nIndex, int nSize, const QString& filterQuery ,bool paging = false);
+    void filter(const QString& requestURL, const QString& filterQuery ,bool paging = false);
 
-    void orderByCollection(const QString& requestURL, int nIndex, int nSize,  OrderByQueryCollection* queryObject ,bool paging = false);
-    void orderBy(const QString& requestURL, int nIndex, int nSize, const QString& fieldAndOrientation ,bool paging = false);
+    void orderByCollection(const QString& requestURL, OrderByQueryCollection* queryObject ,bool paging = false);
+    void orderBy(const QString& requestURL, const QString& fieldAndOrientation ,bool paging = false);
 
     // Fetch the data from the network
     void fetchData(const QString& requestURL, bool paging = false);

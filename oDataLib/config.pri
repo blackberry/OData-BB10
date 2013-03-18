@@ -7,17 +7,15 @@ INCLUDEPATH +=  \
     $$BASEDIR/src
 
 SOURCES +=  \
-	$$BASEDIR/src/FilterResources/FilterQueryTestObject.cpp \
+	$$BASEDIR/src/FilterResources/FilterQueryController.cpp \
 	$$BASEDIR/src/OrderByResources/OrderByQueryCollection.cpp \
     $$BASEDIR/src/ODataSource.cpp \
     $$BASEDIR/src/cODataLib.cpp \
     $$BASEDIR/src/moc_ODataSource.cpp \
     $$BASEDIR/src/moc_cODataLib.cpp
-	$$BASEDIR/src/FilterResources/moc_FilterQueryTestObject.cpp \
-	$$BASEDIR/src/OrderByResources/moc_OrderByQueryCollection.cpp 
 
 HEADERS +=  \
-	$$BASEDIR/src/FilterResources/FilterQueryTestObject.h \
+	$$BASEDIR/src/FilterResources/FilterQueryController.h \
 	$$BASEDIR/src/OrderByResources/OrderByQueryCollection.h \
     $$BASEDIR/src/LOGGER.h \
     $$BASEDIR/src/ODataLib.h \

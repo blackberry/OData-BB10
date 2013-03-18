@@ -5,20 +5,20 @@
  *      Author: adrian
  */
 
-#include "FilterQueryTestObject.h"
+#include "FilterQueryController.h"
 
 #include "FilterQueryObject.h"
 #include "../LOGGER.h"
 
-FilterQueryTestObject::FilterQueryTestObject() {
+FilterQueryController::FilterQueryController() {
 }
 
-FilterQueryTestObject::~FilterQueryTestObject() {
+FilterQueryController::~FilterQueryController() {
 }
 
-QString FilterQueryTestObject::testFilterObject() {
+QString FilterQueryController::testFilterObject() {
 
-    //TODO: Make real test, these ones are unfinished and they are only to see de coherence of the '()'
+    //TODO: Make real test, these ones are unfinished and they are only to see the coherence of the '()'
     LOGGER::log("Testing");
 
     FilterQueryObject aObject("Name", "eq", "Milk");

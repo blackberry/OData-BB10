@@ -30,8 +30,8 @@ Page {
             id: collection;
         },
         
-        FilterQueryTestObject {
-            id: test;
+        FilterQueryController {
+            id: filterController;
         }
     ]
     
@@ -40,10 +40,10 @@ Page {
 
         //test.testFilterObject();
 
-       _datasourceDrilldown.fetchData("http://services.odata.org/OData/OData.svc/" + drilldownPage.title + "?$format=json");
+       //_datasourceDrilldown.fetchData("http://services.odata.org/OData/OData.svc/" + drilldownPage.title + "?$format=json");
        
        // FILTER
-       //_datasourceDrilldown.filter("http://services.odata.org/OData/OData.svc/" + drilldownPage.title + "?$format=json", test.testFilterObject());    
+       _datasourceDrilldown.filter("http://services.odata.org/OData/OData.svc/" + drilldownPage.title + "?$format=json", filterController.testFilterObject());    
        
        // ORDERBY: This examples works only for Products tab
        

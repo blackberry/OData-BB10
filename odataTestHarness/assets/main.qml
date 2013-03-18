@@ -19,13 +19,18 @@ TabbedPane {
         }
     }
     Tab {
-        title: qsTr("Tab 4")
+        title: qsTr("Filter")
+        FilterTab {  
+        }
+    }
+    Tab {
+        title: qsTr("Tab 5")
         Page {
             id: tab4
             Container {
                 // define tab content here
                 Label {
-                    text: qsTr("Tab 4 title")
+                    text: qsTr("Tab 5 title")
                     horizontalAlignment: HorizontalAlignment.Center
                     textStyle {
                         base: SystemDefaults.TextStyles.TitleText
@@ -40,7 +45,7 @@ TabbedPane {
                     verticalAlignment: VerticalAlignment.Fill
                     horizontalAlignment: HorizontalAlignment.Fill
                     Label {
-                        text: qsTr("Tab 4 content")
+                        text: qsTr("Tab 5 content")
                         verticalAlignment: VerticalAlignment.Center
                         horizontalAlignment: HorizontalAlignment.Center
                         textStyle {
@@ -55,7 +60,7 @@ TabbedPane {
         // this slot is called when declarative scene is created
         // write post creation initialization here
         console.log("TabbedPane - onCreationCompleted()")
-
+        
         // enable layout to adapt to the device rotation
         // don't forget to enable screen rotation in bar-bescriptor.xml (Application->Orientation->Auto-orient)
         OrientationSupport.supportedDisplayOrientation = SupportedDisplayOrientation.All;

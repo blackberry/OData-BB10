@@ -10,22 +10,24 @@
 
 #include <QObject>
 
-class FilterQueryObject  {
+class FilterQueryObject {
 
 private:
 
     QString queryText;
 
-    FilterQueryObject(const QString &);
     const FilterQueryObject customOperator(QString, const FilterQueryObject &) const;
 
 public:
-    FilterQueryObject(const QString &, const QString &, const QString &);
-    FilterQueryObject(const QString &, const QString &, float);
+
+    FilterQueryObject(const QString &);
+
+    FilterQueryObject(const QString &field, const QString &op, const QString &value);
+    FilterQueryObject(const QString &field, const QString &op, float value);
 
     // Used when applying Arithmetic Operators, for example: /Products?$filter=Price add 5 gt 10
-    FilterQueryObject(const FilterQueryObject&, const QString&, const QString&);
-    FilterQueryObject(const FilterQueryObject&, const QString&, float);
+    FilterQueryObject(const FilterQueryObject &arithmeticObject, const QString &op, const QString &value);
+    FilterQueryObject(const FilterQueryObject &arithmeticObject, const QString&op, float value);
 
     virtual ~FilterQueryObject();
 
