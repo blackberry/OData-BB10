@@ -5,16 +5,14 @@
  *      Author: adrian
  */
 
-#ifndef ORDERBYQUERYCOLLECTION_H_
-#define ORDERBYQUERYCOLLECTION_H_
+#ifndef ORDERBYQUERYCONTROLLER_H_
+#define ORDERBYQUERYCONTROLLER_H_
 
 #include <QObject>
 
 #include "OrderByQueryObject.h"
 
-//TODO: Extract Model information and leave these class as a Controller
-
-class OrderByQueryCollection: public QObject {
+class OrderByQueryController: public QObject {
 
     Q_OBJECT
 
@@ -22,12 +20,12 @@ class OrderByQueryCollection: public QObject {
         QList<OrderByQueryObject> queryObjects;
 
     public:
-        OrderByQueryCollection(QObject *parent=0);
-        virtual ~OrderByQueryCollection();
+        OrderByQueryController(QObject *parent=0);
+        virtual ~OrderByQueryController();
 
         Q_INVOKABLE void addQuery (const QString& field, bool ascending) ;
 
         Q_INVOKABLE QString getQueryText() const;
 };
 
-#endif /* ORDERBYQUERYCOLLECTION_H_ */
+#endif /* ORDERBYQUERYCONTROLLER_H_ */

@@ -14,14 +14,16 @@ class FilterQueryController : public QObject {
 
     Q_OBJECT
 
+private:
+
+
 public:
+
     FilterQueryController();
     virtual ~FilterQueryController();
 
-    Q_INVOKABLE QString testFilterObject ();
+    Q_INVOKABLE QString testFilter();
 
-    //Q_INVOKABLE QString testFilterObject (QString query);
-    //Q_INVOKABLE QString testFilterObject (const QString &field, const QString &op, const QString &value);
 };
 
 #endif /* FILTERQUERYCONTROLLER_H_ */

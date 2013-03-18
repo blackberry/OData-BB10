@@ -7,23 +7,18 @@
 
 #include "FilterQueryObject.h"
 
-FilterQueryObject::FilterQueryObject(const QString& field, const QString& op, const QString& value) :
-    queryText ("(" + field + " " + op + " '" + value + "')")
+FilterQueryObject::FilterQueryObject(const QString& field, LogicalOperation op, const QString& value) :
+    queryText (QString("(" + field + " %1 '" + value + "')").arg(logicalOperationStrings[op]))
 {
 }
 
-FilterQueryObject::FilterQueryObject(const QString& field, const QString& op, float value) :
-    queryText (QString("(" + field + " " + op + " %1)").arg(value))
+FilterQueryObject::FilterQueryObject(const QString& field, LogicalOperation op, float value) :
+    queryText (QString("(" + field + " %1 %2)").arg(logicalOperationStrings[op]).arg(value))
 {
 }
 
-FilterQueryObject::FilterQueryObject(const FilterQueryObject& anotherFilter, const QString& op, const QString& value) :
-    queryText ("(" + anotherFilter.getQueryText() + " " + op + " '" + value + "')")
-{
-}
-
-FilterQueryObject::FilterQueryObject(const FilterQueryObject& anotherFilter, const QString& op, float value) :
-    queryText (QString("(" + anotherFilter.getQueryText() + " " + op + " %1)").arg(value))
+FilterQueryObject::FilterQueryObject(const QString &field, ArithmeticOperation arithmeticOperation, float arithmeticValue, LogicalOperation logicalOperation, float value) :
+            queryText (QString("(" + field + " %1 %2) %3 %4").arg(arithmeticOperationStrings[arithmeticOperation]).arg(arithmeticValue).arg(logicalOperationStrings[logicalOperation]).arg(value))
 {
 }
 
@@ -57,7 +52,7 @@ const FilterQueryObject FilterQueryObject::customOperator(QString op, const Filt
     fullText.append(anotherObject.getQueryText());
     fullText.append(")");
 
-    FilterQueryObject returnValue (fullText);
+    FilterQueryObject returnValue(fullText);
     return returnValue;
 }
 
@@ -67,14 +62,6 @@ const FilterQueryObject FilterQueryObject::andOperator(const FilterQueryObject &
 
 const FilterQueryObject FilterQueryObject::orOperator(const FilterQueryObject &anotherObject) const {
     return this->customOperator("or", anotherObject);
-}
-
-const FilterQueryObject FilterQueryObject::operator+ (const FilterQueryObject &anotherObject) const {
-    return this->orOperator(anotherObject);
-}
-
-const FilterQueryObject FilterQueryObject::operator* (const FilterQueryObject &anotherObject) const {
-    return this->andOperator(anotherObject);
 }
 
 const FilterQueryObject FilterQueryObject::operator||(const FilterQueryObject &anotherObject) const {

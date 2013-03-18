@@ -22,16 +22,11 @@ cODataLib::~cODataLib()
 }
 
 void cODataLib::filter(const QString& requestURL, const QString& filterQuery ,bool paging) {
-    LOGGER::log("Filter");
     ((ODataSource*)m_datasource)->filter(requestURL, filterQuery , paging);
 }
 
-
-void cODataLib::orderByCollection(const QString& requestURL, QObject *  queryObject ,bool paging ) {
-    ((ODataSource*)m_datasource)->orderByCollection(requestURL, (OrderByQueryCollection *) queryObject , paging);
-}
-
 void cODataLib::orderBy(const QString& requestURL, const QString& fieldAndOrientation ,bool paging)  {
+    LOGGER::log("String");
     ((ODataSource*)m_datasource)->orderBy(requestURL, fieldAndOrientation, paging);
 }
 

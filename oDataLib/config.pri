@@ -8,7 +8,7 @@ INCLUDEPATH +=  \
 
 SOURCES +=  \
 	$$BASEDIR/src/FilterResources/FilterQueryController.cpp \
-	$$BASEDIR/src/OrderByResources/OrderByQueryCollection.cpp \
+	$$BASEDIR/src/OrderByResources/OrderByQueryController.cpp \
     $$BASEDIR/src/ODataSource.cpp \
     $$BASEDIR/src/cODataLib.cpp \
     $$BASEDIR/src/moc_ODataSource.cpp \
@@ -16,7 +16,7 @@ SOURCES +=  \
 
 HEADERS +=  \
 	$$BASEDIR/src/FilterResources/FilterQueryController.h \
-	$$BASEDIR/src/OrderByResources/OrderByQueryCollection.h \
+	$$BASEDIR/src/OrderByResources/OrderByQueryController.h \
     $$BASEDIR/src/LOGGER.h \
     $$BASEDIR/src/ODataLib.h \
     $$BASEDIR/src/ODataSource.h \

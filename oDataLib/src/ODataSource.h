@@ -11,8 +11,7 @@
 #include <QObject>
 #include <bb/cascades/ArrayDataModel>
 
-#include "OrderByResources/OrderByQueryObject.h"
-#include "OrderByResources/OrderByQueryCollection.h"
+#include "OrderByResources/OrderByQueryController.h"
 
 /**
  * Class that provides generic access to the odata service
@@ -38,8 +37,6 @@ public:
     bb::cascades::DataModel* getDataModel() const;
 
     void filter(const QString& requestURL, const QString& filterQuery ,bool paging = false);
-
-    void orderByCollection(const QString& requestURL, OrderByQueryCollection* queryObject ,bool paging = false);
     void orderBy(const QString& requestURL, const QString& fieldAndOrientation ,bool paging = false);
 
     // Fetch the data from the network

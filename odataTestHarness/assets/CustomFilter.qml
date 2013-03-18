@@ -2,20 +2,15 @@ import bb.cascades 1.0
 import ODataLib 1.0 
 
 Page {
-    id: tab3
-    
+    id: customFilterTab
     Container {
-        id: rootContainer
         
-        attachedObjects: [
-            OrderByQueryCollection {
-                id: collection;
-            }
-        ]
+        layout:StackLayout {
+            orientation: LayoutOrientation.TopToBottom
+        }
         
         Container {
-            DropDown {
-                
+            DropDown {  
                 id: dropDown
                 horizontalAlignment: HorizontalAlignment.Left
                 Option {
@@ -34,66 +29,22 @@ Page {
         Container {
             layout:StackLayout {
                 orientation: LayoutOrientation.TopToBottom
-            
-            }
-            Label {
-                id: fullQuery
-            }
-            Container {
-                layout:StackLayout {
-                    orientation: LayoutOrientation.LeftToRight
-                
-                }
-                TextField {
-                    id: fieldText
-                    
-                }
-                DropDown {
-                    id: dropDownOrientation
-                    preferredWidth: 15.0
-                    Option {
-                        selected: true
-                        text: "Ascending"
-                        value: true
-                    }
-                    Option {
-                        text: "Descending"
-                        value: false
-                    }
-                }
-                Button {
-                    id: addQueryButton
-                    text: qsTr("+")
-                    preferredWidth: 5.0
-                    onClicked: {
-                        collection.addQuery(fieldText.text,dropDownOrientation.selectedValue);
-                        fieldText.setText("");
-                        fullQuery.setText(collection.getQueryText());
-                        
-                    }
-                }
-            }
-        }
-        
-        Container {
-            layout:StackLayout {
-                orientation: LayoutOrientation.TopToBottom
             }
             
+            TextField {
+                id: queryField;
+            }
             Button {
-                id: orderByButton
-                text: qsTr("OrderBy")
+                text: "Filter"
                 onClicked: {
-                    _datasourceOrderBy.orderByCollection("http://services.odata.org/OData/OData.svc/" + dropDown.selectedOption.text + "?$format=json", 20, 10, collection);
+                    _datasourceFilter.filter("http://services.odata.org/OData/OData.svc/" + dropDown.selectedOption.text + "?$format=json", queryField.text);
                 }
             }
-           
         }
         
         Container {
-            id: secondPart
             ODataList {
-                odatasource: _datasourceOrderBy
+                odatasource: _datasourceFilter
                 listItemComponents: [
                     ListItemComponent {
                         type: "loadItem"

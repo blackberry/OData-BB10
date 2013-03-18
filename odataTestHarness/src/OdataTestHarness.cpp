@@ -15,12 +15,14 @@ cODataLib *objToDataLib = NULL;
 cODataLib *objToDataLibSvcs = NULL;
 cODataLib *objToDataLibDDown = NULL;
 cODataLib *objToDataLibOrderBy = NULL;
+cODataLib *objToDataLibFilter = NULL;
 
 OdataTestHarness::OdataTestHarness(bb::cascades::Application *app) :
                 QObject(app) {
 	// You must add this for class registration for use in the qml View and/or Container
     qmlRegisterType<cODataLib>("ODataLib", 1, 0, "cODataLib");
-    qmlRegisterType<OrderByQueryCollection>("ODataLib", 1, 0, "OrderByQueryCollection");
+
+    qmlRegisterType<OrderByQueryController>("ODataLib", 1, 0, "OrderByQueryController");
     qmlRegisterType<FilterQueryController>("ODataLib", 1, 0, "FilterQueryController");
 
     // create scene document from main.qml asset
@@ -38,7 +40,8 @@ OdataTestHarness::OdataTestHarness(bb::cascades::Application *app) :
 
     objToDataLibOrderBy = new cODataLib(this);
     qml->setContextProperty("_datasourceOrderBy", objToDataLibOrderBy);
-
+    objToDataLibFilter = new cODataLib(this);
+    qml->setContextProperty("_datasourceFilter", objToDataLibFilter);
 
     // create root object for the UI
     AbstractPane *root = qml->createRootObject<AbstractPane>();

@@ -8,8 +8,8 @@ Page {
         id: rootContainer
         
         attachedObjects: [
-            OrderByQueryCollection {
-                id: collection;
+            OrderByQueryController {
+                id: controller;
             }
         ]
         
@@ -46,8 +46,8 @@ Page {
                 }
                 TextField {
                     id: fieldText
-                    
                 }
+                
                 DropDown {
                     id: dropDownOrientation
                     preferredWidth: 15.0
@@ -61,14 +61,15 @@ Page {
                         value: false
                     }
                 }
+                
                 Button {
                     id: addQueryButton
                     text: qsTr("+")
                     preferredWidth: 5.0
                     onClicked: {
-                        collection.addQuery(fieldText.text,dropDownOrientation.selectedValue);
+                        controller.addQuery(fieldText.text,dropDownOrientation.selectedValue);
                         fieldText.setText("");
-                        fullQuery.setText(collection.getQueryText());
+                        fullQuery.setText(controller.getQueryText());
                         
                     }
                 }
@@ -84,14 +85,13 @@ Page {
                 id: orderByButton
                 text: qsTr("OrderBy")
                 onClicked: {
-                    _datasourceOrderBy.orderByCollection("http://services.odata.org/OData/OData.svc/" + dropDown.selectedOption.text + "?$format=json", 20, 10, collection);
+                    _datasourceOrderBy.orderBy("http://services.odata.org/OData/OData.svc/" + dropDown.selectedOption.text + "?$format=json", controller.getQueryText());
                 }
             }
            
         }
         
         Container {
-            id: secondPart
             ODataList {
                 odatasource: _datasourceOrderBy
                 listItemComponents: [

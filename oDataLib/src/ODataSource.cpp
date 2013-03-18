@@ -20,6 +20,9 @@
 
 #include "LOGGER.h"
 
+#include "OrderByResources/OrderByQueryObject.h"
+
+
 using namespace bb::cascades;
 using namespace bb::data;
 using bb::system::SystemToast;
@@ -64,10 +67,6 @@ void ODataSource::orderBy(const QString& requestURL, const QString& fieldAndOrie
     queryRequest.append("$orderby=");
     queryRequest.append(fieldAndOrientation);
     this->fetchData(queryRequest, paging);
-}
-
-void ODataSource::orderByCollection(const QString& requestURL, OrderByQueryCollection* queryObject ,bool paging) {
-    this->orderBy(requestURL, queryObject->getQueryText(), paging);
 }
 
 void ODataSource::fetchData(const QString& requestURL, bool paging) {

@@ -5,18 +5,18 @@
  *      Author: adrian
  */
 
-#include "OrderByQueryCollection.h"
+#include "OrderByQueryController.h"
 
-OrderByQueryCollection::OrderByQueryCollection(QObject *parent):
+OrderByQueryController::OrderByQueryController(QObject *parent):
     QObject(parent),
     queryObjects (QList<OrderByQueryObject>())
 {
 }
 
-OrderByQueryCollection::~OrderByQueryCollection() {
+OrderByQueryController::~OrderByQueryController() {
 }
 
-QString OrderByQueryCollection::getQueryText() const {
+QString OrderByQueryController::getQueryText() const {
 
     QString queryRequest = QString();
     int size = queryObjects.count();
@@ -32,6 +32,6 @@ QString OrderByQueryCollection::getQueryText() const {
     return queryRequest;
 }
 
-void OrderByQueryCollection::addQuery (const QString& field, bool ascending) {
+void OrderByQueryController::addQuery (const QString& field, bool ascending) {
     queryObjects.append(OrderByQueryObject(field, ascending));
 }

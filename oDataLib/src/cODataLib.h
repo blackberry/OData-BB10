@@ -21,7 +21,7 @@
 #include <QObject>
 #include <bb/cascades/ArrayDataModel>
 
-#include "OrderByResources/OrderByQueryCollection.h"
+#include "OrderByResources/OrderByQueryController.h"
 
 #include "FilterResources/FilterQueryController.h"
 
@@ -40,8 +40,8 @@ public:
 
 	// Access methods
     Q_INVOKABLE void filter(const QString& requestURL, const QString& filterQuery ,bool paging = false);
-    Q_INVOKABLE void orderByCollection(const QString& requestURL, QObject * orderByCollectionObject ,bool paging = false);
     Q_INVOKABLE void orderBy(const QString& requestURL, const QString& fieldAndOrientation, bool paging = false);
+
     Q_INVOKABLE void fetchData(const QString& url, bool paged = false);
     Q_INVOKABLE void loadMoreItems();
 
