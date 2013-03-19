@@ -21,11 +21,16 @@ cODataLib::~cODataLib()
 {
 }
 
-void cODataLib::filter(const QString& requestURL, const QString& filterQuery ,bool paging) {
-    ((ODataSource*)m_datasource)->filter(requestURL, filterQuery , paging);
+void cODataLib::filter(const QString& requestURL, const QString& filterQuery, bool paging) {
+//void cODataLib::filter(const QString& requestURL, const QString& filterQuery ,bool paging) {
+    ((ODataSource*)m_datasource)->filter(requestURL, filterQuery, paging);
 }
 
-void cODataLib::orderBy(const QString& requestURL, const QString& fieldAndOrientation ,bool paging)  {
+void cODataLib::orderByCollection(const QString& requestURL,  QObject * queryObject, bool paging) {
+}
+
+void cODataLib::orderBy(const QString& requestURL, const QString& fieldAndOrientation, bool paging) {
+//void cODataLib::orderBy(const QString& requestURL, const QString& fieldAndOrientation ,bool paging)  {
     ((ODataSource*)m_datasource)->orderBy(requestURL, fieldAndOrientation, paging);
 }
 

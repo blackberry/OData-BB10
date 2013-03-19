@@ -32,7 +32,7 @@ OdataTestHarness::OdataTestHarness(bb::cascades::Application *app) :
     // Set the Data source object so it can be accessed from QML
     objToDataLib = new cODataLib(this);
     qml->setContextProperty("_datasourceNetflix", objToDataLib);
-    // objToDataLib->fetchData("http://odata.netflix.com/Catalog/Titles?$filter=ReleaseYear%20le%201989%20and%20ReleaseYear%20ge%201980%20and%20AverageRating%20gt%204&$expand=Awards&$format=json", 0, 20, true);
+
     objToDataLibSvcs = new cODataLib(this);
     qml->setContextProperty("_datasourceODataServices", objToDataLibSvcs);
     objToDataLibDDown = new cODataLib(this);

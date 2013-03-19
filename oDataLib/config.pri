@@ -11,6 +11,8 @@ SOURCES +=  \
 	$$BASEDIR/src/OrderByResources/OrderByQueryController.cpp \
     $$BASEDIR/src/ODataSource.cpp \
     $$BASEDIR/src/cODataLib.cpp \
+	$$BASEDIR/src/FilterResources/moc_FilterQueryController.cpp \
+	$$BASEDIR/src/OrderByResources/moc_OrderByQueryController.cpp \
     $$BASEDIR/src/moc_ODataSource.cpp \
     $$BASEDIR/src/moc_cODataLib.cpp
 

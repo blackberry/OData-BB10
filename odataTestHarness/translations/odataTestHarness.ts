@@ -12,12 +12,12 @@
 <context>
     <name>OrderByTab</name>
     <message>
-        <location filename="../assets/OrderByTab.qml" line="66"/>
+        <location filename="../assets/OrderByTab.qml" line="67"/>
         <source>+</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../assets/OrderByTab.qml" line="85"/>
+        <location filename="../assets/OrderByTab.qml" line="86"/>
         <source>OrderBy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -41,17 +41,22 @@
     </message>
     <message>
         <location filename="../assets/main.qml" line="22"/>
-        <source>Tab 4</source>
+        <source>Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="28"/>
-        <source>Tab 4 title</source>
+        <location filename="../assets/main.qml" line="27"/>
+        <source>Tab 5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="43"/>
-        <source>Tab 4 content</source>
+        <location filename="../assets/main.qml" line="33"/>
+        <source>Tab 5 title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../assets/main.qml" line="48"/>
+        <source>Tab 5 content</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
