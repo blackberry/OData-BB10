@@ -11,12 +11,13 @@
 
 #include "ODataSource.h"
 #include <bb/data/JsonDataAccess>
-#include <bb/data/XmlDataAccess>
+//#include <bb/data/XmlDataAccess>
 #include <bb/system/SystemToast>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkAccessManager>
 
 #include "cODataLib.h"
+#include "cAtomManager.h"
 
 #include "LOGGER.h"
 
@@ -88,8 +89,6 @@ void ODataSource::fetchData(const QString& requestURL, bool paging) {
         pagedRequestURL = requestURL;
         pagedRequestURL.contains("?") ? pagedRequestURL.append("&") : pagedRequestURL.append("?");
         pagedRequestURL = pagedRequestURL.append(QString("$top=%1").arg(ITEMS_PER_PAGE));
-
-
     }
     else {
         m_bEndReached = true;
@@ -193,113 +192,50 @@ int ODataSource::onDataListReceived(QNetworkReply* reply, ArrayDataModel* dataMo
     QByteArray result;
     result = reply->readAll();
 
-    int countAdded = fillDataModelItems(result, dataModel);
+    int countAdded = 0;
+    if  (m_JSONEnabled)	{
+    	countAdded = fillDataModelItems(result, dataModel);
+    }
+    else {
+    	// Atom XML parsing cases...
+    	countAdded = cAtomManager::Instance().fillDataModelItems(result, *dataModel);
+    }
+
     return countAdded;
 }
 
 int ODataSource::fillDataModelItems(QByteArray result, ArrayDataModel* dataModel) {
 
 	QVariantMap root;
-	if (m_JSONEnabled)	{
-
-		// load the JSON data
-		JsonDataAccess jda;
-		QVariant jsonContent = jda.loadFromBuffer(result);
-		if (jda.hasError()) {
-			DataAccessError error = jda.error();
-			LOGGER::log("failed to load featured list JSON: ", error.errorType());
-			LOGGER::log("failed to load featured list JSON: ", error.errorMessage());
-			return 0;
-		}
-	    // Retrieve list
-		root = jsonContent.value<QVariantMap>();
+	// load the JSON data
+	JsonDataAccess jda;
+	QVariant jsonContent = jda.loadFromBuffer(result);
+	if (jda.hasError()) {
+		DataAccessError error = jda.error();
+		LOGGER::log("failed to load featured list JSON: ", error.errorType());
+		LOGGER::log("failed to load featured list JSON: ", error.errorMessage());
+		return 0;
 	}
-	else
-	{
-		// Then we have XML
-		XmlDataAccess xda;
-		QVariant xmlContent = xda.loadFromBuffer(result);
+	// Retrieve list
+	root = jsonContent.value<QVariantMap>();
 
-		if (xda.hasError()) {
-			DataAccessError error = xda.error();
-			LOGGER::log("failed to load featured list XML: ", error.errorType());
-			LOGGER::log("failed to load featured list XML: ", error.errorMessage());
-			return 0;
-		}
-
-		// We have a Map
-		root = xmlContent.value<QVariantMap>();
-	}
-
-    return parseItemList(root, dataModel);
+	return parseItemList(root, dataModel);
 }
 
 int ODataSource::parseItemList(QVariantMap& root, ArrayDataModel* dataModel) {
     // TODO: Is this generic to all odata services?
     QVariantList list;
 
-    if (m_JSONEnabled)
-	{
-	    QVariantMap rootVal = root["d"].value<QVariantMap>();
-		if (rootVal.contains("EntitySets")) {
-			QVariant resultVal = rootVal["EntitySets"];
-			list = resultVal.value<QVariantList>();
-		}
-		else if (rootVal.contains("results")) {
-			QVariant resultVal = rootVal["results"]; // TODO: This seems to be feed specific
-			list = resultVal.value<QVariantList>();
-		} else {
-			list = root["d"].value<QVariantList>();
-		}
+	QVariantMap rootVal = root["d"].value<QVariantMap>();
+	if (rootVal.contains("EntitySets")) {
+		QVariant resultVal = rootVal["EntitySets"];
+		list = resultVal.value<QVariantList>();
 	}
-	else
-	{
-		// TODO: Review XML parsing for something a bit more smarter
-		QVariantMap toInsertInList;
-
-		QVariant vtTmp = root["entry"];
-		if (vtTmp.type() == QVariant::List)
-		{
-			QVariantList listTmp = vtTmp.value<QVariantList>();
-			int tt = listTmp.size();
-
-			foreach (QVariant vt, listTmp)
-			{
-				if (vt.type() == QVariant::Map)
-				{
-					QVariantMap variantMap = vt.value<QVariantMap>();
-					tt = variantMap.size();
-
-					/*
-					for(QVariantMap::const_iterator iter = variantMap.begin(); iter != variantMap.end(); ++iter) {
-						QVariant k = iter.key();
-						QString tt = k.toString();
-
-						LOGGER::log("\nmap key: ", tt);
-						LOGGER::log("map key type: ", (int)k.type());
-
-						QVariant m = iter.value();
-						QString tt2 = m.toString();
-
-						LOGGER::log("map value: ", tt2);
-						LOGGER::log("map value type: ", (int)m.type());
-					}*/
-					QVariantMap variantPropertiesMap = variantMap["m:properties"].value<QVariantMap>();
-
-					QVariant vtValue = variantPropertiesMap["d:Name"];
-					QString tmp = vtValue.toString();
-					toInsertInList.insert("Name", vtValue.toString());
-
-					vtValue = variantPropertiesMap["d:Rating"];
-					toInsertInList.insert("Rating", vtValue.toString());
-					vtValue = variantPropertiesMap["d:ShortSynopsis"];
-					toInsertInList.insert("ShortSynopsis", vtValue.toString());
-
-					list.append(toInsertInList);
-					toInsertInList.clear();
-				}
-			}
-		}
+	else if (rootVal.contains("results")) {
+		QVariant resultVal = rootVal["results"]; // TODO: This seems to be feed specific
+		list = resultVal.value<QVariantList>();
+	} else {
+		list = root["d"].value<QVariantList>();
 	}
 
     // add the data to the model

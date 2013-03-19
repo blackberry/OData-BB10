@@ -26,10 +26,6 @@ public:
     ODataSource(QObject *parent = 0);
     virtual ~ODataSource();
 
-    // copy require for QSharedDataPointer
- //   ODataSource(const ODataSource &other);
- //   ODataSource& operator=(const ODataSource &other);
-
     // Access methods
 public:
     //bb::cascades::ArrayDataModel getArrayDataModel() const;
