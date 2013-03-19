@@ -7,7 +7,6 @@
 
 #include "FilterQueryController.h"
 
-#include "FilterQueryObject.h"
 #include "../LOGGER.h"
 
 FilterQueryController::FilterQueryController() {
@@ -26,9 +25,39 @@ QString FilterQueryController::testFilter() {
     return (aObject || bObject || cObject).getQueryText();
 }
 
+QString FilterQueryController::getQueryText() const {
+    return queryObject.getQueryText();
+}
 
+//TODO: Change int op to LogicalOperation in methods interface
 
+void FilterQueryController::addQuery(const QString &field, int arithmeticOp, float arithmeticValue, int logicalOp, float logicValue) {
+    queryObject = FilterQueryObject(field, (ArithmeticOperation)arithmeticOp, arithmeticValue ,(LogicalOperation)logicalOp, logicValue);
+}
 
+void FilterQueryController::addQuery(const QString &field, int op, const QString &value) {
+    queryObject = FilterQueryObject(field, (LogicalOperation)op, value);
+}
+
+void FilterQueryController::addQuery(const QString &field, int op, float value) {
+    queryObject = FilterQueryObject(field, (LogicalOperation)op, value);
+}
+
+void FilterQueryController::andQuery(const QString &field, int op, const QString &value) {
+    queryObject = queryObject && FilterQueryObject(field, (LogicalOperation)op, value);
+}
+
+void FilterQueryController::andQuery(const QString &field, int op, float value) {
+    queryObject = queryObject && FilterQueryObject(field, (LogicalOperation)op, value);
+}
+
+void FilterQueryController::orQuery(const QString &field, int op, const QString &value) {
+    queryObject = queryObject || FilterQueryObject(field, (LogicalOperation)op, value);
+}
+
+void FilterQueryController::orQuery(const QString &field, int op, float value) {
+    queryObject = queryObject || FilterQueryObject(field, (LogicalOperation)op, value);
+}
 
 
 

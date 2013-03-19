@@ -46,6 +46,8 @@ private:
 
 public:
 
+    FilterQueryObject();
+
     FilterQueryObject(const QString &field, LogicalOperation op, const QString &value);
     FilterQueryObject(const QString &field, LogicalOperation op, float value);
 

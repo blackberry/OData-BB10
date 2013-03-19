@@ -7,6 +7,12 @@
 
 #include "FilterQueryObject.h"
 
+FilterQueryObject::FilterQueryObject() :
+    queryText("")
+{
+
+}
+
 FilterQueryObject::FilterQueryObject(const QString& field, LogicalOperation op, const QString& value) :
     queryText (QString("(" + field + " %1 '" + value + "')").arg(logicalOperationStrings[op]))
 {

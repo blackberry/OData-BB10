@@ -26,7 +26,6 @@ void cODataLib::filter(const QString& requestURL, const QString& filterQuery ,bo
 }
 
 void cODataLib::orderBy(const QString& requestURL, const QString& fieldAndOrientation ,bool paging)  {
-    LOGGER::log("String");
     ((ODataSource*)m_datasource)->orderBy(requestURL, fieldAndOrientation, paging);
 }
 
