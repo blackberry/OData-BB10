@@ -21,6 +21,7 @@ OdataTestHarness::OdataTestHarness(bb::cascades::Application *app) :
                 QObject(app) {
 	// You must add this for class registration for use in the qml View and/or Container
     qmlRegisterType<cODataLib>("ODataLib", 1, 0, "cODataLib");
+    qmlRegisterType<ODataQuery>("ODataLib", 1, 0, "ODataQuery");
 
     qmlRegisterType<OrderByQueryController>("ODataLib", 1, 0, "OrderByQueryController");
     qmlRegisterType<FilterQueryController>("ODataLib", 1, 0, "FilterQueryController");
@@ -57,4 +58,8 @@ OdataTestHarness::~OdataTestHarness()
 		delete objToDataLibSvcs;
 	if (objToDataLibDDown != NULL)
 		delete objToDataLibDDown;
+	if (objToDataLibOrderBy != NULL )
+	    delete objToDataLibOrderBy;
+	if (objToDataLibFilter != NULL)
+	    delete objToDataLibFilter;
 }

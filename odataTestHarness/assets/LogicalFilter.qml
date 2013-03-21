@@ -8,7 +8,11 @@ Page {
     attachedObjects: [
         FilterQueryController {
             id: controller;
+        },
+        ODataQuery {
+           id: oDataQuery; 
         }
+        
     ]
     
     Container {
@@ -89,7 +93,8 @@ Page {
                     else
                         controller.addQuery(queryField.text, dropDownOperation.selectedOption.value, parseFloat(queryValue.text));
                     
-                    _datasourceFilter.filter("http://services.odata.org/OData/OData.svc/" + dropDown.selectedOption.text + "?$format=json", controller.getQueryText());
+                    oDataQuery.setUri("http://services.odata.org/OData/OData.svc/" + dropDown.selectedOption.text).format("json").filter(controller.getQueryText());
+                    _datasourceFilter.fetchData(oDataQuery.getQueryText());
                 }
             }
         }
