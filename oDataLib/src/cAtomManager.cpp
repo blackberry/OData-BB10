@@ -26,70 +26,72 @@ void logMap(QVariantMap & map, int level);
 
 void logList(QVariantList & list, int level)
 {
-	LOGGER::log("\n ========================= LIST level:      ", level);
-    //list = resultVal.value<QVariantList>();
+	// add space to make the level indented
+	LOGGER::log_indent("LIST level:  ", level, level);
 
 	int sz = list.size();
+
     /*
      *  Traverse the list... just for debug purposes
      */
-    foreach (QVariant tm, list)
+    foreach (QVariant vt, list)
     {
 		//LOGGER::log("\n            list type: ", (int)tm.type());
-
-		if (tm.type() == QVariant::Map)
+		if (vt.type() == QVariant::Map)
 		{
-			QVariantMap toPass = tm.value<QVariantMap>();
+			QVariantMap toPass = vt.value<QVariantMap>();
 			logMap(toPass, level+1);
 		}
-		else if (tm.type() == QVariant::List)
+		else if (vt.type() == QVariant::List)
 		{
-			QVariantList toPass = tm.value<QVariantList>();
+			QVariantList toPass = vt.value<QVariantList>();
 			logList(toPass, level+1);
 		}
-		else if (tm.type() == QVariant::String)
+		else if (vt.type() == QVariant::String)
 		{
-			LOGGER::log("list value: ", tm.toString());
+			LOGGER::log_indent("list value                    : ", vt.toString(), level);
 		}
 		else
 		{
-			LOGGER::log("list type (no output on value): ", (int) tm.type());
+			LOGGER::log_indent("list type (no output on value): ", (int) vt.type(), level);
 		}
-		LOGGER::log("\n info LIST level:      ", level);
     }
+	LOGGER::log_indent("exiting LIST level:  ", level, level);
 }
 
 void logMap(QVariantMap & map, int level)
 {
-	LOGGER::log("\n ========================= MAP level:      ", level);
+	LOGGER::log_indent("MAP level:  ", level, level);
+
+	int sz = map.size();
 
 	for(QVariantMap::const_iterator iter = map.begin(); iter != map.end(); ++iter) {
 
-		QVariant k = iter.key();
-		QString tt = k.toString();
+		QVariant vt_key = iter.key();
+		QString vt_string = vt_key.toString();
 
-		LOGGER::log("\nmap key: ", tt);
-		LOGGER::log("map key type: ", (int)k.type());
+		LOGGER::log_indent("map key       : ", vt_string, level);
+		LOGGER::log_indent("map key type  : ", (int)vt_key.type(), level);
 
-		int yy = tt.length();
+		int yy = vt_string.length();
 
-		QVariant m = iter.value();
-		QString tt2 = m.toString();
+		QVariant vt_val = iter.value();
+		QString tvt_string2 = vt_val.toString();
 
-		LOGGER::log("map value: ", tt2);
-		LOGGER::log("map value type: ", (int)m.type());
+		LOGGER::log_indent("map value     : ", tvt_string2, level);
+		LOGGER::log_indent("map value type: ", (int)vt_val.type(), level);
 
-		if (m.type() == QVariant::Map) {
-			QVariantMap toPass = m.value<QVariantMap>();
+		if (vt_val.type() == QVariant::Map) {
+			QVariantMap toPass = vt_val.value<QVariantMap>();
 			logMap(toPass, level+1);
 		}
 
-		if (m.type() == QVariant::List) {
-			QVariantList toPass = m.value<QVariantList>();
-			//logList(toPass, level+1);
+		if (vt_val.type() == QVariant::List) {
+			QVariantList toPass = vt_val.value<QVariantList>();
+			logList(toPass, level+1);
 		}
-		LOGGER::log("\n info MAP level:      ", level);
 	}
+	LOGGER::log_indent("exiting MAP level:  ", level, level);
 }
 
 cAtomManager::~cAtomManager() {
@@ -253,6 +255,8 @@ int cAtomManager::parseElementsforDataModel(QVariantList& entries, bb::cascades:
 			}
 	}
 
+	logList(listForQML, 1);
+
 	return listForQML.size();
 }
 
@@ -264,7 +268,7 @@ int cAtomManager::fillDataModelItems(QByteArray& result, ArrayDataModel& dataMod
     return parseElementsforDataModel(parsed, dataModel, tp, cAtomManager::eProperties);
 }
 
-QByteArray cAtomManager::createHTTP_POST_request_test(const char* strHeaderType) {
+QByteArray cAtomManager::createHTTP_request_test(const char* strHeaderType) {
 
 	QByteArray arrByteBody;
 	if(strcmp(strHeaderType, "PUT") == 0)

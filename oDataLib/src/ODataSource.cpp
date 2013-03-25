@@ -59,7 +59,7 @@ QVariant ODataSource::byIntegerCallBogus(QVariant q, int iMethod)
 	// Testing writing to database with a some simplified atom/xml string using "PUT"
 	if (toSwapInDebugTime == 1)
 	{
-		vt = cAtomManager::Instance().createHTTP_POST_request_test("PUT");
+		vt = cAtomManager::Instance().createHTTP_request_test("PUT");
 		QByteArray arrB = vt.value<QByteArray>();
 
 		// Info
@@ -71,7 +71,7 @@ QVariant ODataSource::byIntegerCallBogus(QVariant q, int iMethod)
 	    QString url("http://services.odata.org/(S(0aatlc1jdpzfp1x241vfduge))/OData/OData.svc/Categories(0)");
 
 	    // should be changed to update data
-	    addData(url, arrB);
+	    updateData(url, arrB);
 	}
 	// Testing writing to database with a some simplified atom/xml string using "POST"
 	// this is intended for adding an entry in a table
@@ -79,7 +79,7 @@ QVariant ODataSource::byIntegerCallBogus(QVariant q, int iMethod)
 	// Allow the end-user to enter data; then send an entry with new data to be entered in database
 	else if (toSwapInDebugTime == 2)
 	{
-		vt = cAtomManager::Instance().createHTTP_POST_request_test("POST");
+		vt = cAtomManager::Instance().createHTTP_request_test("POST");
 		QByteArray arrB = vt.value<QByteArray>();
 
 		// Info
@@ -91,7 +91,7 @@ QVariant ODataSource::byIntegerCallBogus(QVariant q, int iMethod)
 	    QString url("http://services.odata.org/(S(0aatlc1jdpzfp1x241vfduge))/OData/OData.svc/Categories(0)");
 
 	    // should be changed to update data
-	    addData(url, arrB);
+	    //addData(url, arrB);
 	}
 
 	return vt;
@@ -118,7 +118,7 @@ void ODataSource::orderBy(const QString& requestURL, const QString& fieldAndOrie
     this->fetchData(queryRequest, paging);
 }
 
-void ODataSource::addData(const QString& requestURL, const QByteArray& body) {
+void ODataSource::updateData(const QString& requestURL, const QByteArray& body) {
 	QNetworkRequest request;
     QString addRequestURL = requestURL;
 
@@ -142,9 +142,9 @@ void ODataSource::addData(const QString& requestURL, const QByteArray& body) {
 
     QNetworkReply* reply = m_netManager->put(request, body);
     if (reply) {
-    	connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onEditingDataError_Slot(QNetworkReply::NetworkError)));
-    	bool res = connect(reply, SIGNAL(finished()), this, SLOT(onfinishedEditingData_Slot()));
+    	connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onUpdatingDataError_Slot(QNetworkReply::NetworkError)));
 
+        bool res = connect(reply, SIGNAL(finished()), this, SLOT(onfinishedUpdatingData_Slot()));
 
         if (!res) {
             LOGGER::log("ODataSource::addData - Connect failed - finished");
@@ -227,10 +227,10 @@ void ODataSource::onODataReceived_Slot() {
 }
 
 // We could remove this method and keep onODataReceived_Slot... may be
-void ODataSource::onfinishedEditingData_Slot() {
+void ODataSource::onfinishedUpdatingData_Slot() {
 
 	// TO DO - should we review the response ???
-	LOGGER::log("ODataSource::onfinishedEditingData_Slot called");
+	LOGGER::log("ODataSource::onfinishedUpdatingData_Slot called");
 
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
 
@@ -241,8 +241,8 @@ void ODataSource::onfinishedEditingData_Slot() {
     reply->deleteLater();
 }
 
-void ODataSource::onEditingDataError_Slot(QNetworkReply::NetworkError errNet) {
-	 LOGGER::log("ODataSource::onAddingDataError_Slot - error", errNet);
+void ODataSource::onUpdatingDataError_Slot(QNetworkReply::NetworkError errNet) {
+	 LOGGER::log("ODataSource::onUpdatingDataError_Slot - error", errNet);
 }
 
 void ODataSource::onODataReceived() {

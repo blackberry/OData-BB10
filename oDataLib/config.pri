@@ -14,6 +14,7 @@ SOURCES +=  \
 	$$BASEDIR/src/FilterResources/moc_FilterQueryController.cpp \
 	$$BASEDIR/src/OrderByResources/moc_OrderByQueryController.cpp \
     $$BASEDIR/src/moc_ODataSource.cpp \
+    $$BASEDIR/src/moc_ODataQuery.cpp \
     $$BASEDIR/src/moc_cODataLib.cpp
 
 HEADERS +=  \
@@ -22,6 +23,7 @@ HEADERS +=  \
     $$BASEDIR/src/LOGGER.h \
     $$BASEDIR/src/ODataLib.h \
     $$BASEDIR/src/ODataSource.h \
+    $$BASEDIR/src/ODataQuery.h \
     $$BASEDIR/src/cODataLib.h
 
 lupdate_inclusion {

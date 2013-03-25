@@ -39,7 +39,7 @@ public:
     void fetchData(const QString& requestURL, bool paging = false);
 
     // Add data through OData service
-    void addData(const QString& requestURL, const QByteArray& body);
+    void updateData(const QString& requestURL, const QByteArray& body);
 
     // Load more items in the data model
     // Used for infinite scrolling
@@ -52,10 +52,10 @@ public Q_SLOTS:
     void onODataReceived_Slot();
 
 	Q_INVOKABLE
-	void onfinishedEditingData_Slot();
+	void onfinishedUpdatingData_Slot();
 
 	Q_INVOKABLE
-	void onEditingDataError_Slot(QNetworkReply::NetworkError errNet);
+	void onUpdatingDataError_Slot(QNetworkReply::NetworkError errNet);
 
 	QVariant byIntegerCallBogus(QVariant q, int iMethod);
 
