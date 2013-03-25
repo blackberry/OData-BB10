@@ -56,6 +56,10 @@ QVariant ODataSource::byIntegerCallBogus(QVariant q, int iMethod)
 	QVariant vt;
 	int toSwapInDebugTime = iMethod;
 
+	QString test = cAtomManager::Instance().getAtomXMLUpdatedDateTime();
+
+	LOGGER::log("date time is = ",  test);
+
 	// Testing writing to database with a some simplified atom/xml string using "PUT"
 	if (toSwapInDebugTime == 1)
 	{

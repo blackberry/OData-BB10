@@ -12,15 +12,15 @@
 #include <QObject>
 #include <bb/cascades/ArrayDataModel>
 
-
 using namespace bb::cascades;
-//using namespace bb::data;
 
 class cAtomManager {
 
 public:
-	enum atomType { eAtomFeed, eAtomService, eAtomUndefined  };
-	enum atomFeed { eAtomId, eAtomEntry, eAtomLink, eAtomTitle };
+	enum atomDocumentType { eAtomFeed, eAtomService, eAtomEntry  };
+
+	// These enums needs to be reviewed
+	enum atomFeed { eFeedId, eFeedEntry, eFeedLink, eFeedTitle };
 	enum entryType { eId, eLink, eProperties, eAuthor };
 
 public:
@@ -35,6 +35,8 @@ public:
 
 	QByteArray createHTTP_request_test(const char* strHeaderType);
 
+	QString getAtomXMLUpdatedDateTime();
+
 private:
 	cAtomManager() {};
 	cAtomManager(const cAtomManager&); // prevent use of copy constructor
@@ -44,11 +46,11 @@ private:
 	const char* getString(atomFeed e);
 	const char* getString(entryType e);
 
-	atomType findType(QVariantMap& map);
+	atomDocumentType findType(QVariantMap& map);
 
 	QVariantMap buildAtomElements(QByteArray& arrBytes);
-	QVariantList parseAtomElements(QByteArray& arrBytes, QVariantMap& mapEntries, atomType eType = eAtomUndefined);
-	int parseElementsforDataModel(QVariantList& entries, bb::cascades::ArrayDataModel& dt, atomType eAtomType, entryType eEntryType);
+	QVariantList parseAtomElements(QByteArray& arrBytes, QVariantMap& mapEntries, atomDocumentType eType);
+	int parseElementsforDataModel(QVariantList& entries, bb::cascades::ArrayDataModel& dt, atomDocumentType eAtomDocType, entryType eEntryType);
 };
 
 #endif /* CATOMMANAGER_H_ */
