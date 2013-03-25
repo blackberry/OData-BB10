@@ -3,10 +3,13 @@ import ODataLib 1.0
 
 Page {
     id: arithmeticFilterTab
-        
+    
     attachedObjects: [
         FilterQueryController {
             id: controller;
+        },
+        ODataQuery {
+            id: oDataQuery; 
         }
     ]
     

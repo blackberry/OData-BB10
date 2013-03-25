@@ -5,6 +5,12 @@ Page {
     id: customFilterTab
     Container {
         
+        attachedObjects: [
+            ODataQuery {
+                id: oDataQuery; 
+            }
+        ]
+        
         layout:StackLayout {
             orientation: LayoutOrientation.TopToBottom
         }
@@ -37,7 +43,9 @@ Page {
             Button {
                 text: "Filter"
                 onClicked: {
-                    _datasourceFilter.filter("http://services.odata.org/OData/OData.svc/" + dropDown.selectedOption.text + "?$format=json", queryField.text);
+                    oDataQuery.setUri("http://services.odata.org/OData/OData.svc/" + dropDown.selectedOption.text).format("json").filter(queryField.text);
+                    _datasourceFilter.fetchData(oDataQuery.getQueryText());
+                    
                 }
             }
         }
