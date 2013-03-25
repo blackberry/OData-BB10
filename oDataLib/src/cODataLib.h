@@ -39,6 +39,9 @@ public:
 
     Q_INVOKABLE void onODataReceived();
 
+    // For testing only
+    Q_INVOKABLE QVariant byIntegerCallBogus(QVariant q, int iMethod);
+
 public:
 	// called after triggered signal from onODataReceived in ODataSource obj
 	void triggerDataFetched();

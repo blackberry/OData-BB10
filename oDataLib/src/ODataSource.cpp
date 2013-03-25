@@ -2,7 +2,7 @@
  * ODataSource.cpp
  *
  *  Created on: Mar 4, 2013
- *      Author: martin
+ *      Author: Martin Larochelle
  *
  *
  *  Uses data sources from:
@@ -17,6 +17,7 @@
 #include <QtNetwork/QNetworkAccessManager>
 
 #include "cODataLib.h"
+#include "Atom_constants.h"
 #include "cAtomManager.h"
 
 #include "LOGGER.h"
@@ -49,6 +50,53 @@ ODataSource::ODataSource(QObject *parent) :
 ODataSource::~ODataSource() {
 }
 
+//////////// For testing purposes only
+QVariant ODataSource::byIntegerCallBogus(QVariant q, int iMethod)
+{
+	QVariant vt;
+	int toSwapInDebugTime = iMethod;
+
+	// Testing writing to database with a some simplified atom/xml string using "PUT"
+	if (toSwapInDebugTime == 1)
+	{
+		vt = cAtomManager::Instance().createHTTP_POST_request_test("PUT");
+		QByteArray arrB = vt.value<QByteArray>();
+
+		// Info
+		QString toXchge = QString(arrB);
+	    LOGGER::log("ODataSource::arrB == ",  toXchge);
+
+	    // Nota bene: ... This link was generated manually.
+	    // Use any browser for generating it from OData.org / see sample services Read/Write database
+	    QString url("http://services.odata.org/(S(0aatlc1jdpzfp1x241vfduge))/OData/OData.svc/Categories(0)");
+
+	    // should be changed to update data
+	    addData(url, arrB);
+	}
+	// Testing writing to database with a some simplified atom/xml string using "POST"
+	// this is intended for adding an entry in a table
+	// ... IDEALLY, read the $metadata; build in GUI with a list of data input box for each of the items described in the metadata;
+	// Allow the end-user to enter data; then send an entry with new data to be entered in database
+	else if (toSwapInDebugTime == 2)
+	{
+		vt = cAtomManager::Instance().createHTTP_POST_request_test("POST");
+		QByteArray arrB = vt.value<QByteArray>();
+
+		// Info
+		QString toXchge = QString(arrB);
+	    LOGGER::log("ODataSource::arrB == ",  toXchge);
+
+	    // Nota bene: ... This link was generated manually.
+	    // Use any browser for generating it from OData.org / see sample services Read/Write database
+	    QString url("http://services.odata.org/(S(0aatlc1jdpzfp1x241vfduge))/OData/OData.svc/Categories(0)");
+
+	    // should be changed to update data
+	    addData(url, arrB);
+	}
+
+	return vt;
+}
+
 /* Filter querys */
 
 void ODataSource::filter(const QString& requestURL, const QString& filterQuery ,bool paging) {
@@ -68,6 +116,40 @@ void ODataSource::orderBy(const QString& requestURL, const QString& fieldAndOrie
     queryRequest.append("$orderby=");
     queryRequest.append(fieldAndOrientation);
     this->fetchData(queryRequest, paging);
+}
+
+void ODataSource::addData(const QString& requestURL, const QByteArray& body) {
+	QNetworkRequest request;
+    QString addRequestURL = requestURL;
+
+    // Not planning to support this yet
+    // m_JSONEnabled = addRequestURL.contains(QString("$format=json"));
+
+    LOGGER::log("ODataSource::addData - addRequestURL:", addRequestURL);
+    request.setUrl(addRequestURL);
+
+    // set the raw headers
+    // QT has a definition for Content-Type... but not for the others...
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/atom+xml"); // ATOM_Resource_Content_Type);  ///);
+
+    request.setRawHeader(HttpRequestHeader_Accept, "application/atom+xml"); // should it be ==> ATOM_Resource_Accept); //);
+    request.setRawHeader(HttpRequestHeader_UserAgent, "BB10 ODataLib v0.1");
+    request.setRawHeader(HttpRequestHeader_DataService, Resource_DataServiceVersion_1);
+    request.setRawHeader(HttpRequestHeader_MaxDataService, Resource_MaxDataServiceVersion);
+    request.setRawHeader(HttpRequestHeader_Host, "services.odata.org");
+    QByteArray postDataSize = QByteArray::number(body.size());
+    request.setRawHeader(HttpRequestHeader_ContentLength, postDataSize);
+
+    QNetworkReply* reply = m_netManager->put(request, body);
+    if (reply) {
+    	connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onEditingDataError_Slot(QNetworkReply::NetworkError)));
+    	bool res = connect(reply, SIGNAL(finished()), this, SLOT(onfinishedEditingData_Slot()));
+
+
+        if (!res) {
+            LOGGER::log("ODataSource::addData - Connect failed - finished");
+        }
+    }
 }
 
 void ODataSource::fetchData(const QString& requestURL, bool paging) {
@@ -142,6 +224,25 @@ DataModel* ODataSource::getDataModel() const {
 
 void ODataSource::onODataReceived_Slot() {
 	onODataReceived();
+}
+
+// We could remove this method and keep onODataReceived_Slot... may be
+void ODataSource::onfinishedEditingData_Slot() {
+
+	// TO DO - should we review the response ???
+	LOGGER::log("ODataSource::onfinishedEditingData_Slot called");
+
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+
+    // To implement
+    // ((cODataLib*)parent())->triggerDataEdited();
+
+    // Memory management
+    reply->deleteLater();
+}
+
+void ODataSource::onEditingDataError_Slot(QNetworkReply::NetworkError errNet) {
+	 LOGGER::log("ODataSource::onAddingDataError_Slot - error", errNet);
 }
 
 void ODataSource::onODataReceived() {

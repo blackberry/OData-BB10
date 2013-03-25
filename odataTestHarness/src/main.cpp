@@ -9,9 +9,19 @@
 
 using namespace bb::cascades;
 
+// Allows logging in QML
+/*void qmlMessageOutput(QtMsgType type, const char* msg)
+{
+	fprintf(stdout, "%s\n", msg);
+	fflush(stdout);
+}*/
+
 Q_DECL_EXPORT int main(int argc, char **argv) {
     // this is where the server is started etc
     Application app(argc, argv);
+
+    // Allows logging in QML
+   // qInstallMsgHandler(qmlMessageOutput);
 
     // localization support
     QTranslator translator;
@@ -28,3 +38,7 @@ Q_DECL_EXPORT int main(int argc, char **argv) {
     return Application::exec();
     // when loop is exited the Application deletes the scene which deletes all its children (per qt rules for children)
 }
+
+
+
+

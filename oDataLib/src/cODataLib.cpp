@@ -59,3 +59,9 @@ void cODataLib::triggerDataFetched()
 	emit dataFetched();
 }
 
+QVariant cODataLib::byIntegerCallBogus(QVariant q, int iMethod)
+{
+	return ((ODataSource*)m_datasource)->byIntegerCallBogus(q, iMethod);
+}
+
+

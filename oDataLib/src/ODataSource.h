@@ -38,6 +38,9 @@ public:
     // Fetch the data from the network
     void fetchData(const QString& requestURL, bool paging = false);
 
+    // Add data through OData service
+    void addData(const QString& requestURL, const QByteArray& body);
+
     // Load more items in the data model
     // Used for infinite scrolling
     void loadMoreItems();
@@ -47,6 +50,14 @@ public:
 public Q_SLOTS:
 	Q_INVOKABLE
     void onODataReceived_Slot();
+
+	Q_INVOKABLE
+	void onfinishedEditingData_Slot();
+
+	Q_INVOKABLE
+	void onEditingDataError_Slot(QNetworkReply::NetworkError errNet);
+
+	QVariant byIntegerCallBogus(QVariant q, int iMethod);
 
 //signals:
     // Triggered when the data is received to allow the QML to stop its activity indicator

@@ -43,6 +43,11 @@ OdataTestHarness::OdataTestHarness(bb::cascades::Application *app) :
     objToDataLibFilter = new cODataLib(this);
     qml->setContextProperty("_datasourceFilter", objToDataLibFilter);
 
+
+    // other test
+    QVariant test;
+    QVariant vt = objToDataLibSvcs->byIntegerCallBogus(test, 1);
+
     // create root object for the UI
     AbstractPane *root = qml->createRootObject<AbstractPane>();
     // set created root object as a scene

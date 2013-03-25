@@ -33,6 +33,8 @@ public:
 // Manager can...
 	int fillDataModelItems(QByteArray& result, ArrayDataModel& dataModel);
 
+	QByteArray createHTTP_POST_request_test(const char* strHeaderType);
+
 private:
 	cAtomManager() {};
 	cAtomManager(const cAtomManager&); // prevent use of copy constructor
