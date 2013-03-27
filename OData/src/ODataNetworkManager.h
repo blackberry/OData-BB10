@@ -11,6 +11,10 @@
 #include <qobject.h>
 #include <qnetworkaccessmanager.h>
 
+static const QByteArray TYPE_ATOM = "application/atom+xml";
+static const QByteArray TYPE_JSON = "application/json";
+static const QByteArray TYPE_XML = "application/xml";
+
 class ODataNetworkManager : public QObject {
     Q_OBJECT
 
@@ -20,23 +24,14 @@ public:
 
     void read(QString url);
 
-    enum MessageType {
-            GET,
-            PUT,
-            POST,
-            DELETE
-    };
-
 private:
-    QByteArray generateHeader(MessageType type);
-
     QNetworkAccessManager* mNetAccessManager;
-signals:
-    void jsonReady(const QByteArray& response);
-    void atomReady(const QByteArray& response);
 
-protected slots:
-    void reply();
+signals:
+    void readReady(QVariant response);
+
+public slots:
+    void onReply();
 };
 
 #endif /* ODATANETWORKMANAGER_H_ */
