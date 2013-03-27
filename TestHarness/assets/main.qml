@@ -18,8 +18,8 @@ Page {
             listItemComponents: [
                 ListItemComponent {
                     StandardListItem {
-                        title: ListItemData.Name
-                        description: ListItemData.Description + " - Cost: " + ListItemData.Price
+                        title: ListItemData.title[".data"]
+                        description: ListItemData.summary[".data"] + " - Cost: " + ListItemData.content["m:properties"]["d:Price"][".data"]
                     }
                 }
             ]

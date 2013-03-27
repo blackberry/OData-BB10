@@ -83,7 +83,7 @@ void ODataListModel::jsonCompleted(QVariant response) {
 
 
 void ODataListModel::atomCompleted(QVariant response) {
-    mDataList = response.toMap()["d"].toList();
+    mDataList = response.toMap()["entry"].toList();
 
     emit itemsChanged(bb::cascades::DataModelChangeType::Init);
 }
