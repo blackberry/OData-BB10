@@ -1,11 +1,11 @@
 /*
- * ODataJsonModel.cpp
+ * ODataListModel.cpp
  *
  *  Created on: 2013-03-26
  *      Author: Daniel Baxter
  */
 
-#include "ODataJsonModel.h"
+#include "ODataListModel.h"
 #include "ODataNetworkManager.h"
 #include <bb/cascades/DataModelChangeType>
 
@@ -13,28 +13,28 @@
  * CONSTRUCTORS / DESCTRUCTORS
  */
 
-ODataJsonModel::ODataJsonModel() {
+ODataListModel::ODataListModel() {
 }
 
-ODataJsonModel::~ODataJsonModel() {
+ODataListModel::~ODataListModel() {
 }
 
 /*
  * PROPERTIES
  */
 
-QString ODataJsonModel::getSource(){
+QString ODataListModel::getSource(){
     return mSource;
 }
-void ODataJsonModel::setSource(QString newSource){
+void ODataListModel::setSource(QString newSource){
     mSource = newSource;
     emit sourceChanged();
 }
 
-int ODataJsonModel::getPageSize(){
+int ODataListModel::getPageSize(){
     return mPageSize;
 }
-void ODataJsonModel::setPageSize(int newSize){
+void ODataListModel::setPageSize(int newSize){
     mPageSize = newSize;
     emit pageSizeChanged();
 }
@@ -43,15 +43,11 @@ void ODataJsonModel::setPageSize(int newSize){
  * FUNCTIONS
  */
 
-QString ODataJsonModel::itemType(const QVariantList &indexPath){
-    return "item";
+QVariant ODataListModel::data(const QVariantList& indexPath){
+    return mDataList[indexPath[0].toInt()].toMap();
 }
 
-QVariant ODataJsonModel::data(const QVariantList& indexPath){
-    return mDataList[indexPath[0].toInt()];
-}
-
-int ODataJsonModel::childCount(const QVariantList& indexPath){
+int ODataListModel::childCount(const QVariantList& indexPath){
     // the empty list is the root.
     // when it requests the root we should go get the data
     if (indexPath.count() == 0 && mDataList.count() == 0) {
@@ -62,28 +58,32 @@ int ODataJsonModel::childCount(const QVariantList& indexPath){
     return mDataList.count();
 }
 
-bool ODataJsonModel::hasChildren(const QVariantList& indexPath){
+bool ODataListModel::hasChildren(const QVariantList& indexPath){
     // we aren't multilevel so we are only concerned with the root having children
     return indexPath.count() == 0 && !mDataList.isEmpty();
 }
 
-void ODataJsonModel::loadData(){
+void ODataListModel::loadData(){
     ODataNetworkManager* manager = new ODataNetworkManager();
     manager->read(mSource);
 
-    connect(manager, SIGNAL(readReady(QVariant)), this, SLOT(readCompleted(QVariant)));
+    connect(manager, SIGNAL(jsonReady(QVariant)), this, SLOT(jsonCompleted(QVariant)));
+    connect(manager, SIGNAL(atomReady(QVariant)), this, SLOT(atomCompleted(QVariant)));
 }
 
 /*
  * SLOTS
  */
 
-void ODataJsonModel::readCompleted(QVariant response) {
+void ODataListModel::jsonCompleted(QVariant response) {
     mDataList = response.toMap()["d"].toList();
 
-    for (int i = 0; i < mDataList.count(); i++) {
-        fprintf(stderr, mDataList[i].toMap()["Name"].toString().toUtf8().constData());
-    }
+    emit itemsChanged(bb::cascades::DataModelChangeType::Init);
+}
+
+
+void ODataListModel::atomCompleted(QVariant response) {
+    mDataList = response.toMap()["d"].toList();
 
     emit itemsChanged(bb::cascades::DataModelChangeType::Init);
 }

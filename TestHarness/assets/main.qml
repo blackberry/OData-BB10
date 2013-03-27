@@ -12,28 +12,14 @@ Page {
             horizontalAlignment: HorizontalAlignment.Center
         }
         ListView {
-            dataModel: ODataJsonModel {
-                source: "http://services.odata.org/OData/OData.svc/Products?$format=json"
+            dataModel: ODataListModel {
+                source: "http://services.odata.org/OData/OData.svc/Products"
             }
             listItemComponents: [
                 ListItemComponent {
-                    type: "item"
-                    Container {
-                        layout: StackLayout {
-                            
-                        }
-                        Label {
-                            text: ListItemData.Name
-                            textStyle.color: Color.White
-                        }
-                        Label {
-                            text: ListItemData.Description
-                            textStyle.color: Color.White
-                        }
-                        Label {
-                            text: ListItemData.Price
-                            textStyle.color: Color.White
-                        }
+                    StandardListItem {
+                        title: ListItemData.Name
+                        description: ListItemData.Description + " - Cost: " + ListItemData.Price
                     }
                 }
             ]

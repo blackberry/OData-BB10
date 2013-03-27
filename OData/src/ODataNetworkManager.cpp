@@ -57,12 +57,12 @@ void ODataNetworkManager::onReply() {
             if (contentType.contains(TYPE_ATOM)) {
                 fprintf(stderr, "atom \n");
                 bb::data::XmlDataAccess xda;
-                emit readReady(xda.loadFromBuffer(response));
+                emit atomReady(xda.loadFromBuffer(response));
             }
             else if (contentType.contains(TYPE_JSON)) {
                 fprintf(stderr, "json \n");
                 bb::data::JsonDataAccess jda;
-                emit readReady(jda.loadFromBuffer(response));
+                emit jsonReady(jda.loadFromBuffer(response));
             }
         }
         else {
