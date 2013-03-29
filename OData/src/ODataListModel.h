@@ -40,6 +40,7 @@ public slots:
     void atomCompleted(QVariant response);
 
 private:
+    bool initialized;
     QVariantList mDataList;
     QString mSource;
     int mPageSize;

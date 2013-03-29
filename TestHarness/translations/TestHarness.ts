@@ -4,8 +4,23 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../assets/main.qml" line="9"/>
-        <source>Hello World</source>
+        <location filename="../assets/main.qml" line="10"/>
+        <source>atom</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../assets/main.qml" line="16"/>
+        <source>Atom</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../assets/main.qml" line="39"/>
+        <source>json</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../assets/main.qml" line="46"/>
+        <source>JSON</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

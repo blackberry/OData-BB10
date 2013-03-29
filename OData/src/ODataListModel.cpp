@@ -14,6 +14,7 @@
  */
 
 ODataListModel::ODataListModel() {
+    initialized = false;
 }
 
 ODataListModel::~ODataListModel() {
@@ -28,6 +29,18 @@ QString ODataListModel::getSource(){
 }
 void ODataListModel::setSource(QString newSource){
     mSource = newSource;
+
+    if (initialized) {
+        // when we get a new url source we should load that data and toss the current data
+        mDataList.clear();
+        emit itemsChanged(bb::cascades::DataModelChangeType::Init);
+
+        // only call load if the is a string to check. TODO? make sure this matches a url of some sort
+        if (!mSource.isEmpty()) {
+            loadData();
+        }
+    }
+
     emit sourceChanged();
 }
 
@@ -64,6 +77,9 @@ bool ODataListModel::hasChildren(const QVariantList& indexPath){
 }
 
 void ODataListModel::loadData(){
+    // once we have called loadData at least once we are initialized
+    initialized = true;
+
     ODataNetworkManager* manager = new ODataNetworkManager();
     manager->read(mSource);
 

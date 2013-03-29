@@ -55,14 +55,16 @@ void ODataNetworkManager::onReply() {
 
             // determine what the response is encoded in
             if (contentType.contains(TYPE_ATOM)) {
-                fprintf(stderr, "atom \n");
                 bb::data::XmlDataAccess xda;
                 emit atomReady(xda.loadFromBuffer(response));
             }
             else if (contentType.contains(TYPE_JSON)) {
-                fprintf(stderr, "json \n");
                 bb::data::JsonDataAccess jda;
                 emit jsonReady(jda.loadFromBuffer(response));
+            }
+            else if (contentType.contains(TYPE_XML)) {
+                bb::data::XmlDataAccess xda;
+                emit xmlReady(xda.loadFromBuffer(response));
             }
         }
         else {
