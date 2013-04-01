@@ -40,10 +40,10 @@ void ODataObjectModel::setSource(QString newSource){
     emit sourceChanged();
 }
 
-QString ODataObjectModel::getModel(){
+QVariant ODataObjectModel::getModel(){
     return mModel;
 }
-void ODataObjectModel::setModel(QString newModel){
+void ODataObjectModel::setModel(QVariant newModel){
     mModel = newModel;
 
     emit modelChanged();

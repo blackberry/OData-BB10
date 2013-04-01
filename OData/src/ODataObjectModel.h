@@ -39,7 +39,7 @@ public slots:
 
 private:
     QString mSource;
-    QString mModel;
+    QVariant mModel;
 
     void loadData();
 };
