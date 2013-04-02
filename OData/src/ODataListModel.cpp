@@ -35,10 +35,7 @@ void ODataListModel::setSource(QString newSource){
         mDataList.clear();
         emit itemsChanged(bb::cascades::DataModelChangeType::Init);
 
-        // only call load if the is a string to check. TODO? make sure this matches a url of some sort
-        if (!mSource.isEmpty()) {
-            loadData();
-        }
+        loadData();
     }
 
     emit sourceChanged();
@@ -63,7 +60,7 @@ QVariant ODataListModel::data(const QVariantList& indexPath){
 int ODataListModel::childCount(const QVariantList& indexPath){
     // the empty list is the root.
     // when it requests the root we should go get the data
-    if (indexPath.count() == 0 && mDataList.count() == 0) {
+    if (indexPath.count() == 0 && !initialized) {
         loadData();
     }
 
@@ -80,6 +77,10 @@ void ODataListModel::loadData(){
     // once we have called loadData at least once we are initialized
     initialized = true;
 
+    if (mSource.isEmpty()) {
+        return;
+    }
+
     ODataNetworkManager* manager = new ODataNetworkManager();
     manager->read(mSource);
 
@@ -94,12 +95,22 @@ void ODataListModel::loadData(){
 void ODataListModel::jsonCompleted(QVariant response) {
     mDataList = response.toMap()["d"].toList();
 
+    // handle the case where there was only 1 item in the list
+    if (mDataList.count() == 0) {
+        mDataList.append(response.toMap()["d"]);
+    }
+
     emit itemsChanged(bb::cascades::DataModelChangeType::Init);
 }
 
 
 void ODataListModel::atomCompleted(QVariant response) {
     mDataList = response.toMap()["entry"].toList();
+
+    // handle the case where there was only 1 item in the list
+    if (mDataList.count() == 0) {
+        mDataList.append(response.toMap()["entry"]);
+    }
 
     emit itemsChanged(bb::cascades::DataModelChangeType::Init);
 }

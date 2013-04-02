@@ -8,12 +8,12 @@
 #ifndef ODATACONSTANTS_H_
 #define ODATACONSTANTS_H_
 
-const char* METADATA = "$metadata";
-const char* FORMAT = "$format";
+extern const char* METADATA;
+extern const char* FORMAT;
 
 
-const char* COLLECTION = "collection";
-const char* ENTITYSETS = "EntitySets";
-const char* WORKSPACE = "workspace";
+extern const char* COLLECTION;
+extern const char* ENTITYSETS;
+extern const char* WORKSPACE;
 
 #endif /* ODATACONSTANTS_H_ */

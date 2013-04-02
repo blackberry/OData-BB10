@@ -1,67 +1,49 @@
 // Default empty project template
 import bb.cascades 1.0
-import odata 1.0
+import bb.system 1.0
+import "tabs" 1.0
+import "pages" 1.0
 
 TabbedPane {
+    id: tabPane
     showTabsOnActionBar: false
-    activeTab: atomTab
-	Tab {
-	    id: atomTab
-	    title: qsTr("atom")
-	    
-	    content: Page {
-		    Container {
-		        layout: StackLayout {}
-		        Label {
-		            text: qsTr("Atom")
-		            textStyle.base: SystemDefaults.TextStyles.BigText
-		            verticalAlignment: VerticalAlignment.Center
-		            horizontalAlignment: HorizontalAlignment.Center
-		        }
-		        ListView {
-		            dataModel: ODataListModel {
-		                source: "http://services.odata.org/OData/OData.svc/Products"
-		            }
-		            listItemComponents: [
-		                ListItemComponent {
-		                    StandardListItem {
-		                        title: ListItemData.title[".data"]
-		                        description: ListItemData.summary[".data"] + " - Cost: " + ListItemData.content["m:properties"]["d:Price"][".data"]
-		                    }
-		                }
-		            ]
-		        }
-		    }
-	    }
-	}
-	Tab {
-        id: jsonTab
-        title: qsTr("json")
+    
+    attachedObjects: [
+        ComponentDefinition {
+            id: productDetailsPage
+            source: "asset:///pages/ProductDetails.qml"
+        },
+        ComponentDefinition {
+            id: productListPage
+            source: "asset:///pages/ProductList.qml"
+        },
 
-        content: Page {
-            Container {
-                layout: StackLayout {
-                }
-                Label {
-                    text: qsTr("JSON")
-                    textStyle.base: SystemDefaults.TextStyles.BigText
-                    verticalAlignment: VerticalAlignment.Center
-                    horizontalAlignment: HorizontalAlignment.Center
-                }
-                ListView {
-                    dataModel: ODataListModel {
-                        source: "http://services.odata.org/OData/OData.svc/Products?$format=json"
-                    }
-                    listItemComponents: [
-                        ListItemComponent {
-                            StandardListItem {
-                                title: ListItemData.Name
-                                description: ListItemData.Description + " - Cost: " + ListItemData.Price
-                            }
-                        }
-                    ]
-                }
-            }
+        ComponentDefinition {
+            id: supplierDetailsPage
+            source: "asset:///pages/SupplierDetails.qml"
+        },
+        SystemToast {
+            id: toastMsg
+        }
+    ]
+
+	Tab {
+	    title: qsTr("Products")
+	    content: ProductsListTab {
+	        title: qsTr("Products")
+	        dataSource: dataService.source + "/Products"
+        }
+	}
+    Tab {
+        title: qsTr("Categories")
+        content: CategoriesListTab {
+            dataSource: dataService.source + "/Categories"
+        }
+    }
+    Tab {
+        title: qsTr("Suppliers")
+        content: SuppliersListTab {
+            dataSource: dataService.source + "/Suppliers"
         }
     }
 }

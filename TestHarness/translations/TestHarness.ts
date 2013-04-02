@@ -4,23 +4,15 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../assets/main.qml" line="10"/>
-        <source>atom</source>
+        <source>Categories</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="16"/>
-        <source>Atom</source>
+        <source>Suppliers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="39"/>
-        <source>json</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../assets/main.qml" line="46"/>
-        <source>JSON</source>
+        <source>Products</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

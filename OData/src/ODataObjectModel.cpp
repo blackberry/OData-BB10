@@ -57,7 +57,7 @@ void ODataObjectModel::loadData(){
     manager->read(mSource);
 
     connect(manager, SIGNAL(jsonReady(QVariant)), this, SLOT(jsonReadComplete(QVariant)));
-    connect(manager, SIGNAL(xmlReady(QVariant)), this, SLOT(atomReadComplete(QVariant)));
+    connect(manager, SIGNAL(atomReady(QVariant)), this, SLOT(atomReadComplete(QVariant)));
 }
 
 /*

@@ -31,6 +31,7 @@ private:
 signals:
     void jsonReady(QVariant response);
     void atomReady(QVariant response);
+    void xmlReady(QVariant response);
 
 public slots:
     void onReply();

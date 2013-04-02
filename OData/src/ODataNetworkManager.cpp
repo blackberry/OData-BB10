@@ -69,12 +69,12 @@ void ODataNetworkManager::onReply() {
         }
         else {
             // TODO: handle the error
-            fprintf(stderr, "error? \n");
+
         }
     }
     else {
         // TODO: handle the error
-        fprintf(stderr, "error? \n");
+
     }
 
 }

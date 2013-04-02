@@ -32,7 +32,7 @@
 								<inputType id="com.qnx.qcc.inputType.compiler.32935125" superClass="com.qnx.qcc.inputType.compiler"/>
 							</tool>
 							<tool id="com.qnx.qcc.tool.assembler.373910127" name="QCC Assembler" superClass="com.qnx.qcc.tool.assembler">
-								<option id="com.qnx.qcc.option.assembler.includePath.1013257981" superClass="com.qnx.qcc.option.assembler.includePath" valueType="includePath">
+								<option id="com.qnx.qcc.option.assembler.includePath.1013257981" name="Include Directories (-I)" superClass="com.qnx.qcc.option.assembler.includePath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/OData/public}&quot;"/>
 								</option>
 								<inputType id="com.qnx.qcc.inputType.assembler.749655773" superClass="com.qnx.qcc.inputType.assembler"/>
@@ -92,7 +92,7 @@
 								<inputType id="com.qnx.qcc.inputType.compiler.1503222195" superClass="com.qnx.qcc.inputType.compiler"/>
 							</tool>
 							<tool id="com.qnx.qcc.tool.assembler.1402331706" name="QCC Assembler" superClass="com.qnx.qcc.tool.assembler">
-								<option id="com.qnx.qcc.option.assembler.includePath.597608234" superClass="com.qnx.qcc.option.assembler.includePath" valueType="includePath">
+								<option id="com.qnx.qcc.option.assembler.includePath.597608234" name="Include Directories (-I)" superClass="com.qnx.qcc.option.assembler.includePath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/OData/public}&quot;"/>
 								</option>
 								<inputType id="com.qnx.qcc.inputType.assembler.1381706076" superClass="com.qnx.qcc.inputType.assembler"/>
@@ -152,7 +152,7 @@
 								<inputType id="com.qnx.qcc.inputType.compiler.1666548058" superClass="com.qnx.qcc.inputType.compiler"/>
 							</tool>
 							<tool id="com.qnx.qcc.tool.assembler.105364075" name="QCC Assembler" superClass="com.qnx.qcc.tool.assembler">
-								<option id="com.qnx.qcc.option.assembler.includePath.1261984158" superClass="com.qnx.qcc.option.assembler.includePath" valueType="includePath">
+								<option id="com.qnx.qcc.option.assembler.includePath.1261984158" name="Include Directories (-I)" superClass="com.qnx.qcc.option.assembler.includePath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/OData/public}&quot;"/>
 								</option>
 								<inputType id="com.qnx.qcc.inputType.assembler.216019333" superClass="com.qnx.qcc.inputType.assembler"/>
@@ -212,7 +212,7 @@
 								<inputType id="com.qnx.qcc.inputType.compiler.1466763501" superClass="com.qnx.qcc.inputType.compiler"/>
 							</tool>
 							<tool id="com.qnx.qcc.tool.assembler.162752916" name="QCC Assembler" superClass="com.qnx.qcc.tool.assembler">
-								<option id="com.qnx.qcc.option.assembler.includePath.1713860107" superClass="com.qnx.qcc.option.assembler.includePath" valueType="includePath">
+								<option id="com.qnx.qcc.option.assembler.includePath.1713860107" name="Include Directories (-I)" superClass="com.qnx.qcc.option.assembler.includePath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/OData/public}&quot;"/>
 								</option>
 								<inputType id="com.qnx.qcc.inputType.assembler.612919889" superClass="com.qnx.qcc.inputType.assembler"/>
