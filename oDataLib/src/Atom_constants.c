@@ -84,7 +84,7 @@ const char* OData_MS_link_DataSvc_Scheme				= "http://schemas.microsoft.com/ado/
 const char* OData_MS_link_DataSvc_Meta					= "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata";
 
 const char* OData_atom_link								= "http://www.w3.org/2005/Atom";
-const char* OData_app_link								= "http://www.w3.org/2007/App";
+const char* OData_app_link								= "http://www.w3.org/2007/app";
 const char* OData_xml_link								= "http://www.w3.org/XML/1998/namespace";
 
 const char* EDM2006_Link 								= "http://schemas.microsoft.com/ado/2006/04/edm"; // edm 1.0
@@ -97,8 +97,8 @@ const char* EDMANNOTATION_Link 							= "http://schemas.microsoft.com/ado/2009/0
 
 /////////////////////////////////////
 
-const char* OData_Prefix								= "d";
-const char* OData_Meta_Prefix							= "m";
+const char* OData_ns_dataservices_Prefix				= "d";
+const char* OData_ns_metadata_Prefix					= "m";
 
 /////////////////////////////////////
 
@@ -173,6 +173,66 @@ const char* const_CR_LF								= "\r\n";
 //definition of possible Accept and Content-Types headers
 const char* ATOM_Resource_Accept						= "application/atom+xml,application/xml";
 const char* ATOM_Resource_Content_Type					= "application/atom+xml,application/xml";
+
+// definition of primitive Types in Atom
+const char* EDM = "Edm.";
+const char* EDM_BINARY = "Edm.Binary";
+const char* EDM_BOOLEAN = "Edm.Boolean";
+const char* EDM_BYTE = "Edm.Byte";
+const char* EDM_DATETIME = "Edm.DateTime";
+const char* EDM_DATETIMEOFFSET = "Edm.DateTimeOffset";
+const char* EDM_DECIMAL = "Edm.Decimal";
+const char* EDM_DOUBLE = "Edm.Double";
+const char* EDM_GUID = "Edm.Guid";
+const char* EDM_INT16 = "Edm.Int16";
+const char* EDM_INT32 = "Edm.Int32";
+const char* EDM_INT64 = "Edm.Int64";
+const char* EDM_SBYTE = "Edm.SByte";
+const char* EDM_SINGLE = "Edm.Single";
+const char* EDM_STRING = "Edm.String";
+const char* EDM_TIME = "Edm.Time";
+
+const char* EDM_GEOGRAPHY = "Edm.Geography";
+const char* EDM_GEOGRAPHY_POINT = "Edm.GeographyPoint";
+const char* EDM_GEOGRAPHY_LINESTRING = "Edm.GeographyLineString";
+const char* EDM_GEOGRAPHY_POLYGON = "Edm.GeographyPolygon";
+const char* EDM_GEOGRAPHY_COLLECTION = "Edm.GeographyCollection";
+const char* EDM_GEOGRAPHY_MULTIPOLYGON = "Edm.GeographyMultiPolygon";
+const char* EDM_GEOGRAPHY_MULTILINESTRING = "Edm.GeographyMultiLineString";
+const char* EDM_GEOGRAPHY_MULTIPOINT = "Edm.GeographyMultiPoint";
+
+const char* EDM_GEOMETRY = "Edm.Geometry";
+const char* EDM_GEOMETRY_POINT = "Edm.GeometryPoint";
+const char* EDM_GEOMETRY_LINESTRING = "Edm.GeometryLineString";
+const char* EDM_GEOMETRY_POLYGON = "Edm.GeometryPolygon";
+const char* EDM_GEOMETRY_COLLECTION = "Edm.GeometryCollection";
+const char* EDM_GEOMETRY_MULTIPOLYGON = "Edm.GeometryMultiPolygon";
+const char* EDM_GEOMETRY_MULTILINESTRING = "Edm.GeometryMultiLineString";
+const char* EDM_GEOMETRY_MULTIPOINT = "Edm.GeometryMultiPoint";
+
+const char* GEOJSON_POINT = "Point";
+const char* GEOJSON_LINESTRING = "LineString";
+const char* GEOJSON_POLYGON = "Polygon";
+const char* GEOJSON_MULTIPOINT = "MultiPoint";
+const char* GEOJSON_MULTILINESTRING = "MultiLineString";
+const char* GEOJSON_MULTIPOLYGON = "MultiPolygon";
+const char* GEOJSON_GEOMETRYCOLLECTION = "GeometryCollection";
+
+const char* PROPERTY_NAME = "Name";
+const char* PROPERTY_TYPE = "Type";
+const char* PROPERTY_MAXLENGTH = "MaxLength";
+const char* PROPERTY_MINLENGTH  = "MinLength";
+const char* PROPERTY_FIXEDLENGTH = "FixedLength";
+const char* PROPERTY_NULLABLE = "Nullable";
+const char* PROPERTY_UNICODE = "Unicode";
+
+const char* PROPERTY_CONCURRENCYMODE = "ConcurrencyMode";
+const char* PROPERTY_FC_TARGETPATH = "FC_TargetPath";
+const char* PROPERTY_FC_KEEPINCONTENT = "FC_KeepInContent";
+const char* PROPERTY_FC_SOURCEPATH = "FC_SourcePath";
+const char* PROPERTY_FC_CONTENTKIND = "FC_ContentKind";
+const char* PROPERTY_FC_NSPREFIX = "FC_NsPrefix";
+const char* PROPERTY_FC_NSURI = "FC_NsURI";
 
 //error message for version mismatch
 const char* Resource_VersionMisMatch					= "Response version mismatch. Client Library Expect version 2.0, but service returns response with version ";

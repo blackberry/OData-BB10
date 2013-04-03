@@ -31,40 +31,50 @@ public:
     //bb::cascades::ArrayDataModel getArrayDataModel() const;
 
     bb::cascades::DataModel* getDataModel() const;
+    QByteArray getMetadata() const;
 
-    void filter(const QString& requestURL, const QString& filterQuery ,bool paging = false);
-    void orderBy(const QString& requestURL, const QString& fieldAndOrientation ,bool paging = false);
+    void filter(const QString& requestURL, const QString& filterQuery, bool paging = false);
+    void orderBy(const QString& requestURL, const QString& fieldAndOrientation, bool paging = false);
 
     // Fetch the data from the network
     void fetchData(const QString& requestURL, bool paging = false);
 
+    // Use for fetching Atom XML OData definition of a given service
+    void fetchMetadata(const QString& requestURL);
+
     // Add data through OData service
-    void updateData(const QString& requestURL, const QByteArray& body);
+    void postData(const QString& toURL, const QVariant& qvariantListProperties, const QString& sCollectionName, const QString& sNamespace, const QString& sEntityName);
 
     // Load more items in the data model
     // Used for infinite scrolling
     void loadMoreItems();
 
     void onODataReceived();
+    void onODataMetadataReceived();
 
 public Q_SLOTS:
 	Q_INVOKABLE
     void onODataReceived_Slot();
 
 	Q_INVOKABLE
-	void onfinishedUpdatingData_Slot();
+	void onfinishedPostingData_Slot();
 
 	Q_INVOKABLE
-	void onUpdatingDataError_Slot(QNetworkReply::NetworkError errNet);
+	void onODataMetadataReceived_Slot();
 
-	QVariant byIntegerCallBogus(QVariant q, int iMethod);
+	Q_INVOKABLE
+	void onPostingDataError_Slot(QNetworkReply::NetworkError errNet);
+
+	// QVariant byIntegerCallBogus(QVariant q, int iMethod);
 
 //signals:
     // Triggered when the data is received to allow the QML to stop its activity indicator
 //    void oDataListLoaded();
 
 private:
-    int onDataListReceived(QNetworkReply* reply, bb::cascades::ArrayDataModel* dataModel);
+    bool readReply(QNetworkReply* reply, QByteArray& result);
+
+	int onDataListReceived(QNetworkReply* reply, bb::cascades::ArrayDataModel* dataModel);
     int fillDataModelItems(QByteArray result, bb::cascades::ArrayDataModel* dataModel);
     int parseItemList(QVariantMap& root, bb::cascades::ArrayDataModel* dataModel);
     void addLoadItem(bb::cascades::ArrayDataModel* dataModel);
@@ -73,6 +83,8 @@ private:
 private:
 //    bb::cascades::DataModel* oDataModel();
     bb::cascades::ArrayDataModel* m_oDataModel;  // data model for passing entries to QML
+    QByteArray m_metadata;  //
+
     QNetworkAccessManager* m_netManager;
 
     int m_nPage;          // The last requested page
@@ -80,6 +92,7 @@ private:
     QString m_requestURL; // Current request URL
     bool m_pagingEnabled; // True if paging mode is enabled
     bool m_JSONEnabled;
+    bool m_MetaTestEnabled;
 };
 
 #endif /* ODATASOURCE_H_ */

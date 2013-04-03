@@ -24,8 +24,7 @@ public:
 	enum entryType { eId, eLink, eProperties, eAuthor };
 
 public:
-	static cAtomManager& Instance()
-	{
+	static cAtomManager& Instance() {
 		static cAtomManager singleton;
 		return singleton;
 	}
@@ -33,9 +32,11 @@ public:
 // Manager can...
 	int fillDataModelItems(QByteArray& result, ArrayDataModel& dataModel);
 
-	QByteArray createHTTP_request_test(const char* strHeaderType);
+	QVariant buildPropertyList(const QByteArray& arrMetadata, const QString& sSchema, const QString& sEntityType);
+	QByteArray buildXMLfromPropertyList(QVariantList& propertiesList, const QString& sCollectionName, const QString& sNamespace, const QString& sEntityName);
+	int generateEntriesDefnFromMetadata(QByteArray& result, ArrayDataModel& dataModel);
 
-	QString getAtomXMLUpdatedDateTime();
+	void setHeaders(QNetworkRequest& request, const QByteArray& body);
 
 private:
 	cAtomManager() {};
@@ -47,9 +48,22 @@ private:
 	const char* getString(entryType e);
 
 	atomDocumentType findType(QVariantMap& map);
+	bool isNamespaceForApp(QVariantMap& map);
+	bool isNamespaceForAtom(QVariantMap& map);
 
-	QVariantMap buildAtomElements(QByteArray& arrBytes);
-	QVariantList parseAtomElements(QByteArray& arrBytes, QVariantMap& mapEntries, atomDocumentType eType);
+	// Build XML
+	QByteArray createBodyHeader();
+    QByteArray createEntryHeader(const QString& sBase);
+    QByteArray createTitleForEntryHeader(const QString& sTitle);
+    QByteArray createContentTypeHeader(const QString& sContentType);
+    QByteArray createCategoryTermHeader(const QString& sCategory, const QString& sSchema);
+    QByteArray createPropertyHeader();
+    QByteArray createXMLwithTag(const QString& sTag, const QString& value);
+    QByteArray createClosureXMLwithTag(const QString& sTag, bool bAdd_CR_LF = false);
+	QString getAtomXMLCurrentDateTime();
+
+	QVariantMap buildAtomElements(const QByteArray& arrBytes);
+	QVariantList parseToODataAtomElements(QByteArray& arrBytes, QVariantMap& mapEntries, atomDocumentType eType);
 	int parseElementsforDataModel(QVariantList& entries, bb::cascades::ArrayDataModel& dt, atomDocumentType eAtomDocType, entryType eEntryType);
 };
 

@@ -5,16 +5,20 @@
  *      Author: cmartin
  */
 #include <QDateTime>
+#include <QList>
 #include <bb/data/XmlDataAccess>
 
 #include "Atom_constants.h"
 #include "cAtomManager.h"
+#include "cProperty.h"
+
 #include "LOGGER.h"
 
 // Incomplete const char* declarations
 const char* atomEntry = "entry";
 const char* atomLink = "link";
 const char* atomId = "id";
+const char* atomODataDocumentTypeKey = "xmlns:";
 
 // Incomplete const char* declarations
 const char* entryProperties = "m:properties";
@@ -22,76 +26,215 @@ const char* entryProperties = "m:properties";
 using namespace bb::cascades;
 using namespace bb::data;
 
-void logMap(QVariantMap & map, int level);
-
-void logList(QVariantList & list, int level)
-{
-	// add space to make the level indented
-	LOGGER::log_indent("LIST level:  ", level, level);
-
-	int sz = list.size();
-
-    /*
-     *  Traverse the list... just for debug purposes
-     */
-    foreach (QVariant vt, list)
-    {
-		if (vt.type() == QVariant::Map)
-		{
-			QVariantMap toPass = vt.value<QVariantMap>();
-			logMap(toPass, level+1);
-		}
-		else if (vt.type() == QVariant::List)
-		{
-			QVariantList toPass = vt.value<QVariantList>();
-			logList(toPass, level+1);
-		}
-		else if (vt.type() == QVariant::String)
-		{
-			LOGGER::log_indent("list value                    : ", vt.toString(), level);
-		}
-		else
-		{
-			LOGGER::log_indent("list type (no output on value): ", (int) vt.type(), level);
-		}
-    }
-	LOGGER::log_indent("exiting LIST level:  ", level, level);
-}
-
-void logMap(QVariantMap & map, int level)
-{
-	LOGGER::log_indent("MAP level:  ", level, level);
-
-	int sz = map.size();
-
-	for(QVariantMap::const_iterator iter = map.begin(); iter != map.end(); ++iter) {
-
-		QVariant vt_key = iter.key();
-		QString vt_string = vt_key.toString();
-
-		LOGGER::log_indent("map key       : ", vt_string, level);
-		LOGGER::log_indent("map key type  : ", (int)vt_key.type(), level);
-
-		QVariant vt_val = iter.value();
-		QString tvt_string2 = vt_val.toString();
-
-		LOGGER::log_indent("map value     : ", tvt_string2, level);
-		LOGGER::log_indent("map value type: ", (int)vt_val.type(), level);
-
-		if (vt_val.type() == QVariant::Map) {
-			QVariantMap toPass = vt_val.value<QVariantMap>();
-			logMap(toPass, level+1);
-		}
-
-		if (vt_val.type() == QVariant::List) {
-			QVariantList toPass = vt_val.value<QVariantList>();
-			logList(toPass, level+1);
-		}
-	}
-	LOGGER::log_indent("exiting MAP level:  ", level, level);
-}
 
 cAtomManager::~cAtomManager() {
+}
+
+QVariantMap cAtomManager::buildAtomElements(const QByteArray& arrBytes) {
+
+	// Then we have XML
+	XmlDataAccess xda;
+	QVariantMap ret;
+	QVariant xmlContent = xda.loadFromBuffer(arrBytes);
+
+	// LOGGER::log("Byte Array : ", QString(arrBytes));
+
+	if (xda.hasError()) {
+		DataAccessError error = xda.error();
+		LOGGER::log("failed to load featured list XML: ", error.errorType());
+		LOGGER::log("failed to load featured list XML: ", error.errorMessage());
+
+		return QVariantMap();
+	}
+
+	if (xmlContent.type() != QVariant::Map)
+	{
+		LOGGER::log("failed to parse byte array into QVarianMap: ");
+		LOGGER::log("qvariant is of type : ", (int)xmlContent.type());
+		return QVariantMap();
+	}
+
+	// We have a Map
+	return xmlContent.value<QVariantMap>();
+}
+
+bool cAtomManager::isNamespaceForApp(QVariantMap& map) {
+	QVariant vtObject = map[atomODataDocumentTypeKey];
+	QString s = vtObject.value<QString>();
+
+	return s.contains(OData_app_link, Qt::CaseInsensitive);
+}
+
+bool cAtomManager::isNamespaceForAtom(QVariantMap& map) {
+	QVariant vtObject = map[atomODataDocumentTypeKey];
+	QString s = vtObject.value<QString>();
+
+	return s.contains(OData_atom_link, Qt::CaseInsensitive);
+}
+
+cAtomManager::atomDocumentType cAtomManager::findType(QVariantMap& map) {
+
+	// Two sources of information where used for this method
+	// 1- OData.org Atom specs file. see link
+	//       [1] http://www.odata.org/media/30002/OData%20Atom%20Format.html#primitivetypesinatom
+	// 2- Datajs library source code. see link
+	//       [2] http://datajs.codeplex.com/SourceControl/changeset/view/23844#16631
+	//    it is the odata-atom.js file
+	//
+	//   ----------
+	//   Nota Bene:
+	//   ----------
+	//   Note that the OData Atom format is more complex the original described Atom XML.
+	//		As described in the link above [1]:
+	//    	OData builds on RFC4287 and RFC5023 by defining additional conventions and extensions for representing and querying entity data.
+
+	// XmlDataAccess object creates a ".root" entry at the top
+	QVariant vtObject = map[".root"];
+
+	// =============================================================================================
+	// According to datajs library, it first determine if there is a namespace defined called
+	// appXmlNs. This refers to "http://www.w3.org/2007/app". It also look for "atomXmlNs" which is
+	// "http://www.w3.org/2005/Atom".
+	// =============================================================================================
+
+	// ==============================================================================================
+	// In section 13 of the link above [1]
+	// Atom defines the concept of a Service Document to represent the set of available collections.
+	// OData uses Service Documents to describe the set of entity sets available through the service.
+    // So this call attempts to evaluate this
+	// Note that "service" is a reserved word in OData Atom XML
+
+	// Addendum info: we validate as well for the namespace  "http://www.w3.org/2007/app"..
+	if (isNamespaceForApp(map))
+		if ((vtObject.type() == QVariant::String) && (vtObject.toString().contains("service")))
+			return eAtomService;
+
+	// Otherwise, we are facing a collection of entries called "feed" or a simple "entry"
+	// In section 5 of the link above [1]
+
+	// [2] According to datajs library; the method atomReadDocument, we need to check for
+	//     "http://www.w3.org/2005/Atom". Then validate if we have a feed or an entry
+	if (isNamespaceForAtom(map))
+		return eAtomFeed;
+
+	// TODO:we should have: if (some validation ...) return eAtomEntry;
+
+	return eAtomEntry;
+}
+
+int cAtomManager::fillDataModelItems(QByteArray& result, ArrayDataModel& dataModel) {
+
+	QVariantMap mapEntries = buildAtomElements(result);
+	cAtomManager::atomDocumentType tp = findType(mapEntries);
+
+	QVariantList parsed = parseToODataAtomElements(result, mapEntries, tp);
+
+	return parseElementsforDataModel(parsed, dataModel, tp, cAtomManager::eProperties);
+}
+
+QVariantList cAtomManager::parseToODataAtomElements(QByteArray& arrBytes, QVariantMap& mapEntries, atomDocumentType eType) {
+
+	QVariantList result;
+
+	switch (eType)
+	{
+		case eAtomFeed:
+			{
+				// TODO: Should review code for other cases
+			    const char* tmp = getString(eFeedEntry);
+				result = mapEntries[tmp].value<QVariantList>();
+			}
+			break;
+		case eAtomService:
+			{
+				// TODO: Should review code for other cases
+				QVariantMap subResult = mapEntries["workspace"].value<QVariantMap>();
+				result = subResult["collection"].value<QVariantList>();
+			}
+			break;
+
+		case eAtomEntry:
+				// TODO: Should review code for other cases
+				// Need to implement this one
+			break;
+
+		default:
+
+			break;
+	}
+
+	return result;
+}
+
+int cAtomManager::parseElementsforDataModel(QVariantList& entries, bb::cascades::ArrayDataModel& dt, atomDocumentType eAtomDocType, entryType eEntryType) {
+	QVariantList listForQML;
+	switch (eAtomDocType)
+	{
+		case eAtomFeed:
+			{
+				const char* type = getString(eEntryType);
+				QVariantMap toInsertInList;
+
+				foreach (QVariant vt, entries)
+				{
+					if (vt.type() == QVariant::Map)
+					{
+						QVariantMap variantMap = vt.value<QVariantMap>();
+						QVariantMap variantPropertiesMap = variantMap[type].value<QVariantMap>(); // used to be  "m:properties"
+
+						for(QVariantMap::const_iterator iter = variantPropertiesMap.begin(); iter != variantPropertiesMap.end(); ++iter) {
+							QVariant k = iter.key();
+							QVariant tmp;
+
+							// "d" refers to a prefix commonly used for namespacing.
+							// It is defined in the Atom_constants as OData_ns_dataservices_Prefix
+							// See documentation
+							// http://www.odata.org/documentation/atom-format
+							// 2.3. Representing Collections of Entries
+							QString toCompare = QString(OData_ns_dataservices_Prefix) + QString(":");
+							if (k.type() == QVariant::String)
+								if (k.toString().startsWith(toCompare))
+									tmp = k.toString().remove(toCompare);
+								else
+									tmp = k.toString();
+
+							// assuming here that all keys are strings
+							toInsertInList.insert(tmp.toString(), iter.value());
+						}
+
+						listForQML.append(toInsertInList);
+						toInsertInList.clear();
+					}
+				}
+				// add the data to the model
+				dt.append(listForQML);
+			}
+			break;
+		case eAtomService:
+			{
+				int sz = entries.size();
+				const char* type = "atom:title";
+				//sortList(entries, 1);
+
+				foreach (QVariant vt, entries)
+				{
+					if (vt.type() == QVariant::Map)
+					{
+						QVariantMap variantMap = vt.value<QVariantMap>();
+						QVariant vtTmp = variantMap[type];
+
+						if (vtTmp.type() == QVariant::String) {
+							listForQML.append(vtTmp);
+						}
+					}
+				}
+				// add the data to the model
+				dt.append(listForQML);
+			}
+			break;
+	}
+
+	return listForQML.size();
 }
 
 const char* cAtomManager::getString(atomFeed e) {
@@ -126,184 +269,139 @@ const char* cAtomManager::getString(entryType e) {
 	return result;
 }
 
-QVariantMap cAtomManager::buildAtomElements(QByteArray& arrBytes) {
+void cAtomManager::setHeaders(QNetworkRequest& request, const QByteArray& body) {
+    // set the raw headers
+    // QT has a definition for Content-Type... but not for the others...
+    request.setRawHeader(HttpRequestHeader_Content_Type, "application/atom+xml"); // ATOM_Resource_Content_Type);  ///);
+    // TODO: remove hard coding
+    request.setRawHeader(HttpRequestHeader_Accept, "application/atom+xml"); // should it be ==> ATOM_Resource_Accept); //);
+    request.setRawHeader(HttpRequestHeader_UserAgent, "BB10 ODataLib v0.1");
+    request.setRawHeader(HttpRequestHeader_DataService, Resource_DataServiceVersion_1);
+    request.setRawHeader(HttpRequestHeader_MaxDataService, Resource_MaxDataServiceVersion);
+    request.setRawHeader(HttpRequestHeader_Host, "services.odata.org");
 
-	// Then we have XML
-	XmlDataAccess xda;
-	QVariantMap ret;
-	QVariant xmlContent = xda.loadFromBuffer(arrBytes);
-
-	LOGGER::log("Byte Array : ", QString(arrBytes));
-
-	if (xda.hasError()) {
-		DataAccessError error = xda.error();
-		LOGGER::log("failed to load featured list XML: ", error.errorType());
-		LOGGER::log("failed to load featured list XML: ", error.errorMessage());
-
-		return QVariantMap();
-	}
-
-	if (xmlContent.type() != QVariant::Map)
-	{
-		LOGGER::log("failed to parse byte array into QVarianMap: ");
-		LOGGER::log("qvariant is of type : ", (int)xmlContent.type());
-		return QVariantMap();
-	}
-
-	// We have a Map
-	return xmlContent.value<QVariantMap>();
+    QByteArray postDataSize = QByteArray::number(body.size());
+    request.setRawHeader(HttpRequestHeader_ContentLength, postDataSize);
 }
 
-cAtomManager::atomDocumentType cAtomManager::findType(QVariantMap& map) {
+QVariant cAtomManager::buildPropertyList(const QByteArray& arrMetadata, const QString& sSchema, const QString& sEntityType) {
 
-	// Two sources of information where used for this method
-	// 1- OData.org Atom specs file. see link
-	//       [1] http://www.odata.org/media/30002/OData%20Atom%20Format.html#primitivetypesinatom
-	// 2- Datajs library source code. see link
-	//       [2] http://datajs.codeplex.com/SourceControl/changeset/view/23844#16631
-	//    it is the odata-atom.js file
+	QVariantList resultList;
+
+	QVariantMap mapEntries = buildAtomElements(arrMetadata);
+
+    // see line [2] above
+    QVariant vt_tmp = mapEntries["edmx:DataServices"];
+    QVariantMap vt_map = vt_tmp.value<QVariantMap>();
+
+    // see line [3] above (this can be a list of different schema)
+    vt_tmp = vt_map["Schema"];
+
+    // if there is more than one schema
+    if (vt_tmp.type() == QVariant::List)  {
+    	QVariantList schemas = vt_tmp.value<QVariantList>();
+
+    	// TODO: handle multiple schemas
+    	// For the mean time, we will stick to the first schema
+    	vt_tmp = schemas.at(0);
+    }
+
+	{
+		if (vt_tmp.type() == QVariant::Map) {
+			QVariantMap variantSchemaMap = vt_tmp.value<QVariantMap>();
+
+			// see line [4] above
+			vt_tmp = variantSchemaMap["EntityType"];
+
+			// Somewhat puzzled here... "EntityType" returns a List...
+			if (vt_tmp.type() == QVariant::List) {
+				QVariantList entitiesList = vt_tmp.value<QVariantList>();
+
+				// again for the purpose of the exercise, getting only the second "EntityType" Map
+				// see line [2] above ...
+
+				vt_tmp.clear();
+				foreach (QVariant itm, entitiesList) {
+					// Should be all type Map
+					if (itm.type() == QVariant::Map) {
+
+						QVariantMap vtMap = itm.value<QVariantMap>();
+						QVariant v = vtMap["Name"];
+
+						if (v.type() == QVariant::String) {
+							if (v.toString().contains(sEntityType))
+								vt_tmp = itm;
+						}
+					}
+				}
+
+				if (vt_tmp.isNull()) {
+					LOGGER::log("Unable to find map for entity type");
+					return resultList;
+				}
+
+				if (vt_tmp.type() == QVariant::Map) {
+					QVariantMap variantEntityMap = vt_tmp.value<QVariantMap>();
+
+					vt_tmp = variantEntityMap["Property"];
+					QVariantList list_ofProps = vt_tmp.value<QVariantList>();
+
+					cProperty* oProp;
+					foreach (QVariant vt_prop, list_ofProps) {
+						oProp = cProperty::createProperty(vt_prop);
+						QVariant vAddToList = qVariantFromValue((void *) oProp);
+						resultList.append(vAddToList);
+					}
+				}
+			}
+		}
+	}
+	return resultList;
+}
+
+QByteArray cAtomManager::buildXMLfromPropertyList(QVariantList& propertiesList, const QString& sCollectionName, const QString& sNamespace, const QString& sEntityName) {
+
+	QByteArray arrBody;
+	arrBody.append(createBodyHeader());
+
+	// TODO: remove hard coding and add parameter for this
+	arrBody.append(createEntryHeader("http://services.odata.org/OData/OData.svc/"));
+	arrBody.append(createTitleForEntryHeader(sCollectionName));
+
+	arrBody.append(createXMLwithTag("updated", getAtomXMLCurrentDateTime()));
+	// TODO: add a parameter for this
+	arrBody.append(createXMLwithTag("author", createXMLwithTag("name", "")));
+
+	// We use Schema Namespace and EntityType Name to create the <category term> xml string
 	//
-	//   --------------
-	//   Addendum info:
-	//   --------------
-	//   Note that the OData Atom format is more complex the original described Atom XML.
-	//		As described in the link above [1]:
-	//    	OData builds on RFC4287 and RFC5023 by defining additional conventions and extensions for representing and querying entity data.
+	// So, for example, we have a $metadata xml like this one:
+	//		[...]
+	// 			<Schema Namespace="ODataDemo" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+	//  			<EntityType Name="Category">
+	//
+	// in this case, it would give you "ODataDemo.Category"
 
-	// XmlDataAccess object creates a ".root" entry at the top
-	QVariant vtObject = map[".root"];
+	// TODO: remove hard coding and add parameter for this
+	// might have add a parameter to the for OData_MS_link_DataSvc_Scheme
+	arrBody.append(createCategoryTermHeader(sNamespace + QString(".") + sEntityName, OData_MS_link_DataSvc_Scheme));
+	arrBody.append(createContentTypeHeader("application/xml"));
 
+	arrBody.append(createPropertyHeader());
 
-	// According to datajs library, it first determine if there is a namespace defined called
-	// appXmlNs. This refers to "http://www.w3.org/2007/app". It also look for "atomXmlNs" which is
-	// "http://www.w3.org/2005/Atom". In this code, this is not handle (yet).
-
-
-	// ==============================================================================================
-	// In section 13 of the link above [1]
-	// Atom defines the concept of a Service Document to represent the set of available collections.
-	// OData uses Service Documents to describe the set of entity sets available through the service.
-    // So this call attempts to evaluate this
-	// Note that "service" is a reserved word in OData Atom XML
-
-	// TO DO: Addendum info: we could validate as well for the namespace  "http://www.w3.org/2007/app"..
-	if ((vtObject.type() == QVariant::String) && (vtObject.toString().contains("service")))
-			return eAtomService;
-
-	// Otherwise, we are facing a collection of entries called "feed" or a simple "entry"
-	// In section 5 of the link above [1]
-	// [2] According to datajs library; the method atomReadDocument, we need to check for
-	//     "http://www.w3.org/2005/Atom". Then validate if we have a feed or an entry
-
-	// we should have if (some validation ...) return eAtomEntry;
-
-	return eAtomFeed;
-}
-
-QVariantList cAtomManager::parseAtomElements(QByteArray& arrBytes, QVariantMap& mapEntries, atomDocumentType eType) {
-
-	QVariantList result;
-
-	switch (eType)
-	{
-		case eAtomFeed:
-			{
-				// TO DO: Should review code for other cases
-			    const char* tmp = getString(eFeedEntry);
-				result = mapEntries[tmp].value<QVariantList>();
-			}
-			break;
-		case eAtomService:
-			{
-				// TO DO: Should review code for other cases
-				QVariantMap subResult = mapEntries["workspace"].value<QVariantMap>();
-				result = subResult["collection"].value<QVariantList>();
-			}
-			break;
-
-		default:
-			break;
-	}
-	return result;
-}
-
-int cAtomManager::parseElementsforDataModel(QVariantList& entries, bb::cascades::ArrayDataModel& dt, atomDocumentType eAtomDocType, entryType eEntryType) {
-	QVariantList listForQML;
-	switch (eAtomDocType)
-	{
-		case eAtomFeed:
-			{
-				const char* type = getString(eEntryType);
-				QVariantMap toInsertInList;
-
-				foreach (QVariant vt, entries)
-				{
-					if (vt.type() == QVariant::Map)
-					{
-						QVariantMap variantMap = vt.value<QVariantMap>();
-						QVariantMap variantPropertiesMap = variantMap[type].value<QVariantMap>(); // used to be  "m:properties"
-
-						for(QVariantMap::const_iterator iter = variantPropertiesMap.begin(); iter != variantPropertiesMap.end(); ++iter) {
-							QVariant k = iter.key();
-							QVariant tmp;
-
-							// TO DO: insert a const char "d:" might need some review
-							if (k.type() == QVariant::String)
-								if (k.toString().startsWith("d:"))
-									tmp = k.toString().remove("d:");
-								else
-									tmp = k.toString();
-
-							// assuming here that all keys are strings
-							toInsertInList.insert(tmp.toString(), iter.value());
-						}
-
-						listForQML.append(toInsertInList);
-						toInsertInList.clear();
-					}
-				}
-				// add the data to the model
-				dt.append(listForQML);
-			}
-		case eAtomService:
-			{
-				int sz = entries.size();
-				const char* type = "atom:title";
-				//sortList(entries, 1);
-
-				foreach (QVariant vt, entries)
-				{
-					if (vt.type() == QVariant::Map)
-					{
-						QVariantMap variantMap = vt.value<QVariantMap>();
-						QVariant vtTmp = variantMap[type];
-
-						if (vtTmp.type() == QVariant::String) {
-							listForQML.append(vtTmp);
-						}
-					}
-				}
-				// add the data to the model
-				dt.append(listForQML);
-			}
+	foreach (QVariant vt, propertiesList) {
+	  cProperty* prop = (cProperty *) vt.value<void *>();
+	  arrBody.append(prop->serialize());
+	  arrBody.append(const_CR_LF);
 	}
 
-	logList(listForQML, 1);
+	arrBody.append(createClosureXMLwithTag(QString(OData_ns_metadata_Prefix) + QString(":") + QString("properties"), true));
+	arrBody.append(createClosureXMLwithTag("content", true));
+	arrBody.append(createClosureXMLwithTag("entry", true));
 
-	return listForQML.size();
+	return arrBody;
 }
 
-int cAtomManager::fillDataModelItems(QByteArray& result, ArrayDataModel& dataModel) {
-
-    QVariantMap mapEntries = buildAtomElements(result);
-    cAtomManager::atomDocumentType tp = findType(mapEntries);
-
-    QVariantList parsed = parseAtomElements(result, mapEntries, tp);
-
-    return parseElementsforDataModel(parsed, dataModel, tp, cAtomManager::eProperties);
-}
-
-QString cAtomManager::getAtomXMLUpdatedDateTime() {
+QString cAtomManager::getAtomXMLCurrentDateTime() {
 	// according to Atom/XML specs see link:
 	//
 	//   http://tools.ietf.org/html/rfc4287
@@ -321,176 +419,161 @@ QString cAtomManager::getAtomXMLUpdatedDateTime() {
 	dt.setTimeSpec(Qt::UTC);
 	//QDateTime local = dt.toLocalTime();
 
-	QString sDateTime = dt.toString(Qt::ISODate); // YYYY-MM-DDTHH:MM:SSZ    // TO DO add this SS+SSTZD
+	QString sDateTime = dt.toString(Qt::ISODate); // YYYY-MM-DDTHH:MM:SSZ    // TODO add this SS+SSTZD
 
-	// TO DO review for time zone
+	// TODO review for time zone
 	// Not clear how to get time zone info
 	return sDateTime;
 }
 
-QByteArray cAtomManager::createHTTP_request_test(const char* strHeaderType) {
+QByteArray cAtomManager::createBodyHeader() {
+	// creates :
+	// <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 
 	QByteArray arrByteBody;
-	if(strcmp(strHeaderType, "PUT") == 0)
-	{
 
-		// Trying to fill XML as shown below here
-		/*
-		<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-			<entry xml:base="http://services.odata.org/OData/OData.svc/"
-    		xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
-    		xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
-    		xmlns="http://www.w3.org/2005/Atom">
-  	  	  	  <title type="text" />
-  	  	  	  	  <updated>2013-03-22T19:24:36Z</updated>
-    				<author>
-      	  	  	  	  <name />
-    				</author>
-    				<category term="ODataDemo.Category" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
-    				<content type="application/xml">
-      	  	  	  	  <m:properties>
-        				<d:Name>no Food</d:Name>
-      			  	  </m:properties>
-    			</content>
-		</entry>*/
+	arrByteBody.append("<?xml version=\"1.0\" encoding=\"");
+	arrByteBody.append(const_UTF_8);
+	arrByteBody.append("\" standalone=\"yes\"?>");
+	arrByteBody.append(const_CR_LF);
 
-
-		// ... into this arrByteBody
-		// entry body
-		arrByteBody.append("<?xml version=\"1.0\" encoding=\"");
-		arrByteBody.append(const_UTF_8);
-		arrByteBody.append("\" standalone=\"yes\"?>"); // .. not sure if standalone="yes" is essential
-
-		// is this right ?
-		arrByteBody.append(const_CR_LF);
-
-		arrByteBody.append("<entry xml:base=\"");
-		arrByteBody.append("http://services.odata.org/OData/OData.svc/");
-		arrByteBody.append("\"");
-		arrByteBody.append(const_CR_LF);
-
-		arrByteBody.append("   xmlns");
-		arrByteBody.append(":");
-		arrByteBody.append(OData_Prefix);
-		arrByteBody.append("=\"");
-		arrByteBody.append(OData_MS_link_DataSvc);
-		arrByteBody.append("\"");
-		arrByteBody.append(const_CR_LF);
-
-		arrByteBody.append("   xmlns");
-		arrByteBody.append(":");
-		arrByteBody.append(OData_Meta_Prefix);
-		arrByteBody.append("=\"");
-		arrByteBody.append(OData_MS_link_DataSvc_Meta);
-		arrByteBody.append("\"");
-		arrByteBody.append(const_CR_LF);
-
-		arrByteBody.append("   xmlns");
-		arrByteBody.append("=\"");
-		arrByteBody.append(OData_atom_link);
-		arrByteBody.append("\"");
-		arrByteBody.append(">");
-		arrByteBody.append(const_CR_LF);
-
-		arrByteBody.append("   <title type=\"text\" />");
-		arrByteBody.append(const_CR_LF);
-
-		arrByteBody.append("   <updated>");
-
-		// Should be using this method for date time
-		QString sDtTm = getAtomXMLUpdatedDateTime();
-
-		arrByteBody.append("2013-03-21T19:17:52Z");   //  arrByteBody.append(sDtTm);
-		arrByteBody.append("</updated>");
-		arrByteBody.append(const_CR_LF);
-
-		// *********** Shud be parameterized ???? ******************
-		arrByteBody.append("   <author>");
-		arrByteBody.append(const_CR_LF);
-		arrByteBody.append("     <name />");
-		arrByteBody.append(const_CR_LF);
-
-		arrByteBody.append("   </author>");
-		arrByteBody.append(const_CR_LF);
-
-		arrByteBody.append("   <category term=");
-
-		// *********** Shud be parameterized ******************
-		arrByteBody.append("\"ODataDemo.Category\"");
-
-		arrByteBody.append(" scheme=\"");
-		arrByteBody.append(OData_MS_link_DataSvc_Scheme);
-		arrByteBody.append("\" />");
-		arrByteBody.append(const_CR_LF);
-
-		arrByteBody.append("   <");
-		arrByteBody.append(Entry_ContentType);
-		arrByteBody.append("=");
-		arrByteBody.append("\"");
-		arrByteBody.append("application/xml");         //ATOM_Resource_Content_Type);
-		arrByteBody.append("\"");
-		arrByteBody.append(">");
-		arrByteBody.append(const_CR_LF);
-
-		arrByteBody.append("   <");
-		arrByteBody.append(OData_Meta_Prefix);
-
-		// *********** Shud be parameterized ******************
-		arrByteBody.append(":properties>");
-		arrByteBody.append(const_CR_LF);
-
-/*		arrByteBody.append("      <");
-		arrByteBody.append(OData_Prefix);
-
-		// *********** Shud be parameterized ******************
-		arrByteBody.append(":");
-		arrByteBody.append("ID ");
-		arrByteBody.append(OData_Meta_Prefix);
-		arrByteBody.append(":");
-		arrByteBody.append("type=");
-		arrByteBody.append("\"");
-		arrByteBody.append("Edm.Int32");
-		arrByteBody.append("\"");
-
-		arrByteBody.append(">");
-
-		// *********** Shud be parameterized ******************
-		arrByteBody.append("14");
-
-		arrByteBody.append("</");
-		arrByteBody.append(OData_Prefix);
-		arrByteBody.append(":");
-		arrByteBody.append("ID");
-		arrByteBody.append(">");
-		arrByteBody.append(const_CR_LF);*/
-
-		arrByteBody.append("      <");
-		arrByteBody.append(OData_Prefix);
-		arrByteBody.append(":");
-		arrByteBody.append("Name");
-		arrByteBody.append(">");
-
-		// All this code to change this property !!??!!
-		arrByteBody.append("No more food");
-
-		arrByteBody.append("<");
-		arrByteBody.append("/");
-		arrByteBody.append(OData_Prefix);
-		arrByteBody.append(":");
-		arrByteBody.append("Name");
-		arrByteBody.append(">");
-		arrByteBody.append(const_CR_LF);
-
-		arrByteBody.append("   </");
-		arrByteBody.append(OData_Meta_Prefix);
-		arrByteBody.append(":properties>");
-		arrByteBody.append(const_CR_LF);
-
-		arrByteBody.append(" </content>");
-		arrByteBody.append(const_CR_LF);
-		arrByteBody.append("</entry>");
-
-		return arrByteBody;
-	}
+	return arrByteBody;
 }
 
+QByteArray cAtomManager::createEntryHeader(const QString& sBase) {
+	// creates :
+	//<entry xml:base="http://services.odata.org/OData/OData.svc/"
+	//			xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
+	//			xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+	//			xmlns="http://www.w3.org/2005/Atom">
+
+	QByteArray arrByteBody;
+
+	arrByteBody.append("<entry xml:base=\"");
+	arrByteBody.append(sBase); // "http://services.odata.org/OData/OData.svc/");
+	arrByteBody.append("\"");
+	arrByteBody.append(const_CR_LF);
+
+	arrByteBody.append(" xmlns");
+	arrByteBody.append(":");
+	arrByteBody.append(OData_ns_dataservices_Prefix);
+	arrByteBody.append("=\"");
+	arrByteBody.append(OData_MS_link_DataSvc);
+	arrByteBody.append("\"");
+	arrByteBody.append(const_CR_LF);
+
+	arrByteBody.append(" xmlns");
+	arrByteBody.append(":");
+	arrByteBody.append(OData_ns_metadata_Prefix);
+	arrByteBody.append("=\"");
+	arrByteBody.append(OData_MS_link_DataSvc_Meta);
+	arrByteBody.append("\"");
+	arrByteBody.append(const_CR_LF);
+
+	arrByteBody.append(" xmlns");
+	arrByteBody.append("=\"");
+	arrByteBody.append(OData_atom_link);
+	arrByteBody.append("\"");
+	arrByteBody.append(">");
+	arrByteBody.append(const_CR_LF);
+
+	return arrByteBody;
+}
+
+QByteArray cAtomManager::createClosureXMLwithTag(const QString& sTag, bool bAdd_CR_LF) {
+	QByteArray arrByteBody;
+
+	arrByteBody.append("</");
+	arrByteBody.append(sTag);
+	arrByteBody.append("> ");
+	if (bAdd_CR_LF)
+		arrByteBody.append(const_CR_LF);
+
+	return arrByteBody;
+}
+
+QByteArray cAtomManager::createXMLwithTag(const QString& sTag, const QString& sValue) {
+	QByteArray arrByteBody;
+
+	// creates:
+	arrByteBody.append("<");
+	arrByteBody.append(sTag);
+	arrByteBody.append(">");
+
+	arrByteBody.append(sValue);
+
+	arrByteBody.append(createClosureXMLwithTag(sTag));
+	arrByteBody.append(const_CR_LF);
+
+	return arrByteBody;
+}
+
+QByteArray cAtomManager::createTitleForEntryHeader(const QString& sTitle) {
+	// creates:
+	// <title type="text">some title</title>
+
+	QByteArray arrByteBody;
+
+	// creates:
+	arrByteBody.append("<title type=\"text\">");
+	arrByteBody.append(sTitle);
+	arrByteBody.append("</title>");
+	arrByteBody.append(const_CR_LF);
+
+	return arrByteBody;
+}
+
+
+QByteArray cAtomManager::createCategoryTermHeader(const QString& sCategory, const QString& sSchema) {
+	// creates:
+	// <category term="ODataDemo.Category" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+
+	QByteArray arrByteBody;
+
+	arrByteBody.append("<category term=");
+
+	arrByteBody.append("\"");
+	arrByteBody.append(sCategory);
+	arrByteBody.append("\"");
+
+	arrByteBody.append(" scheme=\"");
+	arrByteBody.append(sSchema);
+	arrByteBody.append("\" />");
+	arrByteBody.append(const_CR_LF);
+
+	return arrByteBody;
+}
+
+QByteArray cAtomManager::createContentTypeHeader(const QString& sContentType) {
+	// creates:
+	// <content type="application/xml">
+
+	QByteArray arrByteBody;
+	arrByteBody.append("<");
+	arrByteBody.append(Entry_ContentType);
+	arrByteBody.append("=");
+	arrByteBody.append("\"");
+	arrByteBody.append(sContentType);  // ATOM_Resource_Content_Type);
+	arrByteBody.append("\"");
+
+	arrByteBody.append(">");
+	arrByteBody.append(const_CR_LF);
+
+	return arrByteBody;
+}
+
+QByteArray cAtomManager::createPropertyHeader() {
+	// creates:
+	// <m:properties>
+
+	QByteArray arrByteBody;
+
+	arrByteBody.append("<");
+	arrByteBody.append(OData_ns_metadata_Prefix);
+	arrByteBody.append(":");
+	arrByteBody.append("properties");
+	arrByteBody.append(">");
+	arrByteBody.append(const_CR_LF);
+
+	return arrByteBody;
+}

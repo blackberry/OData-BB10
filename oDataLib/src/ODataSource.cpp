@@ -19,11 +19,11 @@
 #include "cODataLib.h"
 #include "Atom_constants.h"
 #include "cAtomManager.h"
+#include "cProperty.h"
 
 #include "LOGGER.h"
 
 #include "OrderByResources/OrderByQueryObject.h"
-
 
 using namespace bb::cascades;
 using namespace bb::data;
@@ -42,67 +42,16 @@ ODataSource::ODataSource(QObject *parent) :
                 m_nPage(0),
                 m_bEndReached(false),
                 m_pagingEnabled(false),
-                m_JSONEnabled(false) {
+                m_JSONEnabled(false),
+                m_MetaTestEnabled(false) {
     m_oDataModel = new ArrayDataModel(this);
     m_netManager = new QNetworkAccessManager();
+
 }
 
 ODataSource::~ODataSource() {
 }
-
-//////////// For testing purposes only
-QVariant ODataSource::byIntegerCallBogus(QVariant q, int iMethod)
-{
-	QVariant vt;
-	int toSwapInDebugTime = iMethod;
-
-	QString test = cAtomManager::Instance().getAtomXMLUpdatedDateTime();
-
-	LOGGER::log("date time is = ",  test);
-
-	// Testing writing to database with a some simplified atom/xml string using "PUT"
-	if (toSwapInDebugTime == 1)
-	{
-		vt = cAtomManager::Instance().createHTTP_request_test("PUT");
-		QByteArray arrB = vt.value<QByteArray>();
-
-		// Info
-		QString toXchge = QString(arrB);
-	    LOGGER::log("ODataSource::arrB == ",  toXchge);
-
-	    // Nota bene: ... This link was generated manually.
-	    // Use any browser for generating it from OData.org / see sample services Read/Write database
-	    QString url("http://services.odata.org/(S(0aatlc1jdpzfp1x241vfduge))/OData/OData.svc/Categories(0)");
-
-	    // should be changed to update data
-	    updateData(url, arrB);
-	}
-	// Testing writing to database with a some simplified atom/xml string using "POST"
-	// this is intended for adding an entry in a table
-	// ... IDEALLY, read the $metadata; build in GUI with a list of data input box for each of the items described in the metadata;
-	// Allow the end-user to enter data; then send an entry with new data to be entered in database
-	else if (toSwapInDebugTime == 2)
-	{
-		vt = cAtomManager::Instance().createHTTP_request_test("POST");
-		QByteArray arrB = vt.value<QByteArray>();
-
-		// Info
-		QString toXchge = QString(arrB);
-	    LOGGER::log("ODataSource::arrB == ",  toXchge);
-
-	    // Nota bene: ... This link was generated manually.
-	    // Use any browser for generating it from OData.org / see sample services Read/Write database
-	    QString url("http://services.odata.org/(S(0aatlc1jdpzfp1x241vfduge))/OData/OData.svc/Categories(0)");
-
-	    // should be changed to update data
-	    //addData(url, arrB);
-	}
-
-	return vt;
-}
-
 /* Filter querys */
-
 void ODataSource::filter(const QString& requestURL, const QString& filterQuery ,bool paging) {
     QString queryRequest(requestURL);
     (queryRequest.contains("?")) ? queryRequest.append("&") : queryRequest.append("?");
@@ -122,36 +71,57 @@ void ODataSource::orderBy(const QString& requestURL, const QString& fieldAndOrie
     this->fetchData(queryRequest, paging);
 }
 
-void ODataSource::updateData(const QString& requestURL, const QByteArray& body) {
+void ODataSource::postData(const QString& toURL, const QVariant& qvariantListProperties, const QString& sCollectionName, const QString& sNamespace, const QString& sEntityName) {
+	QByteArray body;
 	QNetworkRequest request;
-    QString addRequestURL = requestURL;
 
-    // Not planning to support this yet
-    // m_JSONEnabled = addRequestURL.contains(QString("$format=json"));
+	// TODO: should validate if we need to do this before sCollectionName: + "/" +
+    QString toURLPost = toURL + sCollectionName;
 
-    LOGGER::log("ODataSource::addData - addRequestURL:", addRequestURL);
-    request.setUrl(addRequestURL);
+    LOGGER::log("ODataSource::post - url: ", toURLPost);
 
-    // set the raw headers
-    // QT has a definition for Content-Type... but not for the others...
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/atom+xml"); // ATOM_Resource_Content_Type);  ///);
+    request.setUrl(toURLPost);
 
-    request.setRawHeader(HttpRequestHeader_Accept, "application/atom+xml"); // should it be ==> ATOM_Resource_Accept); //);
-    request.setRawHeader(HttpRequestHeader_UserAgent, "BB10 ODataLib v0.1");
-    request.setRawHeader(HttpRequestHeader_DataService, Resource_DataServiceVersion_1);
-    request.setRawHeader(HttpRequestHeader_MaxDataService, Resource_MaxDataServiceVersion);
-    request.setRawHeader(HttpRequestHeader_Host, "services.odata.org");
-    QByteArray postDataSize = QByteArray::number(body.size());
+    cAtomManager::Instance().setHeaders(request, body);
+
+
+    QVariantList list = qvariantListProperties.value<QVariantList>();
+    QByteArray xmlPropBody = cAtomManager::Instance().buildXMLfromPropertyList(list, sCollectionName, sNamespace, sEntityName);
+
+    if (xmlPropBody.size() == 0) {
+         LOGGER::log("ODataSource::post - build XML body failed");
+         return;
+    }
+    QByteArray postDataSize = QByteArray::number(xmlPropBody.size());
     request.setRawHeader(HttpRequestHeader_ContentLength, postDataSize);
 
-    QNetworkReply* reply = m_netManager->put(request, body);
-    if (reply) {
-    	connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onUpdatingDataError_Slot(QNetworkReply::NetworkError)));
+    body.append(xmlPropBody);
 
-        bool res = connect(reply, SIGNAL(finished()), this, SLOT(onfinishedUpdatingData_Slot()));
+    LOGGER::log("ODataSource::postData xml: ", QString(body));
+
+    QNetworkReply* reply = m_netManager->post(request, body);
+    if (reply) {
+    	connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onPostingDataError_Slot(QNetworkReply::NetworkError)));
+
+        bool res = connect(reply, SIGNAL(finished()), this, SLOT(onfinishedPostingData_Slot()));
 
         if (!res) {
-            LOGGER::log("ODataSource::addData - Connect failed - finished");
+            LOGGER::log("ODataSource::post - Connect failed");
+        }
+    }
+}
+
+void ODataSource::fetchMetadata(const QString& requestURL) {
+	QString queryRequest(requestURL);
+    QNetworkRequest request;
+    request.setUrl(queryRequest);
+
+    QNetworkReply* reply = m_netManager->get(request);
+
+    if (reply) {
+        bool res = connect(reply, SIGNAL(finished()), this, SLOT(onODataMetadataReceived_Slot()));
+        if (!res) {
+            LOGGER::log("ODataSource::fetchMetadata - Connect failed - finished");
         }
     }
 }
@@ -226,27 +196,50 @@ DataModel* ODataSource::getDataModel() const {
     return m_oDataModel;
 }
 
+QByteArray ODataSource::getMetadata() const {
+    return m_metadata;
+}
+
 void ODataSource::onODataReceived_Slot() {
 	onODataReceived();
 }
 
-// We could remove this method and keep onODataReceived_Slot... may be
-void ODataSource::onfinishedUpdatingData_Slot() {
+void ODataSource::onODataMetadataReceived_Slot() {
+	onODataMetadataReceived();
+}
 
-	// TO DO - should we review the response ???
-	LOGGER::log("ODataSource::onfinishedUpdatingData_Slot called");
+// We could remove this method and keep onODataReceived_Slot with switch case and derive a class for json vs xml
+void ODataSource::onfinishedPostingData_Slot() {
+
+	// TODO - should we review the response ???
+	LOGGER::log("ODataSource::onfinishedPostingData_Slot called");
 
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
 
     // To implement
-    // ((cODataLib*)parent())->triggerDataEdited();
+    // ((cODataLib*)parent())->triggerDataPosted();
 
     // Memory management
     reply->deleteLater();
 }
 
-void ODataSource::onUpdatingDataError_Slot(QNetworkReply::NetworkError errNet) {
+void ODataSource::onPostingDataError_Slot(QNetworkReply::NetworkError errNet) {
 	 LOGGER::log("ODataSource::onUpdatingDataError_Slot - error", errNet);
+}
+
+void ODataSource::onODataMetadataReceived() {
+
+	QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+
+    QByteArray result;
+	if (!readReply(reply, result)) {
+		LOGGER::log("ODataSource::onODataMetadataReceived - reading metadata failed");
+	}
+	m_metadata = result;
+
+    ((cODataLib*)parent())->triggerMetadataFetched();
+
+    reply->deleteLater();
 }
 
 void ODataSource::onODataReceived() {
@@ -258,53 +251,60 @@ void ODataSource::onODataReceived() {
         m_bEndReached = countAdded <= 0;
     }
 
-    // try to remove signals in this class and move to the generic class cODataLib...
-    // emit oDataListLoaded();
     ((cODataLib*)parent())->triggerDataFetched();
 
     // Memory management
     reply->deleteLater();
 }
 
-int ODataSource::onDataListReceived(QNetworkReply* reply, ArrayDataModel* dataModel) {
+bool ODataSource::readReply(QNetworkReply* reply, QByteArray& result) {
     QNetworkReply::NetworkError errorCode = reply->error();
     if (errorCode != QNetworkReply::NoError) {
 
         if (errorCode == QNetworkReply::AuthenticationRequiredError) {
-            LOGGER::log("ODataSource::onDataListReceived - Authentication Failed");
+            LOGGER::log("ODataSource::readReply - Authentication Failed");
 
             SystemToast *toast = new SystemToast(this);
             toast->setBody(tr("Failed to get featured list\nAuthentication needed."));
             toast->show();
         }
         else if (errorCode == QNetworkReply::HostNotFoundError) {
-            LOGGER::log("ODataSource::onDataListReceived - HostNotFound");
+            LOGGER::log("ODataSource::readReply - HostNotFound");
             SystemToast *toast = new SystemToast(this);
             toast->setBody(tr("Failed to get featured list.\nCheck your network connection"));
             toast->show();
         }
         else {
-            LOGGER::log("ODataSource::onDataListReceived errorCode:", errorCode);
+            LOGGER::log("ODataSource::readReply errorCode:", errorCode);
 
             SystemToast *toast = new SystemToast(this);
             toast->setBody(tr("Failed to get featured list."));
             toast->show();
         }
 
-        return 0;
+        return false;
     }
 
-    QByteArray result;
+    // QByteArray result;
     result = reply->readAll();
+
+    return true;
+}
+
+int ODataSource::onDataListReceived(QNetworkReply* reply, ArrayDataModel* dataModel) {
+
+    QByteArray result;
+	if (!readReply(reply, result))
+		return 0;
 
     int countAdded = 0;
     if  (m_JSONEnabled)	{
     	countAdded = fillDataModelItems(result, dataModel);
     }
     else {
-    	// Atom XML parsing cases...
-    	countAdded = cAtomManager::Instance().fillDataModelItems(result, *dataModel);
-    }
+		// Atom XML parsing cases...
+		countAdded = cAtomManager::Instance().fillDataModelItems(result, *dataModel);
+   	}
 
     return countAdded;
 }
@@ -331,7 +331,12 @@ int ODataSource::parseItemList(QVariantMap& root, ArrayDataModel* dataModel) {
     // TODO: Is this generic to all odata services?
     QVariantList list;
 
-	QVariantMap rootVal = root["d"].value<QVariantMap>();
+	// "d" refers to a prefix commonly used for namespacing in OData v3.
+	// It is defined in the Atom_constants as OData_ns_dataservies_Prefix
+	// See documentation
+	// http://www.odata.org/documentation/atom-format
+	// 2.3. Representing Collections of Entries
+	QVariantMap rootVal = root[OData_ns_dataservices_Prefix].value<QVariantMap>();
 	if (rootVal.contains("EntitySets")) {
 		QVariant resultVal = rootVal["EntitySets"];
 		list = resultVal.value<QVariantList>();
@@ -340,7 +345,7 @@ int ODataSource::parseItemList(QVariantMap& root, ArrayDataModel* dataModel) {
 		QVariant resultVal = rootVal["results"]; // TODO: This seems to be feed specific
 		list = resultVal.value<QVariantList>();
 	} else {
-		list = root["d"].value<QVariantList>();
+		list = root[OData_ns_dataservices_Prefix].value<QVariantList>();
 	}
 
     // add the data to the model

@@ -23,14 +23,20 @@ TabbedPane {
         FilterTab {  
         }
     }
+   Tab {
+       objectName: "testPostTab"
+        title: qsTr("TestPost")
+        TestPost {  
+        }
+    }
     Tab {
-        title: qsTr("Tab 5")
+        title: qsTr("Tab 6")
         Page {
-            id: tab4
+            id: tab6
             Container {
                 // define tab content here
                 Label {
-                    text: qsTr("Tab 5 title")
+                    text: qsTr("Tab 6 title")
                     horizontalAlignment: HorizontalAlignment.Center
                     textStyle {
                         base: SystemDefaults.TextStyles.TitleText
@@ -45,7 +51,7 @@ TabbedPane {
                     verticalAlignment: VerticalAlignment.Fill
                     horizontalAlignment: HorizontalAlignment.Fill
                     Label {
-                        text: qsTr("Tab 5 content")
+                        text: qsTr("Tab 6 content")
                         verticalAlignment: VerticalAlignment.Center
                         horizontalAlignment: HorizontalAlignment.Center
                         textStyle {

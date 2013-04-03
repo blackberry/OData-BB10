@@ -10,18 +10,18 @@
 using namespace bb::cascades;
 
 // Allows logging in QML
-/*void qmlMessageOutput(QtMsgType type, const char* msg)
+void qmlMessageOutput(QtMsgType type, const char* msg)
 {
 	fprintf(stdout, "%s\n", msg);
 	fflush(stdout);
-}*/
+}
 
 Q_DECL_EXPORT int main(int argc, char **argv) {
     // this is where the server is started etc
     Application app(argc, argv);
 
     // Allows logging in QML
-   // qInstallMsgHandler(qmlMessageOutput);
+     qInstallMsgHandler(qmlMessageOutput);
 
     // localization support
     QTranslator translator;

@@ -26,12 +26,12 @@ NavigationPane {
             onCreationCompleted: {
                 
                 // JSON 
-                _datasourceODataServices.fetchData("http://services.odata.org/OData/OData.svc/?$format=json"); // 
+                //_datasourceODataServices.fetchData("http://services.odata.org/OData/OData.svc/?$format=json"); // 
                 
                 // Atom XML... be careful, the last slash is important                  -------
                 //                                                                             |
                 //                                                                             V  
-                //_datasourceODataServices.fetchData("http://services.odata.org/OData/OData.svc/"); 
+                _datasourceODataServices.fetchData("http://services.odata.org/OData/OData.svc/"); 
             }
             
             onTriggered: {

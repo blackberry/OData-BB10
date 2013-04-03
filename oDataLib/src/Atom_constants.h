@@ -90,8 +90,8 @@ extern const char* EDMANNOTATION_Link ;
 
 /////////////////////////////////////
 
-extern const char* OData_Prefix;
-extern const char* OData_Meta_Prefix;
+extern const char* OData_ns_dataservices_Prefix;
+extern const char* OData_ns_metadata_Prefix;
 
 /////////////////////////////////////
 
@@ -166,6 +166,69 @@ extern const char* const_CR_LF;
 //definition of possible Accept and Content-Types headers
 extern const char* ATOM_Resource_Accept;
 extern const char* ATOM_Resource_Content_Type;
+
+
+// definition of primitive Types in Atom
+extern const char* EDM;
+extern const char* EDM_BINARY;
+extern const char* EDM_BOOLEAN;
+extern const char* EDM_BYTE;
+extern const char* EDM_DATETIME;
+extern const char* EDM_DATETIMEOFFSET;
+extern const char* EDM_DECIMAL;
+extern const char* EDM_DOUBLE;
+extern const char* EDM_GUID;
+extern const char* EDM_INT16;
+extern const char* EDM_INT32;
+extern const char* EDM_INT64;
+extern const char* EDM_SBYTE;
+extern const char* EDM_SINGLE;
+extern const char* EDM_STRING;
+extern const char* EDM_TIME;
+
+extern const char* EDM_GEOGRAPHY;
+extern const char* EDM_GEOGRAPHY_POINT;
+extern const char* EDM_GEOGRAPHY_LINESTRING;
+extern const char* EDM_GEOGRAPHY_POLYGON;
+extern const char* EDM_GEOGRAPHY_COLLECTION;
+extern const char* EDM_GEOGRAPHY_MULTIPOLYGON;
+extern const char* EDM_GEOGRAPHY_MULTILINESTRING;
+extern const char* EDM_GEOGRAPHY_MULTIPOINT;
+
+extern const char* EDM_GEOMETRY;
+extern const char* EDM_GEOMETRY_POINT;
+extern const char* EDM_GEOMETRY_LINESTRING;
+extern const char* EDM_GEOMETRY_POLYGON;
+extern const char* EDM_GEOMETRY_COLLECTION;
+extern const char* EDM_GEOMETRY_MULTIPOLYGON;
+extern const char* EDM_GEOMETRY_MULTILINESTRING;
+extern const char* EDM_GEOMETRY_MULTIPOINT;
+
+/*
+extern const char* GEOJSON_POINT = "Point";
+extern const char* GEOJSON_LINESTRING = "LineString";
+extern const char* GEOJSON_POLYGON = "Polygon";
+extern const char* GEOJSON_MULTIPOINT = "MultiPoint";
+extern const char* GEOJSON_MULTILINESTRING = "MultiLineString";
+extern const char* GEOJSON_MULTIPOLYGON = "MultiPolygon";
+extern const char* GEOJSON_GEOMETRYCOLLECTION = "GeometryCollection";
+*/
+
+// definition of Property keywords
+extern const char* PROPERTY_NAME;
+extern const char* PROPERTY_TYPE;
+extern const char* PROPERTY_MAXLENGTH;
+extern const char* PROPERTY_MINLENGTH;
+extern const char* PROPERTY_FIXEDLENGTH;
+extern const char* PROPERTY_NULLABLE;
+extern const char* PROPERTY_UNICODE;
+extern const char* PROPERTY_CONCURRENCYMODE;
+extern const char* PROPERTY_FC_TARGETPATH;
+extern const char* PROPERTY_FC_KEEPINCONTENT;
+extern const char* PROPERTY_FC_SOURCEPATH;
+extern const char* PROPERTY_FC_CONTENTKIND;
+extern const char* PROPERTY_FC_NSPREFIX;
+extern const char* PROPERTY_FC_NSURI;
 
 //error message for version mismatch
 extern const char* Resource_VersionMisMatch;
