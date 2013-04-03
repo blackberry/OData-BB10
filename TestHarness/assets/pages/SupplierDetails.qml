@@ -70,7 +70,7 @@ Page {
         }
         Button {
             topMargin: 30
-            text: qsTr("Products")
+            text: qsTr("View Products")
             onClicked: {
                 var activeTab = tabPane.activeTab;
 

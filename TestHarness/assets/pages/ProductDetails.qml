@@ -80,13 +80,103 @@ Page {
             label: qsTr("Updated")
             data: dataModel.updated
         }
-        DetailsItemRow {
-            label: qsTr("Supplier")
-            data: supplierModel.title[".data"]
+
+		// Supplier Linked Row
+
+		Container {
+		    topMargin: 30;
+		    layout: DockLayout {}
+            Container {
+                layout: StackLayout {
+                    orientation: LayoutOrientation.LeftToRight
+                }
+                horizontalAlignment: HorizontalAlignment.Fill
+                verticalAlignment: VerticalAlignment.Fill
+
+                Label {
+                    text: qsTr("Supplier")
+                    textStyle.fontSize: FontSize.Medium
+                    textStyle.fontWeight: FontWeight.W500
+                    verticalAlignment: VerticalAlignment.Top
+
+                    layoutProperties: StackLayoutProperties {
+                        spaceQuota: 3
+                    }
+                }
+                Label {
+                    text: supplierModel.title[".data"]
+                    textStyle.fontSize: FontSize.Medium
+                    textStyle.color: Color.create("#FF8EC1DA")
+                    verticalAlignment: VerticalAlignment.Top
+                    multiline: true
+
+                    layoutProperties: StackLayoutProperties {
+                        spaceQuota: 5
+                    }
+                }
+            }
+		    ImageButton {
+		        horizontalAlignment: HorizontalAlignment.Fill
+		        verticalAlignment: VerticalAlignment.Fill
+		        
+		        onClicked: {
+                    var activeTab = tabPane.activeTab;
+
+                    var supplierDetails = supplierDetailsPage.createObject();
+                    supplierDetails.dataSource = supplierModel.id;
+                    activeTab.content.push(supplierDetails);
+                }
+        	}
         }
-        DetailsItemRow {
-            label: qsTr("Category")
-            data: categoryModel.title[".data"]
+
+        // Category Linked Row
+
+        Container {
+            topMargin: 30
+            layout: DockLayout {
+            }
+            Container {
+                layout: StackLayout {
+                    orientation: LayoutOrientation.LeftToRight
+                }
+                horizontalAlignment: HorizontalAlignment.Fill
+                verticalAlignment: VerticalAlignment.Fill
+
+                Label {
+                    text: qsTr("Category")
+                    textStyle.fontSize: FontSize.Medium
+                    textStyle.fontWeight: FontWeight.W500
+                    verticalAlignment: VerticalAlignment.Top
+
+                    layoutProperties: StackLayoutProperties {
+                        spaceQuota: 3
+                    }
+                }
+                Label {
+                    text: categoryModel.title[".data"]
+                    textStyle.fontSize: FontSize.Medium
+                    textStyle.color: Color.create("#FF8EC1DA")
+                    verticalAlignment: VerticalAlignment.Top
+                    multiline: true
+
+                    layoutProperties: StackLayoutProperties {
+                        spaceQuota: 5
+                    }
+                }
+            }
+            ImageButton {
+                horizontalAlignment: HorizontalAlignment.Fill
+                verticalAlignment: VerticalAlignment.Fill
+
+                onClicked: {
+                    var activeTab = tabPane.activeTab;
+
+                    var productList = productListPage.createObject();
+                    productList.title = categoryModel.title[".data"] + " - " + qsTr("Products");
+                    productList.dataSource = dataService.source + "/" + categoryModel.link[1]["href"];
+                    activeTab.content.push(productList);
+                }
+            }
         }
     }
     
