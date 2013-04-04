@@ -60,6 +60,13 @@ void ODataObjectModel::loadData(){
     connect(manager, SIGNAL(atomReady(QVariant)), this, SLOT(atomReadComplete(QVariant)));
 }
 
+void ODataObjectModel::deleteModel() {
+    ODataNetworkManager* manager = new ODataNetworkManager();
+    manager->del(mSource);
+
+    connect(manager, SIGNAL(deleteSuccessful()), this, SLOT(deleteComplete()));
+}
+
 /*
  * SLOTS
  */
@@ -74,4 +81,8 @@ void ODataObjectModel::atomReadComplete(QVariant response){
     mModel = response;
 
     emit modelReady();
+}
+
+void ODataObjectModel::deleteComplete() {
+    emit modelDeleted();
 }

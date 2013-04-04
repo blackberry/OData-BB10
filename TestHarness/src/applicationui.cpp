@@ -20,7 +20,7 @@ ApplicationUI::ApplicationUI(bb::cascades::Application *app)
     QmlDocument* qml = QmlDocument::create("asset:///main.qml").parent(this);
     qml->setContextProperty("_controller", this);
 
-    ODataService* dataService = new ODataService("http://services.odata.org/OData/OData.svc");
+    ODataService* dataService = new ODataService("http://services.odata.org/(S(3loftsrb4pdnnemtjylc0szd))/OData/OData.svc/");
     qml->setContextProperty("dataService", dataService);
 
     // create root object for the UI
