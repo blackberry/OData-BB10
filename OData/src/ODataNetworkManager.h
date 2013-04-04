@@ -40,6 +40,7 @@ signals:
     void createAtomReady(QVariant response);
     void createXmlReady(QVariant response);
 
+    void createSuccessful();
     void updateSuccessful();
     void deleteSuccessful();
 

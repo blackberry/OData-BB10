@@ -24,6 +24,9 @@ public:
     virtual ~ODataNetworkManager();
 
     void read(QString url);
+    void create(QString url, QVariant dataModel);
+    void update(QString url, QVariant dataModel);
+    void del(QString url); // wanted delete but it's a protected keyword
 
 private:
     QNetworkAccessManager* mNetAccessManager;
@@ -33,8 +36,19 @@ signals:
     void atomReady(QVariant response);
     void xmlReady(QVariant response);
 
+    void createJsonReady(QVariant response);
+    void createAtomReady(QVariant response);
+    void createXmlReady(QVariant response);
+
+    void createSuccessful();
+    void updateSuccessful();
+    void deleteSuccessful();
+
 public slots:
-    void onReply();
+    void onReadReply();
+    void onCreateReply();
+    void onUpdateReply();
+    void onDeleteReply();
 };
 
 #endif /* ODATANETWORKMANAGER_H_ */

@@ -28,14 +28,20 @@ public:
     QVariant getModel();
     void setModel(QVariant newModel);
 
+    Q_INVOKABLE void deleteModel();
+
 signals:
     void modelReady();
     void sourceChanged();
     void modelChanged();
 
+    void modelDeleted();
+
 public slots:
     void jsonReadComplete(QVariant response);
     void atomReadComplete(QVariant response);
+
+    void deleteComplete();
 
 private:
     QString mSource;
