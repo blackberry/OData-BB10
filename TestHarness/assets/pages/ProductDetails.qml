@@ -82,99 +82,89 @@ Page {
         }
 
 		// Supplier Linked Row
+        Container {
+            topMargin: 30
+            gestureHandlers: [
+                TapHandler {
+                    onTapped: {
+                        activeTab = tabPane.activeTab;
 
-		Container {
-		    topMargin: 30;
-		    layout: DockLayout {}
-            Container {
-                layout: StackLayout {
-                    orientation: LayoutOrientation.LeftToRight
-                }
-                horizontalAlignment: HorizontalAlignment.Fill
-                verticalAlignment: VerticalAlignment.Fill
-
-                Label {
-                    text: qsTr("Supplier")
-                    textStyle.fontSize: FontSize.Medium
-                    textStyle.fontWeight: FontWeight.W500
-                    verticalAlignment: VerticalAlignment.Top
-
-                    layoutProperties: StackLayoutProperties {
-                        spaceQuota: 3
+                        var supplierDetails = supplierDetailsPage.createObject();
+                        supplierDetails.dataSource = supplierModel.id;
+                        activeTab.content.push(supplierDetails);
                     }
                 }
-                Label {
-                    text: supplierModel.title[".data"]
-                    textStyle.fontSize: FontSize.Medium
-                    textStyle.color: Color.create("#FF8EC1DA")
-                    verticalAlignment: VerticalAlignment.Top
-                    multiline: true
+            ]
+            
+            layout: StackLayout {
+                orientation: LayoutOrientation.LeftToRight
+            }
+            horizontalAlignment: HorizontalAlignment.Fill
 
-                    layoutProperties: StackLayoutProperties {
-                        spaceQuota: 5
-                    }
+            Label {
+                text: qsTr("Supplier")
+                textStyle.fontSize: FontSize.Medium
+                textStyle.fontWeight: FontWeight.W500
+                verticalAlignment: VerticalAlignment.Top
+
+                layoutProperties: StackLayoutProperties {
+                    spaceQuota: 3
                 }
             }
-		    ImageButton {
-		        horizontalAlignment: HorizontalAlignment.Fill
-		        verticalAlignment: VerticalAlignment.Fill
-		        
-		        onClicked: {
-                    var activeTab = tabPane.activeTab;
+            Label {
+                text: supplierModel.title[".data"]
+                textStyle.fontSize: FontSize.Medium
+                textStyle.color: Color.create("#FF8EC1DA")
+                verticalAlignment: VerticalAlignment.Top
+                multiline: true
 
-                    var supplierDetails = supplierDetailsPage.createObject();
-                    supplierDetails.dataSource = supplierModel.id;
-                    activeTab.content.push(supplierDetails);
+                layoutProperties: StackLayoutProperties {
+                    spaceQuota: 5
                 }
-        	}
+            }
         }
 
         // Category Linked Row
-
         Container {
             topMargin: 30
-            layout: DockLayout {
+            
+            gestureHandlers: [
+                TapHandler {
+                    onTapped: {
+	                    var activeTab = tabPane.activeTab;
+	
+	                    var productList = productListPage.createObject();
+	                    productList.title = categoryModel.title[".data"] + " - " + qsTr("Products");
+	                    productList.dataSource = dataService.source + "/" + categoryModel.link[1]["href"];
+	                    activeTab.content.push(productList);
+	                }
+                }
+            ]
+            
+            layout: StackLayout {
+                orientation: LayoutOrientation.LeftToRight
             }
-            Container {
-                layout: StackLayout {
-                    orientation: LayoutOrientation.LeftToRight
-                }
-                horizontalAlignment: HorizontalAlignment.Fill
-                verticalAlignment: VerticalAlignment.Fill
+            horizontalAlignment: HorizontalAlignment.Fill
 
-                Label {
-                    text: qsTr("Category")
-                    textStyle.fontSize: FontSize.Medium
-                    textStyle.fontWeight: FontWeight.W500
-                    verticalAlignment: VerticalAlignment.Top
+            Label {
+                text: qsTr("Category")
+                textStyle.fontSize: FontSize.Medium
+                textStyle.fontWeight: FontWeight.W500
+                verticalAlignment: VerticalAlignment.Top
 
-                    layoutProperties: StackLayoutProperties {
-                        spaceQuota: 3
-                    }
-                }
-                Label {
-                    text: categoryModel.title[".data"]
-                    textStyle.fontSize: FontSize.Medium
-                    textStyle.color: Color.create("#FF8EC1DA")
-                    verticalAlignment: VerticalAlignment.Top
-                    multiline: true
-
-                    layoutProperties: StackLayoutProperties {
-                        spaceQuota: 5
-                    }
+                layoutProperties: StackLayoutProperties {
+                    spaceQuota: 3
                 }
             }
-            ImageButton {
-                horizontalAlignment: HorizontalAlignment.Fill
-                verticalAlignment: VerticalAlignment.Fill
+            Label {
+                text: categoryModel.title[".data"]
+                textStyle.fontSize: FontSize.Medium
+                textStyle.color: Color.create("#FF8EC1DA")
+                verticalAlignment: VerticalAlignment.Top
+                multiline: true
 
-                onClicked: {
-                    var activeTab = tabPane.activeTab;
-
-                    var productList = productListPage.createObject();
-                    productList.title = categoryModel.title[".data"] + " - " + qsTr("Products");
-                    productList.dataSource = dataService.source + "/" + categoryModel.link[1]["href"];
-                    activeTab.content.push(productList);
+                layoutProperties: StackLayoutProperties {
+                    spaceQuota: 5
                 }
             }
         }
@@ -190,7 +180,7 @@ Page {
         dataModel = odataModel.model;
 
         supplierODataModel.source = dataService.source + "/" + dataModel.link[2]["href"];
-        categoryODataModel.source = dataService.source + "/" + dataModel.link[1]["href"]
+        categoryODataModel.source = dataService.source + "/" + dataModel.link[1]["href"];
     }
     
     function bindSupplier() {
