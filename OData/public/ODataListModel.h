@@ -34,10 +34,13 @@ public:
 signals:
     void sourceChanged();
     void pageSizeChanged();
+    void modelError(int code, QString message);
 
 public slots:
     void jsonCompleted(QVariant response);
     void atomCompleted(QVariant response);
+
+    void error(int code, QString message);
 
 private:
     bool initialized;

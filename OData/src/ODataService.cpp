@@ -58,8 +58,8 @@ void ODataService::loadData(){
     ODataNetworkManager* metaManager = new ODataNetworkManager();
     metaManager->read(mSource + "/" + METADATA);
 
-    connect(manager, SIGNAL(atomReady(QVariant)), this, SLOT(metadataReadComplete(QVariant)));
-    connect(manager, SIGNAL(xmlReady(QVariant)), this, SLOT(metadataReadComplete(QVariant)));
+    connect(metaManager, SIGNAL(atomReady(QVariant)), this, SLOT(metadataReadComplete(QVariant)));
+    connect(metaManager, SIGNAL(xmlReady(QVariant)), this, SLOT(metadataReadComplete(QVariant)));
 }
 
 QVariant ODataService::getServiceDefinition() {
@@ -87,6 +87,7 @@ void ODataService::xmlDefinitionReadComplete(QVariant response){
 }
 
 void ODataService::metadataReadComplete(QVariant response){
-    mMetadata = response;
+    mMetadata = response.toMap()[EDMX_DATASERVICES].toMap()[SCHEMA];
+
     emit metadataReady();
 }

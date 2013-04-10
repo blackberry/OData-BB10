@@ -86,6 +86,7 @@ void ODataListModel::loadData(){
 
     connect(manager, SIGNAL(jsonReady(QVariant)), this, SLOT(jsonCompleted(QVariant)));
     connect(manager, SIGNAL(atomReady(QVariant)), this, SLOT(atomCompleted(QVariant)));
+    connect(manager, SIGNAL(networkError(int, QString)), this, SLOT(error(int, QString)));
 }
 
 /*
@@ -113,4 +114,8 @@ void ODataListModel::atomCompleted(QVariant response) {
     }
 
     emit itemsChanged(bb::cascades::DataModelChangeType::Init);
+}
+
+void ODataListModel::error(int code, QString message) {
+    emit modelError(code, message);
 }

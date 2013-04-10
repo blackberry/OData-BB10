@@ -28,6 +28,11 @@ public:
     QVariant getModel();
     void setModel(QVariant newModel);
 
+    Q_INVOKABLE QVariant getModelStructure(QString modelKey, QVariant metadata);
+
+    Q_INVOKABLE void createModel(QString postUrl);
+    Q_INVOKABLE void updateModel(QString putUrl);
+
     Q_INVOKABLE void deleteModel();
 
 signals:
@@ -37,17 +42,21 @@ signals:
 
     void modelDeleted();
 
+    void modelError(int code, QString message);
 public slots:
     void jsonReadComplete(QVariant response);
     void atomReadComplete(QVariant response);
 
     void deleteComplete();
 
+    void error(int code, QString message);
 private:
     QString mSource;
     QVariant mModel;
 
-    void loadData();
+    QVariant mStructure; // the data structure of the object (used for creates and updates)
+
+    void loadModel();
 };
 
 #endif /* ODATAOBJECTMODEL_H_ */

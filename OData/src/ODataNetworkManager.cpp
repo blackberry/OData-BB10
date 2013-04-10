@@ -7,7 +7,6 @@
 
 #include "ODataNetworkManager.h"
 #include <qnetworkrequest.h>
-#include <qnetworkreply.h>
 #include <JsonDataAccess.hpp>
 #include <XmlDataAccess.hpp>
 
@@ -33,7 +32,7 @@ void ODataNetworkManager::read(QString url) {
     QUrl qurl(url);
 
     QNetworkRequest req(qurl);
-    QNetworkReply *reply = mNetAccessManager->get(req);
+    QNetworkReply* reply = mNetAccessManager->get(req);
     connect(reply, SIGNAL(finished()), this, SLOT(onReadReply()));
 }
 
@@ -49,7 +48,7 @@ void ODataNetworkManager::del(QString url) {
     QUrl qurl(url);
 
     QNetworkRequest req(qurl);
-    QNetworkReply *reply = mNetAccessManager->deleteResource(req);
+    QNetworkReply* reply = mNetAccessManager->deleteResource(req);
     connect(reply, SIGNAL(finished()), this, SLOT(onDeleteReply()));
 }
 
@@ -58,7 +57,7 @@ void ODataNetworkManager::del(QString url) {
  */
 
 void ODataNetworkManager::onReadReply() {
-    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
 
 
     if (reply) {
@@ -84,18 +83,16 @@ void ODataNetworkManager::onReadReply() {
             }
         }
         else {
-            // TODO: handle the error
-
+            handleError(reply);
         }
     }
     else {
-        // TODO: handle the error
-
+        handleErrorNoReply();
     }
 }
 
 void ODataNetworkManager::onCreateReply(){
-    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
 
 
     if (reply) {
@@ -121,18 +118,16 @@ void ODataNetworkManager::onCreateReply(){
             }
         }
         else {
-            // TODO: handle the error
-
+            handleError(reply);
         }
     }
     else {
-        // TODO: handle the error
-
+        handleErrorNoReply();
     }
 }
 
 void ODataNetworkManager::onUpdateReply(){
-    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
 
 
     if (reply) {
@@ -140,18 +135,16 @@ void ODataNetworkManager::onUpdateReply(){
             emit createSuccessful();
         }
         else {
-            // TODO: handle the error
-
+            handleError(reply);
         }
     }
     else {
-        // TODO: handle the error
-
+        handleErrorNoReply();
     }
 }
 
 void ODataNetworkManager::onDeleteReply(){
-    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
 
 
     if (reply) {
@@ -159,13 +152,19 @@ void ODataNetworkManager::onDeleteReply(){
             emit deleteSuccessful();
         }
         else {
-            // TODO: handle the error
-
+            handleError(reply);
         }
     }
     else {
-        // TODO: handle the error
-
+        handleErrorNoReply();
     }
+}
 
+
+void ODataNetworkManager::handleError(QNetworkReply* reply){
+    emit networkError(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(), reply->errorString());
+}
+
+void ODataNetworkManager::handleErrorNoReply(){
+    emit networkError(0, "No Reply");
 }

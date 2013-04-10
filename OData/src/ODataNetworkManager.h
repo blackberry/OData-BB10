@@ -11,6 +11,7 @@
 #include <qobject.h>
 #include <qvariant.h>
 #include <qnetworkaccessmanager.h>
+#include <qnetworkreply.h>
 
 static const QByteArray TYPE_ATOM = "application/atom+xml";
 static const QByteArray TYPE_JSON = "application/json";
@@ -31,6 +32,9 @@ public:
 private:
     QNetworkAccessManager* mNetAccessManager;
 
+    void handleError(QNetworkReply* reply);
+    void handleErrorNoReply();
+
 signals:
     void jsonReady(QVariant response);
     void atomReady(QVariant response);
@@ -44,6 +48,7 @@ signals:
     void updateSuccessful();
     void deleteSuccessful();
 
+    void networkError(int code, QString message);
 public slots:
     void onReadReply();
     void onCreateReply();
