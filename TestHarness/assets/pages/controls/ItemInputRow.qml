@@ -22,6 +22,7 @@ Container {
         }
     }
     TextField {
+        id: dataField
         text: data
         textStyle.fontSize: FontSize.Medium
         verticalAlignment: VerticalAlignment.Bottom
@@ -29,5 +30,9 @@ Container {
         layoutProperties: StackLayoutProperties {
             spaceQuota: 5
         }
+    }
+    
+    function getData() {
+        return dataField.text;
     }
 }

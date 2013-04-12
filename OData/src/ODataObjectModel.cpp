@@ -177,11 +177,6 @@ QVariantList ODataObjectModel::getModelStructure(QString modelKey, QVariant meta
         }
     }
 
-    //debug
-    for (int i = 0; i < mStructure.count(); i++) {
-        fprintf(stderr, "%s of type %s\n", mStructure[i].toMap()[NAME].toString().toUtf8().constData(), mStructure[i].toMap()[TYPE].toString().toUtf8().constData());
-    }
-
     return mStructure;
 }
 

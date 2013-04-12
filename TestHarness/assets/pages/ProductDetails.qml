@@ -46,137 +46,141 @@ Page {
         }
     ]
 
-    content: ScrollView {
-	        
-	    Container {
-	        layout: StackLayout {
-	            
-	        }
-	        Label {
-	            text: "Product Details"
-	            textStyle.base: SystemDefaults.TextStyles.BigText
-	            verticalAlignment: VerticalAlignment.Center
-	            horizontalAlignment: HorizontalAlignment.Center
-	        }
-	        DetailsItemRow {
-	            label: qsTr("Product")
-	            data: dataModel.title[".data"]
-	        }
-	        DetailsItemRow {
-	            label: qsTr("")
-	            data: dataModel.summary[".data"]
-	        }
-	        DetailsItemRow {
-	            label: qsTr("Cost")
-	            data: dataModel.content["m:properties"]["d:Price"][".data"]
-	        }
-	        DetailsItemRow {
-	            label: qsTr("Rating")
-	            data: dataModel.content["m:properties"]["d:Rating"][".data"]
-	        }
-	        DetailsItemRow {
-	            label: qsTr("Released")
-	            data: dataModel.content["m:properties"]["d:ReleaseDate"][".data"]
-	        }
-	        DetailsItemRow {
-	            label: qsTr("Discontinued")
-	            data: dataModel.content["m:properties"]["d:DiscontinuedDate"][".data"]
-	        }
-	        DetailsItemRow {
-	            label: qsTr("Updated")
-	            data: dataModel.updated
-	        }
-	
-			// Supplier Linked Row
-	        Container {
-	            topMargin: 30
-	            gestureHandlers: [
-	                TapHandler {
-	                    onTapped: {
-	                        activeTab = tabPane.activeTab;
-	
-	                        var supplierDetails = supplierDetailsPage.createObject();
-	                        supplierDetails.dataSource = supplierModel.id;
-	                        activeTab.content.push(supplierDetails);
-	                    }
-	                }
-	            ]
-	            
-	            layout: StackLayout {
-	                orientation: LayoutOrientation.LeftToRight
-	            }
-	            horizontalAlignment: HorizontalAlignment.Fill
-	
-	            Label {
-	                text: qsTr("Supplier")
-	                textStyle.fontSize: FontSize.Medium
-	                textStyle.fontWeight: FontWeight.W500
-	                verticalAlignment: VerticalAlignment.Top
-	
-	                layoutProperties: StackLayoutProperties {
-	                    spaceQuota: 3
-	                }
-	            }
-	            Label {
-	                text: supplierModel.title[".data"]
-	                textStyle.fontSize: FontSize.Medium
-	                textStyle.color: Color.create("#FF8EC1DA")
-	                verticalAlignment: VerticalAlignment.Top
-	                multiline: true
-	
-	                layoutProperties: StackLayoutProperties {
-	                    spaceQuota: 5
-	                }
-	            }
-	        }
-	
-	        // Category Linked Row
-	        Container {
-	            topMargin: 30
-	            
-	            gestureHandlers: [
-	                TapHandler {
-	                    onTapped: {
-		                    var activeTab = tabPane.activeTab;
-		
-		                    var productList = productListPage.createObject();
-		                    productList.title = categoryModel.title[".data"] + " - " + qsTr("Products");
-		                    productList.dataSource = dataService.source + "/" + categoryModel.link[1]["href"];
-		                    activeTab.content.push(productList);
-		                }
-	                }
-	            ]
-	            
-	            layout: StackLayout {
-	                orientation: LayoutOrientation.LeftToRight
-	            }
-	            horizontalAlignment: HorizontalAlignment.Fill
-	
-	            Label {
-	                text: qsTr("Category")
-	                textStyle.fontSize: FontSize.Medium
-	                textStyle.fontWeight: FontWeight.W500
-	                verticalAlignment: VerticalAlignment.Top
-	
-	                layoutProperties: StackLayoutProperties {
-	                    spaceQuota: 3
-	                }
-	            }
-	            Label {
-	                text: categoryModel.title[".data"]
-	                textStyle.fontSize: FontSize.Medium
-	                textStyle.color: Color.create("#FF8EC1DA")
-	                verticalAlignment: VerticalAlignment.Top
-	                multiline: true
-	
-	                layoutProperties: StackLayoutProperties {
-	                    spaceQuota: 5
-	                }
-	            }
-	        }
-	    }
-	}
-    
+    content: Container {
+        layout: StackLayout {
+            orientation: LayoutOrientation.TopToBottom
+        }
+        Label {
+            text: "Product Details"
+            textStyle.base: SystemDefaults.TextStyles.BigText
+            verticalAlignment: VerticalAlignment.Center
+            horizontalAlignment: HorizontalAlignment.Center
+        }
+        ScrollView {
+            Container {
+                layout: StackLayout {
+                    orientation: LayoutOrientation.TopToBottom
+                }
+                DetailsItemRow {
+                    label: qsTr("Product")
+                    data: dataModel.title[".data"]
+                }
+                DetailsItemRow {
+                    label: qsTr("")
+                    data: dataModel.summary[".data"]
+                }
+                DetailsItemRow {
+                    label: qsTr("Cost")
+                    data: dataModel.content["m:properties"]["d:Price"][".data"]
+                }
+                DetailsItemRow {
+                    label: qsTr("Rating")
+                    data: dataModel.content["m:properties"]["d:Rating"][".data"]
+                }
+                DetailsItemRow {
+                    label: qsTr("Released")
+                    data: dataModel.content["m:properties"]["d:ReleaseDate"][".data"]
+                }
+                DetailsItemRow {
+                    label: qsTr("Discontinued")
+                    data: dataModel.content["m:properties"]["d:DiscontinuedDate"][".data"]
+                }
+                DetailsItemRow {
+                    label: qsTr("Updated")
+                    data: dataModel.updated
+                }
+
+                // Supplier Linked Row
+                Container {
+                    topMargin: 30
+                    gestureHandlers: [
+                        TapHandler {
+                            onTapped: {
+                                activeTab = tabPane.activeTab;
+
+                                var supplierDetails = supplierDetailsPage.createObject();
+                                supplierDetails.dataSource = supplierModel.id;
+                                activeTab.content.push(supplierDetails);
+                            }
+                        }
+                    ]
+
+                    layout: StackLayout {
+                        orientation: LayoutOrientation.LeftToRight
+                    }
+                    horizontalAlignment: HorizontalAlignment.Fill
+
+                    Label {
+                        text: qsTr("Supplier")
+                        textStyle.fontSize: FontSize.Medium
+                        textStyle.fontWeight: FontWeight.W500
+                        verticalAlignment: VerticalAlignment.Top
+
+                        layoutProperties: StackLayoutProperties {
+                            spaceQuota: 3
+                        }
+                    }
+                    Label {
+                        text: supplierModel.title[".data"]
+                        textStyle.fontSize: FontSize.Medium
+                        textStyle.color: Color.create("#FF8EC1DA")
+                        verticalAlignment: VerticalAlignment.Top
+                        multiline: true
+
+                        layoutProperties: StackLayoutProperties {
+                            spaceQuota: 5
+                        }
+                    }
+                }
+
+                // Category Linked Row
+                Container {
+                    topMargin: 30
+
+                    gestureHandlers: [
+                        TapHandler {
+                            onTapped: {
+                                var activeTab = tabPane.activeTab;
+
+                                var productList = productListPage.createObject();
+                                productList.title = categoryModel.title[".data"] + " - " + qsTr("Products");
+                                productList.dataSource = dataService.source + "/" + categoryModel.link[1]["href"];
+                                activeTab.content.push(productList);
+                            }
+                        }
+                    ]
+
+                    layout: StackLayout {
+                        orientation: LayoutOrientation.LeftToRight
+                    }
+                    horizontalAlignment: HorizontalAlignment.Fill
+
+                    Label {
+                        text: qsTr("Category")
+                        textStyle.fontSize: FontSize.Medium
+                        textStyle.fontWeight: FontWeight.W500
+                        verticalAlignment: VerticalAlignment.Top
+
+                        layoutProperties: StackLayoutProperties {
+                            spaceQuota: 3
+                        }
+                    }
+                    Label {
+                        text: categoryModel.title[".data"]
+                        textStyle.fontSize: FontSize.Medium
+                        textStyle.color: Color.create("#FF8EC1DA")
+                        verticalAlignment: VerticalAlignment.Top
+                        multiline: true
+
+                        layoutProperties: StackLayoutProperties {
+                            spaceQuota: 5
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     onCreationCompleted: {
         odataModel.modelReady.connect(bindToDataModel);
         supplierODataModel.modelReady.connect(bindSupplier);
