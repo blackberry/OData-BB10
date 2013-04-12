@@ -17,6 +17,9 @@ extern const char* WORKSPACE;
 
 extern const char* ASSOCIATION;
 extern const char* COMPLEX_TYPE;
+extern const char* EDMX;
+extern const char* EDMX_DATASERVICES;
+extern const char* END_COMPLEX_TYPE;
 extern const char* ENTITY_TYPE;
 extern const char* FROM_ROLE;
 extern const char* NAME;
@@ -24,6 +27,7 @@ extern const char* NAVIGATION_PROPERTY;
 extern const char* NULLABLE;
 extern const char* PROPERTY;
 extern const char* RELATIONSHIP;
+extern const char* SCHEMA;
 extern const char* TYPE;
 
 extern const char* EDM;

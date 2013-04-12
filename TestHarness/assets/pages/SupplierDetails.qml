@@ -9,7 +9,7 @@ Page {
     actions: [
         ActionItem {
             title: qsTr("Update")
-            imageSource: ""
+            imageSource: "asset:///icons/ic_edit.png"
             ActionBar.placement: ActionBarPlacement.OnBar
             onTriggered: {
                 toastMsg.body = "Not implemented";
@@ -18,7 +18,7 @@ Page {
         },
         ActionItem {
             title: qsTr("Delete")
-            imageSource: ""
+            imageSource: "asset:///icons/ic_delete.png"
             ActionBar.placement: ActionBarPlacement.OnBar
             onTriggered: {
                 toastMsg.body = "Not implemented";

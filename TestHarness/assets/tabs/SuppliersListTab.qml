@@ -8,7 +8,7 @@ NavigationPane {
         actions: [
             ActionItem {
                 title: qsTr("Create")
-                imageSource: ""
+                imageSource: "asset:///icons/ic_add.png"
                 ActionBar.placement: ActionBarPlacement.OnBar
                 onTriggered: {
                     toastMsg.body = "Not implemented";

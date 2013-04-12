@@ -9,11 +9,13 @@ Page {
     actions: [
         ActionItem {
             title: qsTr("Create")
-            imageSource: ""
+            imageSource: "asset:///icons/ic_add.png"
             ActionBar.placement: ActionBarPlacement.OnBar
             onTriggered: {
-                toastMsg.body = "Not implemented";
-                toastMsg.show();
+                var activeTab = tabPane.activeTab;
+
+                var createEditPage = createEditProductPage.createObject();
+                activeTab.content.push(createEditPage);
             }
         }
     ]

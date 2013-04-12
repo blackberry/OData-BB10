@@ -17,10 +17,13 @@ TabbedPane {
             id: productListPage
             source: "asset:///pages/ProductList.qml"
         },
-
         ComponentDefinition {
             id: supplierDetailsPage
             source: "asset:///pages/SupplierDetails.qml"
+        },
+        ComponentDefinition {
+            id: createEditProductPage
+            source: "asset:///pages/CreateEditProduct.qml"
         },
         SystemToast {
             id: toastMsg
@@ -33,17 +36,20 @@ TabbedPane {
 	        title: qsTr("Products")
 	        dataSource: dataService.source + "/Products"
         }
+	    imageSource: "asset:///icons/ic_view_list.png"
 	}
     Tab {
         title: qsTr("Categories")
         content: CategoriesListTab {
             dataSource: dataService.source + "/Categories"
         }
+        imageSource: "asset:///icons/ic_info.png"
     }
     Tab {
         title: qsTr("Suppliers")
         content: SuppliersListTab {
             dataSource: dataService.source + "/Suppliers"
         }
+        imageSource: "asset:///icons/ic_map.png"
     }
 }

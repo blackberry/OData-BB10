@@ -28,7 +28,7 @@ public:
     QVariant getModel();
     void setModel(QVariant newModel);
 
-    Q_INVOKABLE QVariant getModelStructure(QString modelKey, QVariant metadata);
+    Q_INVOKABLE QVariantList getModelStructure(QString modelKey, QVariant metadata);
 
     Q_INVOKABLE void createModel(QString postUrl);
     Q_INVOKABLE void updateModel(QString putUrl);
@@ -54,7 +54,7 @@ private:
     QString mSource;
     QVariant mModel;
 
-    QVariant mStructure; // the data structure of the object (used for creates and updates)
+    QVariantList mStructure; // the data structure of the object (used for creates and updates)
 
     void loadModel();
 };
