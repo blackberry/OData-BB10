@@ -30,8 +30,8 @@ public:
 
     Q_INVOKABLE QVariantList getModelStructure(QString modelKey, QVariant metadata);
 
-    Q_INVOKABLE void createModel(QString postUrl);
-    Q_INVOKABLE void updateModel(QString putUrl);
+    Q_INVOKABLE void createModel(QString postUrl, QString category, QVariant content, QByteArray links);
+    Q_INVOKABLE void updateModel(QString putUrl, QString category, QVariant content, QByteArray links);
 
     Q_INVOKABLE void deleteModel();
 
@@ -41,6 +41,8 @@ signals:
     void modelChanged();
 
     void modelDeleted();
+    void modelCreated();
+    void modelUpdated();
 
     void modelError(int code, QString message);
 public slots:
@@ -48,6 +50,8 @@ public slots:
     void atomReadComplete(QVariant response);
 
     void deleteComplete();
+    void createComplete();
+    void updateComplete();
 
     void error(int code, QString message);
 private:
@@ -57,6 +61,10 @@ private:
     QVariantList mStructure; // the data structure of the object (used for creates and updates)
 
     void loadModel();
+    QByteArray parseContent(QVariant content);
+    QString createOpenTag(QString tag);
+    QString createCloseTag(QString tag);
+    QString createNullTag(QString tag);
 };
 
 #endif /* ODATAOBJECTMODEL_H_ */

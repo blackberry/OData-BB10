@@ -4,6 +4,8 @@ import "controls" 1.0
 
 Page {
     property variant updateModel
+    property string updateCategory: ""
+    property string updateSupplier: ""
     property bool create: true
     property variant modelStructure
     
@@ -33,8 +35,12 @@ Page {
             imageSource: "asset:///icons/ic_done.png"
             ActionBar.placement: ActionBarPlacement.OnBar
             onTriggered: {
-                toastMsg.body = "Not implemented";
-                toastMsg.show();
+                if (create) {
+                    createObject();
+                }
+                else {
+                    updateObject();
+                }
             }
         }
     ]
@@ -55,7 +61,13 @@ Page {
                 layout: StackLayout {
                     orientation: LayoutOrientation.TopToBottom
                 }
-                
+
+                ItemInputRow {
+                    id: idRow
+                    label: qsTr("Id")
+                    data: updateModel.title[".data"]
+                    visible: create
+                }
                 ItemInputRow {
                     id: productRow
                     label: qsTr("Product")
@@ -150,7 +162,7 @@ Page {
 
     onCreationCompleted: {
         modelStructure = objectModel.getModelStructure("Product", dataService.getMetadata());
-        
+
         // Get the lists for the drop downs
         suppliersList.itemsChanged.connect(bindSuppliersDropDown);
         suppliersList.childCount([]); // force the data hit
@@ -163,8 +175,13 @@ Page {
 
         for (var i = 0; i < suppliersList.childCount([]); i++) {
             var opt = option.createObject();
-            opt.text = suppliersList.data([i]).title[".data"];
+            opt.text = suppliersList.data([ i ]).title[".data"];
+            opt.value = suppliersList.data([ i ]).id;
             supplierRow.add(opt);
+            
+            if (!create && suppliersList.data([ i ]).id === updateSupplier) {
+                supplierRow.setSelectedIndex(i);
+            }
         }
     } 
     
@@ -174,7 +191,68 @@ Page {
         for (var i = 0; i < categoriesList.childCount([]); i ++) {
             var opt = option.createObject();
             opt.text = categoriesList.data([ i ]).title[".data"];
+            opt.value = categoriesList.data([ i ]).id;
             categoryRow.add(opt);
+            
+            if (!create && categoriesList.data([ i ]).id === updateCategory) {
+                categoryRow.setSelectedIndex(i);
+            }
         }
+    }
+    
+    function createObject() {
+        readForm();
+
+        _controller.createProduct(modelStructure);
+
+        _controller.createProductSuccess.connect(success);
+    }
+    
+    function updateObject() {
+        readForm();
+
+        dataService.updateProduct(modelStructure);
+    }
+    
+    function readForm() {
+        var model = modelStructure;
+
+        for (var i = 0; i < model.length; i++) {
+            if (model[i].Name === "ID") {
+                model[i].Data = idRow.getData();
+            } 
+            else if (model[i].Name === "Name") {
+                model[i].Data = productRow.getData();
+            } 
+            else if (model[i].Name === "Description") {
+                model[i].Data = descriptionRow.getData();
+            } 
+            else if (model[i].Name === "ReleaseDate") {
+                model[i].Data = releasedRow.getData();
+            } 
+            else if (model[i].Name === "DiscontinuedDate") {
+                model[i].Data = discontinuedRow.getData();
+            } 
+            else if (model[i].Name === "Rating") {
+                model[i].Data = ratingRow.getData();
+            } 
+            else if (model[i].Name === "Price") {
+                model[i].Data = costRow.getData();
+            } 
+            else if (model[i].Name === "Supplier") {
+                model[i].Data = supplierRow.selectedValue;
+            } 
+            else if (model[i].Name === "Category") {
+                model[i].Data = categoryRow.selectedValue;
+            }
+        }
+        
+        modelStructure = model;
+    }
+    
+    function success() {
+        var activeTab = tabPane.activeTab;
+
+        activeTab.content.pop();
     }
 }

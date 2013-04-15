@@ -17,6 +17,7 @@ extern const char* WORKSPACE;
 
 extern const char* ASSOCIATION;
 extern const char* COMPLEX_TYPE;
+extern const char* DATA;
 extern const char* EDMX;
 extern const char* EDMX_DATASERVICES;
 extern const char* END_COMPLEX_TYPE;
@@ -46,5 +47,15 @@ extern const char* EDM_SBYTE;
 extern const char* EDM_SINGLE;
 extern const char* EDM_STRING;
 extern const char* EDM_TIME;
+
+extern const char* XML_TAG;
+extern const char* ENTRY_OPEN;
+extern const char* ENTRY_CLOSE;
+extern const char* UPDATED;
+extern const char* CATEGORY_OPEN;
+extern const char* CATEGORY_CLOSE;
+extern const char* CONTENT_OPEN;
+extern const char* CONTENT_CLOSE;
+extern const char* LINK_TEMPLATE;
 
 #endif /* ODATACONSTANTS_H_ */

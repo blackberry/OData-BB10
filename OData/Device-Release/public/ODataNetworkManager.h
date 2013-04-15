@@ -11,6 +11,7 @@
 #include <qobject.h>
 #include <qvariant.h>
 #include <qnetworkaccessmanager.h>
+#include <qnetworkreply.h>
 
 static const QByteArray TYPE_ATOM = "application/atom+xml";
 static const QByteArray TYPE_JSON = "application/json";
@@ -24,12 +25,15 @@ public:
     virtual ~ODataNetworkManager();
 
     void read(QString url);
-    void create(QString url, QVariant dataModel);
-    void update(QString url, QVariant dataModel);
-    void del(QString url); // wanted delete but it's a protected keyword
+    void create(QString url, QByteArray dataModel);
+    void update(QString url, QByteArray dataModel);
+    void del(QString url); // wanted to call delete but it's a protected keyword
 
 private:
     QNetworkAccessManager* mNetAccessManager;
+
+    void handleError(QNetworkReply* reply);
+    void handleErrorNoReply();
 
 signals:
     void jsonReady(QVariant response);
@@ -44,6 +48,7 @@ signals:
     void updateSuccessful();
     void deleteSuccessful();
 
+    void networkError(int code, QString message);
 public slots:
     void onReadReply();
     void onCreateReply();

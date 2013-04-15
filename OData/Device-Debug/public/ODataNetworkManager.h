@@ -25,9 +25,9 @@ public:
     virtual ~ODataNetworkManager();
 
     void read(QString url);
-    void create(QString url, QVariant dataModel);
-    void update(QString url, QVariant dataModel);
-    void del(QString url); // wanted delete but it's a protected keyword
+    void create(QString url, QByteArray dataModel);
+    void update(QString url, QByteArray dataModel);
+    void del(QString url); // wanted to call delete but it's a protected keyword
 
 private:
     QNetworkAccessManager* mNetAccessManager;

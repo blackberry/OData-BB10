@@ -4,9 +4,9 @@
 #include <bb/cascades/Application>
 #include <bb/cascades/QmlDocument>
 #include <bb/cascades/AbstractPane>
-#include <ODataService.h>
 #include <ODataListModel.h>
 #include <ODataObjectModel.h>
+#include <ODataConstants.h>
 
 using namespace bb::cascades;
 
@@ -20,8 +20,8 @@ ApplicationUI::ApplicationUI(bb::cascades::Application *app)
     QmlDocument* qml = QmlDocument::create("asset:///main.qml").parent(this);
     qml->setContextProperty("_controller", this);
 
-    ODataService* dataService = new ODataService("http://services.odata.org/(S(3loftsrb4pdnnemtjylc0szd))/OData/OData.svc/");
-    qml->setContextProperty("dataService", dataService);
+    _dataService = new ODataService("http://services.odata.org/(S(3loftsrb4pdnnemtjylc0szd))/OData/OData.svc/");
+    qml->setContextProperty("dataService", _dataService);
 
     // create root object for the UI
     AbstractPane* root = qml->createRootObject<AbstractPane>();
@@ -29,3 +29,43 @@ ApplicationUI::ApplicationUI(bb::cascades::Application *app)
     app->setScene(root);
 }
 
+void ApplicationUI::createProduct(QVariant model) {
+    QByteArray links;
+
+    for (int i = 0; i < model.toList().count(); i++) {
+        // now we parse out the types of links and preprocess them
+        if (model.toList()[i].toMap()[TYPE].toString().compare(NAVIGATION_PROPERTY) == 0) { // link
+            QString link = QString(LINK_TEMPLATE);
+
+            if (model.toList()[i].toMap()[NAME].toString().compare("Category") == 0) {
+                link.replace("{{schema}}", "http://schemas.microsoft.com/ado/2007/08/dataservices/related/Category");
+                link.replace("{{title}}", "Category");
+            }
+            else if (model.toList()[i].toMap()[NAME].toString().compare("Supplier") == 0) {
+                link.replace("{{schema}}", "http://schemas.microsoft.com/ado/2007/08/dataservices/related/Supplier");
+                link.replace("{{title}}", "Supplier");
+            }
+
+            link.replace("{{link}}", model.toList()[i].toMap()[DATA].toString());
+
+            links.append(link);
+        }
+    }
+
+    ODataObjectModel* createModel = new ODataObjectModel();
+    createModel->createModel(_dataService->getSource() + "Products", "ODataDemo.Product", model, links);
+
+    connect(createModel, SIGNAL(modelCreated()), this, SLOT(createComplete()));
+}
+
+void ApplicationUI::updateProduct(QVariant model) {
+
+}
+
+void ApplicationUI::createComplete() {
+    emit createProductSuccess();
+}
+
+void ApplicationUI::updateComplete() {
+    emit updateProductSuccess();
+}

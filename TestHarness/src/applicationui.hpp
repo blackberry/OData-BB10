@@ -4,6 +4,8 @@
 
 #include <QObject>
 
+#include <ODataService.h>
+
 namespace bb { namespace cascades { class Application; }}
 
 /*!
@@ -17,6 +19,20 @@ class ApplicationUI : public QObject
 public:
     ApplicationUI(bb::cascades::Application *app);
     virtual ~ApplicationUI() {}
+
+    Q_INVOKABLE void createProduct(QVariant model);
+    Q_INVOKABLE void updateProduct(QVariant model);
+
+signals:
+    void createProductSuccess();
+    void updateProductSuccess();
+
+public slots:
+    void createComplete();
+    void updateComplete();
+
+private:
+    ODataService* _dataService;
 };
 
 

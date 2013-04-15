@@ -19,6 +19,8 @@ Page {
                 var createEditPage = createEditProductPage.createObject();
                 createEditPage.updateModel = dataModel;
                 createEditPage.create = false;
+                createEditPage.updateCategory = categoryModel.id;
+                createEditPage.updateSupplier = supplierModel.id;
                 activeTab.content.push(createEditPage);
             }
         },

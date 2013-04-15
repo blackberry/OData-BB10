@@ -119,6 +119,7 @@ QVariantList ODataObjectModel::getModelStructure(QString modelKey, QVariant meta
             entityData[NAME] = entities[i].toMap()[NAME];
             entityData[TYPE] = entities[i].toMap()[TYPE];
             entityData[NULLABLE] = entities[i].toMap()[NULLABLE];
+            entityData[DATA] = "";
 
             mStructure.append(entityData);
 
@@ -144,6 +145,7 @@ QVariantList ODataObjectModel::getModelStructure(QString modelKey, QVariant meta
                         entityData[NAME] = typeFields[j].toMap()[NAME];
                         entityData[TYPE] = typeFields[j].toMap()[TYPE];
                         entityData[NULLABLE] = typeFields[j].toMap()[NULLABLE];
+                        entityData[DATA] = "";
 
                         mStructure.append(entityData);
                     }
@@ -152,6 +154,7 @@ QVariantList ODataObjectModel::getModelStructure(QString modelKey, QVariant meta
                     entityData[NAME] = entities[i].toMap()[NAME];
                     entityData[TYPE] = END_COMPLEX_TYPE;
                     entityData[NULLABLE] = false;
+                    entityData[DATA] = "";
 
                     mStructure.append(entityData);
                 }
@@ -172,6 +175,7 @@ QVariantList ODataObjectModel::getModelStructure(QString modelKey, QVariant meta
 
             entityData[NAME] = entities[i].toMap()[NAME];
             entityData[TYPE] = NAVIGATION_PROPERTY;
+            entityData[DATA] = "";
 
             mStructure.append(entityData);
         }
@@ -180,12 +184,93 @@ QVariantList ODataObjectModel::getModelStructure(QString modelKey, QVariant meta
     return mStructure;
 }
 
-void ODataObjectModel::createModel(QString postUrl){
+void ODataObjectModel::createModel(QString postUrl, QString category, QVariant content, QByteArray links){
+    QByteArray model;
 
+    model.append(XML_TAG);
+    model.append(ENTRY_OPEN);
+
+    model.append(CATEGORY_OPEN);
+    model.append(category);
+    model.append(CATEGORY_CLOSE);
+
+    model.append(links);
+
+    model.append(CONTENT_OPEN);
+    model.append(parseContent(content));
+    model.append(CONTENT_CLOSE);
+
+    model.append(ENTRY_CLOSE);
+
+
+    ODataNetworkManager* manager = new ODataNetworkManager();
+    manager->create(postUrl, model);
+
+    connect(manager, SIGNAL(createSuccessful()), this, SLOT(createComplete()));
+    connect(manager, SIGNAL(networkError(int, QString)), this, SLOT(error(int, QString)));
 }
 
-void ODataObjectModel::updateModel(QString putUrl){
+void ODataObjectModel::updateModel(QString putUrl, QString category, QVariant content, QByteArray links){
+    QByteArray model;
 
+
+
+    ODataNetworkManager* manager = new ODataNetworkManager();
+    manager->update(putUrl, model);
+
+    connect(manager, SIGNAL(updateSuccessful()), this, SLOT(updateComplete()));
+    connect(manager, SIGNAL(networkError(int, QString)), this, SLOT(error(int, QString)));
+}
+
+
+QByteArray ODataObjectModel::parseContent(QVariant content) {
+    QByteArray parsedContent;
+
+    QVariantList contentList = content.toList();
+
+    for (int i = 0; i < content.toList().count(); i++) {
+        QVariantMap dataMap = contentList[i].toMap();
+
+        // now we ignore the types of links and preprocess everything else
+        if (!dataMap[TYPE].toString().contains(NAVIGATION_PROPERTY)) {
+            if (dataMap[TYPE].toString().indexOf(EDM) != 0) {
+                if (dataMap[TYPE].toString().compare(END_COMPLEX_TYPE) == 0) { // close tag
+                    parsedContent.append(createCloseTag(dataMap[NAME].toString()));
+                }
+                else { // open tag
+                    parsedContent.append(createOpenTag(dataMap[NAME].toString()
+                            .append(QString("m:type='"))
+                            .append(dataMap[TYPE].toString())
+                            .append(QString("'"))
+                        ));
+                }
+            }
+            else {
+                if (dataMap[DATA].toString().isEmpty()) {
+                    parsedContent.append(createNullTag(dataMap[NAME].toString()));
+                }
+                else {
+                    parsedContent.append(createOpenTag(dataMap[NAME].toString()));
+                    parsedContent.append(dataMap[DATA].toString());
+                    parsedContent.append(createCloseTag(dataMap[NAME].toString()));
+                }
+            }
+        }
+    }
+
+    return parsedContent;
+}
+
+QString ODataObjectModel::createOpenTag(QString tag) {
+    return tag.prepend("<d:").append(">");
+}
+
+QString ODataObjectModel::createCloseTag(QString tag) {
+    return tag.prepend("</d:").append(">");
+}
+
+QString ODataObjectModel::createNullTag(QString tag) {
+    return tag.prepend("<d:").append(" m:null='true' />");
 }
 
 /*
@@ -206,6 +291,14 @@ void ODataObjectModel::atomReadComplete(QVariant response){
 
 void ODataObjectModel::deleteComplete() {
     emit modelDeleted();
+}
+
+void ODataObjectModel::createComplete() {
+    emit modelCreated();
+}
+
+void ODataObjectModel::updateComplete() {
+    emit modelUpdated();
 }
 
 void ODataObjectModel::error(int code, QString message) {

@@ -15,6 +15,7 @@ const char* WORKSPACE = "workspace";
 
 const char* ASSOCIATION = "Association";
 const char* COMPLEX_TYPE = "ComplexType";
+const char* DATA = "Data";
 const char* EDMX = "edmx:Edmx";
 const char* EDMX_DATASERVICES = "edmx:DataServices";
 const char* END_COMPLEX_TYPE = "EndComplexType";
@@ -44,3 +45,20 @@ const char* EDM_SBYTE = "Edm.SByte";
 const char* EDM_SINGLE = "Edm.Single";
 const char* EDM_STRING = "Edm.String";
 const char* EDM_TIME = "Edm.Time";
+
+
+const char* XML_TAG = "<?xml version='1.0' encoding='utf-8'?>";
+const char* ENTRY_OPEN = "<entry xmlns:d='http://schemas.microsoft.com/ado/2007/08/dataservices' "
+        "xmlns:m='http://schemas.microsoft.com/ado/2007/08/dataservices/metadata' "
+        "xmlns='http://www.w3.org/2005/Atom'>"
+            "<title type='text'></title>"
+            "<author>"
+                "<name />"
+            "</author>";
+const char* ENTRY_CLOSE = "</entry>";
+const char* UPDATED = "updated";
+const char* CATEGORY_OPEN = "<category term='";
+const char* CATEGORY_CLOSE = "' scheme='http://schemas.microsoft.com/ado/2007/08/dataservices/scheme' /> ";
+const char* CONTENT_OPEN = "<content type='application/xml'><m:properties>";
+const char* CONTENT_CLOSE = "</m:properties></content>";
+const char* LINK_TEMPLATE = "<link rel='{{schema}}' type='application/atom+xml;type=entry' title='{{title}}' href='{{link}}' />";

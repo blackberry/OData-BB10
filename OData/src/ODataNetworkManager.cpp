@@ -36,11 +36,19 @@ void ODataNetworkManager::read(QString url) {
     connect(reply, SIGNAL(finished()), this, SLOT(onReadReply()));
 }
 
-void ODataNetworkManager::create(QString url, QVariant dataModel) {
+void ODataNetworkManager::create(QString url, QByteArray dataModel) {
+    QUrl qurl(url);
 
+    QNetworkRequest req(qurl);
+    req.setRawHeader("Content-Type", "application/atom+xml");
+
+    fprintf(stderr, "%s\n", dataModel.constData());
+
+    QNetworkReply* reply = mNetAccessManager->post(req, dataModel);
+    connect(reply, SIGNAL(finished()), this, SLOT(onCreateReply()));
 }
 
-void ODataNetworkManager::update(QString url, QVariant dataModel) {
+void ODataNetworkManager::update(QString url, QByteArray dataModel) {
 
 }
 
@@ -97,6 +105,9 @@ void ODataNetworkManager::onCreateReply(){
 
     if (reply) {
         if (reply->error() == QNetworkReply::NoError) {
+            emit createSuccessful();
+
+            // further object parsing if they want the data out
             QByteArray response;
 
             response = reply->readAll();
@@ -132,7 +143,7 @@ void ODataNetworkManager::onUpdateReply(){
 
     if (reply) {
         if (reply->error() == QNetworkReply::NoError) {
-            emit createSuccessful();
+            emit updateSuccessful();
         }
         else {
             handleError(reply);
@@ -163,6 +174,7 @@ void ODataNetworkManager::onDeleteReply(){
 
 void ODataNetworkManager::handleError(QNetworkReply* reply){
     emit networkError(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(), reply->errorString());
+    fprintf(stderr, "Error: Code %d - %s\n", reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(), reply->errorString().toUtf8().constData());
 }
 
 void ODataNetworkManager::handleErrorNoReply(){
