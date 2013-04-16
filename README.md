@@ -20,7 +20,7 @@ Import both OData and TestHarness projects into your NDK workspace.
 
 **Build the Application**
 
-1. In order to utilize the writeback functionality of OData you need a writeable source. Visit this link ( http://services.odata.org/(S(readwrite))/OData/OData.svc/ ) here to generate a private sandbox to edit. Copy the url in the address bar and then place it in the marked location in TestHarness/src/applicationui.cpp
+1. In order to utilize the writeback functionality of OData you need a writeable source. Visit this link ( http://services.odata.org/(S(readwrite))/OData/OData.svc/ ) to generate a private sandbox to edit. Copy the url in the address bar and then place it in the marked location in TestHarness/src/applicationui.cpp
 
 2. The TestHarness application should simply build and deploy given that the library built with no issues.
 
@@ -29,13 +29,13 @@ How to use
 
 To integrate into your app:
 
-1. Add this to your .pro file
++ Add this to your .pro file
 
 ```
 LIBS += -lbbdata
 ```
 
-2. Configure the .pro file to import the correct library artifacts from your copy of the library.
++ Configure the .pro file to import the correct library artifacts from your copy of the library.
 
 ```
 device {
