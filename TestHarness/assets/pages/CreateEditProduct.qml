@@ -65,7 +65,7 @@ Page {
                 ItemInputRow {
                     id: idRow
                     label: qsTr("Id")
-                    data: updateModel.title[".data"]
+                    data: updateModel.content["m:properties"]["d:ID"][".data"]
                     visible: create
                 }
                 ItemInputRow {
@@ -168,6 +168,9 @@ Page {
         suppliersList.childCount([]); // force the data hit
         categoriesList.itemsChanged.connect(bindCategoriesDropDown);
         categoriesList.childCount([]); // force the data hit
+
+        _controller.createProductSuccess.connect(success);
+        _controller.updateProductSuccess.connect(success);
     }
     
     function bindSuppliersDropDown() {
@@ -204,14 +207,18 @@ Page {
         readForm();
 
         _controller.createProduct(modelStructure);
-
-        _controller.createProductSuccess.connect(success);
+        
+        toastMsg.body = "Creating";
+        toastMsg.show();
     }
     
     function updateObject() {
         readForm();
 
-        dataService.updateProduct(modelStructure);
+        _controller.updateProduct(updateModel.id, modelStructure);
+    
+        toastMsg.body = "Updating";
+        toastMsg.show();
     }
     
     function readForm() {
@@ -251,8 +258,10 @@ Page {
     }
     
     function success() {
-        var activeTab = tabPane.activeTab;
+        toastMsg.body = "Success";
+        toastMsg.show();
 
+        var activeTab = tabPane.activeTab;
         activeTab.content.pop();
     }
 }

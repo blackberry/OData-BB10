@@ -6,27 +6,6 @@ Page {
     property string dataSource
     property variant dataModel
 
-    actions: [
-        ActionItem {
-            title: qsTr("Update")
-            imageSource: "asset:///icons/ic_edit.png"
-            ActionBar.placement: ActionBarPlacement.OnBar
-            onTriggered: {
-                toastMsg.body = "Not implemented";
-                toastMsg.show();
-            }
-        },
-        ActionItem {
-            title: qsTr("Delete")
-            imageSource: "asset:///icons/ic_delete.png"
-            ActionBar.placement: ActionBarPlacement.OnBar
-            onTriggered: {
-                toastMsg.body = "Not implemented";
-                toastMsg.show();
-            }
-        }
-    ]
-
     attachedObjects: [
         ODataObjectModel {
             id: odataModel

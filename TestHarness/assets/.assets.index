@@ -1,11 +1,12 @@
 1
-17
+18
 icons/ic_add.png
 icons/ic_delete.png
 icons/ic_done.png
 icons/ic_edit.png
 icons/ic_info.png
 icons/ic_map.png
+icons/ic_rotate.png
 icons/ic_view_list.png
 main.qml
 pages/controls/DetailsItemRow.qml

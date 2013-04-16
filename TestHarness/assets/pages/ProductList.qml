@@ -17,6 +17,17 @@ Page {
                 var createEditPage = createEditProductPage.createObject();
                 activeTab.content.push(createEditPage);
             }
+        },
+        ActionItem {
+            title: qsTr("Refresh")
+            imageSource: "asset:///icons/ic_rotate.png"
+            ActionBar.placement: ActionBarPlacement.OnBar
+            onTriggered: {
+                toastMsg.body = "Refreshing";
+                toastMsg.show();
+
+                productsList.dataModel.refresh();
+            }
         }
     ]
 
@@ -30,6 +41,8 @@ Page {
             horizontalAlignment: HorizontalAlignment.Center
         }
         ListView {
+            id: productsList
+            
             dataModel: ODataListModel {
                 source: dataSource
             }

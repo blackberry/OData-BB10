@@ -30,6 +30,7 @@ public:
     Q_INVOKABLE QVariant data(const QVariantList& indexPath);
     Q_INVOKABLE int childCount(const QVariantList& indexPath);
     Q_INVOKABLE bool hasChildren(const QVariantList& indexPath);
+    Q_INVOKABLE void refresh();
 
 signals:
     void sourceChanged();

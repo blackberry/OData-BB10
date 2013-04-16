@@ -73,6 +73,14 @@ bool ODataListModel::hasChildren(const QVariantList& indexPath){
     return indexPath.count() == 0 && !mDataList.isEmpty();
 }
 
+void ODataListModel::refresh() {
+    // when we get a new url source we should load that data and toss the current data
+    mDataList.clear();
+    emit itemsChanged(bb::cascades::DataModelChangeType::Init);
+
+    loadData();
+}
+
 void ODataListModel::loadData(){
     // once we have called loadData at least once we are initialized
     initialized = true;

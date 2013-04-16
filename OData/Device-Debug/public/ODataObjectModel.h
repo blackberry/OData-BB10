@@ -28,6 +28,8 @@ public:
     QVariant getModel();
     void setModel(QVariant newModel);
 
+    Q_INVOKABLE void refreshModel();
+
     Q_INVOKABLE QVariantList getModelStructure(QString modelKey, QVariant metadata);
 
     Q_INVOKABLE void createModel(QString postUrl, QString category, QVariant content, QByteArray links);
@@ -64,6 +66,7 @@ private:
     QByteArray parseContent(QVariant content);
     QString createOpenTag(QString tag);
     QString createCloseTag(QString tag);
+    QString createNullTag(QString tag);
 };
 
 #endif /* ODATAOBJECTMODEL_H_ */

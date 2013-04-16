@@ -9,7 +9,7 @@
 #include <qnetworkrequest.h>
 #include <JsonDataAccess.hpp>
 #include <XmlDataAccess.hpp>
-
+#include <qbuffer.h>
 /*
  * CONSTRUCTORS / DESTRUCTORS
  */
@@ -42,13 +42,21 @@ void ODataNetworkManager::create(QString url, QByteArray dataModel) {
     QNetworkRequest req(qurl);
     req.setRawHeader("Content-Type", "application/atom+xml");
 
-    fprintf(stderr, "%s\n", dataModel.constData());
-
     QNetworkReply* reply = mNetAccessManager->post(req, dataModel);
     connect(reply, SIGNAL(finished()), this, SLOT(onCreateReply()));
 }
 
 void ODataNetworkManager::update(QString url, QByteArray dataModel) {
+    QUrl qurl(url);
+
+    QNetworkRequest req(qurl);
+    req.setRawHeader("Content-Type", "application/atom+xml");
+
+    QBuffer* data = new QBuffer();
+    data->setData(dataModel);
+
+    QNetworkReply* reply = mNetAccessManager->sendCustomRequest(req, "MERGE", data);
+    connect(reply, SIGNAL(finished()), this, SLOT(onUpdateReply()));
 
 }
 
@@ -174,7 +182,15 @@ void ODataNetworkManager::onDeleteReply(){
 
 void ODataNetworkManager::handleError(QNetworkReply* reply){
     emit networkError(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(), reply->errorString());
+
+    /* for debugging errors just uncomment
+    // LOG the error to the console
     fprintf(stderr, "Error: Code %d - %s\n", reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(), reply->errorString().toUtf8().constData());
+
+    QByteArray response;
+    response = reply->readAll();
+    fprintf(stderr, "Response: %s\n", response.constData());
+    */
 }
 
 void ODataNetworkManager::handleErrorNoReply(){

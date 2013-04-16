@@ -5,17 +5,6 @@ NavigationPane {
     property string dataSource
 
     Page {
-        actions: [
-            ActionItem {
-                title: qsTr("Create")
-                imageSource: "asset:///icons/ic_add.png"
-                ActionBar.placement: ActionBarPlacement.OnBar
-                onTriggered: {
-                    toastMsg.body = "Not implemented";
-                    toastMsg.show();
-                }
-            }
-        ]
 
         Container {
             layout: StackLayout {

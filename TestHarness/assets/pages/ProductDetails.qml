@@ -25,12 +25,25 @@ Page {
             }
         },
         ActionItem {
+            title: qsTr("Refresh")
+            imageSource: "asset:///icons/ic_rotate.png"
+            ActionBar.placement: ActionBarPlacement.OnBar
+            onTriggered: {
+                toastMsg.body = "Refreshing";
+                toastMsg.show();
+
+                odataModel.refreshModel();
+            }
+        },
+        ActionItem {
             title: qsTr("Delete")
             imageSource: "asset:///icons/ic_delete.png"
             ActionBar.placement: ActionBarPlacement.OnBar
             onTriggered: {
-                toastMsg.body = "Not implemented";
-                toastMsg.show();
+            	odataModel.deleteModel();
+            	
+            	toastMsg.body = "Deleting";
+            	toastMsg.show();
             }
         }
     ]
@@ -187,6 +200,8 @@ Page {
         odataModel.modelReady.connect(bindToDataModel);
         supplierODataModel.modelReady.connect(bindSupplier);
         categoryODataModel.modelReady.connect(bindCategory);
+
+        odataModel.modelDeleted.connect(deleteSuccess);
     }
     
     function bindToDataModel() {
@@ -202,5 +217,13 @@ Page {
 
     function bindCategory() {
         categoryModel = categoryODataModel.model;
+    }
+    
+    function deleteSuccess() {
+        toastMsg.body = "Success";
+        toastMsg.show();
+        
+        var activeTab = tabPane.activeTab;
+        activeTab.content.pop();
     }
 }

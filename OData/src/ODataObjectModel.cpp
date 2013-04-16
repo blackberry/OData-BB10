@@ -65,6 +65,10 @@ void ODataObjectModel::loadModel(){
     connect(manager, SIGNAL(networkError(int, QString)), this, SLOT(error(int, QString)));
 }
 
+void ODataObjectModel::refreshModel() {
+    loadModel();
+}
+
 void ODataObjectModel::deleteModel() {
     ODataNetworkManager* manager = new ODataNetworkManager();
     manager->del(mSource);
@@ -213,7 +217,20 @@ void ODataObjectModel::createModel(QString postUrl, QString category, QVariant c
 void ODataObjectModel::updateModel(QString putUrl, QString category, QVariant content, QByteArray links){
     QByteArray model;
 
+    model.append(XML_TAG);
+    model.append(ENTRY_OPEN);
 
+    model.append(CATEGORY_OPEN);
+    model.append(category);
+    model.append(CATEGORY_CLOSE);
+
+    model.append(links);
+
+    model.append(CONTENT_OPEN);
+    model.append(parseContent(content));
+    model.append(CONTENT_CLOSE);
+
+    model.append(ENTRY_CLOSE);
 
     ODataNetworkManager* manager = new ODataNetworkManager();
     manager->update(putUrl, model);

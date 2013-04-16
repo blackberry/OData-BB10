@@ -21,7 +21,7 @@ public:
     virtual ~ApplicationUI() {}
 
     Q_INVOKABLE void createProduct(QVariant model);
-    Q_INVOKABLE void updateProduct(QVariant model);
+    Q_INVOKABLE void updateProduct(QString itemUrl, QVariant model);
 
 signals:
     void createProductSuccess();
