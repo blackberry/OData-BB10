@@ -27,7 +27,6 @@
 								<option id="com.qnx.qcc.option.compiler.optlevel.322009929" name="Optimization Level" superClass="com.qnx.qcc.option.compiler.optlevel" value="com.qnx.qcc.option.compiler.optlevel.0" valueType="enumerated"/>
 								<option id="com.qnx.qcc.option.compiler.includePath.1931953681" name="Include Directories (-I)" superClass="com.qnx.qcc.option.compiler.includePath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/OData/public}&quot;"/>
-									<listOptionValue builtIn="false" value="C:\_Development\Source\Macadamian\odatabb10\OData\public"/>
 								</option>
 								<inputType id="com.qnx.qcc.inputType.compiler.32935125" superClass="com.qnx.qcc.inputType.compiler"/>
 							</tool>
@@ -87,7 +86,6 @@
 								<option id="com.qnx.qcc.option.compiler.optlevel.1149551672" name="Optimization Level" superClass="com.qnx.qcc.option.compiler.optlevel" value="com.qnx.qcc.option.compiler.optlevel.0" valueType="enumerated"/>
 								<option id="com.qnx.qcc.option.compiler.includePath.705891479" name="Include Directories (-I)" superClass="com.qnx.qcc.option.compiler.includePath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/OData/public}&quot;"/>
-									<listOptionValue builtIn="false" value="C:\_Development\Source\Macadamian\odatabb10\OData\public"/>
 								</option>
 								<inputType id="com.qnx.qcc.inputType.compiler.1503222195" superClass="com.qnx.qcc.inputType.compiler"/>
 							</tool>
@@ -147,7 +145,6 @@
 								<option id="com.qnx.qcc.option.compiler.optlevel.1293550388" name="Optimization Level" superClass="com.qnx.qcc.option.compiler.optlevel" value="com.qnx.qcc.option.compiler.optlevel.0" valueType="enumerated"/>
 								<option id="com.qnx.qcc.option.compiler.includePath.592676249" name="Include Directories (-I)" superClass="com.qnx.qcc.option.compiler.includePath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/OData/public}&quot;"/>
-									<listOptionValue builtIn="false" value="C:\_Development\Source\Macadamian\odatabb10\OData\public"/>
 								</option>
 								<inputType id="com.qnx.qcc.inputType.compiler.1666548058" superClass="com.qnx.qcc.inputType.compiler"/>
 							</tool>
@@ -207,7 +204,6 @@
 								<option id="com.qnx.qcc.option.compiler.optlevel.1601861985" name="Optimization Level" superClass="com.qnx.qcc.option.compiler.optlevel" value="com.qnx.qcc.option.compiler.optlevel.0" valueType="enumerated"/>
 								<option id="com.qnx.qcc.option.compiler.includePath.1055560457" name="Include Directories (-I)" superClass="com.qnx.qcc.option.compiler.includePath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/OData/public}&quot;"/>
-									<listOptionValue builtIn="false" value="C:\_Development\Source\Macadamian\odatabb10\OData\public"/>
 								</option>
 								<inputType id="com.qnx.qcc.inputType.compiler.1466763501" superClass="com.qnx.qcc.inputType.compiler"/>
 							</tool>

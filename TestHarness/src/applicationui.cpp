@@ -20,7 +20,12 @@ ApplicationUI::ApplicationUI(bb::cascades::Application *app)
     QmlDocument* qml = QmlDocument::create("asset:///main.qml").parent(this);
     qml->setContextProperty("_controller", this);
 
-    _dataService = new ODataService("http://services.odata.org/(S(pxp1i4jci5ga4kbxswqb4l5h))/OData/OData.svc/");
+    /*******************************************************************
+     * Place your read/write url here in place of the read only one
+     *
+     *                                    VVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+     *******************************************************************/
+    _dataService = new ODataService("http://services.odata.org/OData/OData.svc/");
     qml->setContextProperty("dataService", _dataService);
 
     // create root object for the UI

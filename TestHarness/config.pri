@@ -3,11 +3,9 @@ BASEDIR =  $$quote($$_PRO_FILE_PWD_)
 
 device {
     CONFIG(debug, debug|release) {
-        INCLUDEPATH +=  $$quote(C:\_Development\Source\Macadamian\odatabb10\OData\public) \
-                 $$quote($$BASEDIR/..//OData/public)
+        INCLUDEPATH +=  $$quote($$BASEDIR/..//OData/public)
 
-        DEPENDPATH +=  $$quote(C:\_Development\Source\Macadamian\odatabb10\OData\public) \
-                 $$quote($$BASEDIR/..//OData/public)
+        DEPENDPATH +=  $$quote($$BASEDIR/..//OData/public)
 
         LIBS += -lOData
 
@@ -22,11 +20,9 @@ device {
     }
 
     CONFIG(release, debug|release) {
-        INCLUDEPATH +=  $$quote(C:\_Development\Source\Macadamian\odatabb10\OData\public) \
-                 $$quote($$BASEDIR/..//OData/public)
+        INCLUDEPATH +=  $$quote($$BASEDIR/..//OData/public)
 
-        DEPENDPATH +=  $$quote(C:\_Development\Source\Macadamian\odatabb10\OData\public) \
-                 $$quote($$BASEDIR/..//OData/public)
+        DEPENDPATH +=  $$quote($$BASEDIR/..//OData/public)
 
         LIBS += -lOData
 
@@ -43,11 +39,9 @@ device {
 
 simulator {
     CONFIG(debug, debug|release) {
-        INCLUDEPATH +=  $$quote(C:\_Development\Source\Macadamian\odatabb10\OData\public) \
-                 $$quote($$BASEDIR/..//OData/public)
+        INCLUDEPATH +=  $$quote($$BASEDIR/..//OData/public)
 
-        DEPENDPATH +=  $$quote(C:\_Development\Source\Macadamian\odatabb10\OData\public) \
-                 $$quote($$BASEDIR/..//OData/public)
+        DEPENDPATH +=  $$quote($$BASEDIR/..//OData/public)
 
         LIBS += -lOData
 
