@@ -23,6 +23,10 @@ ApplicationUI::ApplicationUI(bb::cascades::Application *app)
     /*******************************************************************
      * Place your read/write url here in place of the read only one
      *
+     * Access the following url to get a read/write sandbox and copy it in below
+     *
+     * http://services.odata.org/(S(readwrite))/OData/OData.svc/
+     *
      *                                    VVVVVVVVVVVVVVVVVVVVVVVVVVVVV
      *******************************************************************/
     _dataService = new ODataService("http://services.odata.org/OData/OData.svc/");
