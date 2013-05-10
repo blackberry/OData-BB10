@@ -1,5 +1,5 @@
-odatabb10
-=========
+OData-bb10
+==========
 
 Open Data Protocol (OData) library for BlackBerry 10 (BB10) Cascades apps.  
 This library makes it easy to build native BB10 apps that consume OData services.  
