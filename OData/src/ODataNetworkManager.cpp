@@ -7,8 +7,8 @@
 
 #include "ODataNetworkManager.h"
 #include <qnetworkrequest.h>
-#include <JsonDataAccess.hpp>
-#include <XmlDataAccess.hpp>
+#include <bb/data/JsonDataAccess>
+#include <bb/data/XmlDataAccess>
 #include <qbuffer.h>
 /*
  * CONSTRUCTORS / DESTRUCTORS

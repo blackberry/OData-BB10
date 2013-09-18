@@ -1,0 +1,39 @@
+
+odata {
+	MYLIBRARY_BASEDIR = $${PWD}$$dirname($${_FILE_})
+
+	INCLUDEPATH *=  $$quote($${MYLIBRARY_BASEDIR}/include)
+	DEPENDPATH *=  $$quote($${MYLIBRARY_BASEDIR}/include)
+	
+	QT += network
+	
+	MYLIBRARY_LIBS = -lODataS -lcpp -lbbdata
+	device {
+		profile {
+		    LIBS += -L$${MYLIBRARY_BASEDIR}/arm/so.le-v7-g $${MYLIBRARY_LIBS}
+		    PRE_TARGETDEPS +=  $$quote($${MYLIBRARY_BASEDIR}/arm/so.le-v7-g/libODataS.a)		
+		}
+		else {
+		    CONFIG(debug, debug|release) {
+		        # Device-Debug custom configuration
+		        LIBS += -L$${MYLIBRARY_BASEDIR}/arm/so.le-v7-g $${MYLIBRARY_LIBS}
+		        PRE_TARGETDEPS +=  $$quote($${MYLIBRARY_BASEDIR}/arm/so.le-v7-g/libODataS.a)
+		    }
+		
+		    CONFIG(release, debug|release) {
+		        # Device-Release custom configuration
+		        LIBS += -L$${MYLIBRARY_BASEDIR}/arm/so.le-v7 $${MYLIBRARY_LIBS}
+		        PRE_TARGETDEPS +=  $$quote($${MYLIBRARY_BASEDIR}/arm/so.le-v7/libODataS.a)
+		    }
+	    }
+	}
+	
+	simulator {
+	    CONFIG(debug, debug|release) {
+	        # Simulator-Debug custom configuration
+	        LIBS += -L$${MYLIBRARY_BASEDIR}/x86/so-g $${MYLIBRARY_LIBS}
+	        PRE_TARGETDEPS +=  $$quote($${MYLIBRARY_BASEDIR}/x86/so-g/libODataS.a)
+	    }
+	}
+
+}
