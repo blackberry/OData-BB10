@@ -3,16 +3,6 @@ BASEDIR =  $$quote($$_PRO_FILE_PWD_)
 
 device {
     CONFIG(debug, debug|release) {
-        INCLUDEPATH +=  $$quote($$BASEDIR/..//OData/public)
-
-        DEPENDPATH +=  $$quote($$BASEDIR/..//OData/public)
-
-        LIBS += -lOData
-
-        LIBS +=  $$quote(-L$$BASEDIR/..//OData/Device-Debug)
-
-        PRE_TARGETDEPS +=  $$quote($$BASEDIR/..//OData/Device-Debug)
-
         SOURCES +=  $$quote($$BASEDIR/src/applicationui.cpp) \
                  $$quote($$BASEDIR/src/main.cpp)
 
@@ -20,16 +10,6 @@ device {
     }
 
     CONFIG(release, debug|release) {
-        INCLUDEPATH +=  $$quote($$BASEDIR/..//OData/public)
-
-        DEPENDPATH +=  $$quote($$BASEDIR/..//OData/public)
-
-        LIBS += -lOData
-
-        LIBS +=  $$quote(-L$$BASEDIR/..//OData/Device-Release)
-
-        PRE_TARGETDEPS +=  $$quote($$BASEDIR/..//OData/Device-Release)
-
         SOURCES +=  $$quote($$BASEDIR/src/applicationui.cpp) \
                  $$quote($$BASEDIR/src/main.cpp)
 
@@ -39,16 +19,6 @@ device {
 
 simulator {
     CONFIG(debug, debug|release) {
-        INCLUDEPATH +=  $$quote($$BASEDIR/..//OData/public)
-
-        DEPENDPATH +=  $$quote($$BASEDIR/..//OData/public)
-
-        LIBS += -lOData
-
-        LIBS +=  $$quote(-L$$BASEDIR/..//OData/Simulator-Debug)
-
-        PRE_TARGETDEPS +=  $$quote($$BASEDIR/..//OData/Simulator-Debug)
-
         SOURCES +=  $$quote($$BASEDIR/src/applicationui.cpp) \
                  $$quote($$BASEDIR/src/main.cpp)
 
