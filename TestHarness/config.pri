@@ -3,16 +3,6 @@ BASEDIR =  $$quote($$_PRO_FILE_PWD_)
 
 device {
     CONFIG(debug, debug|release) {
-        INCLUDEPATH +=  $$quote($$BASEDIR/..//OData/public)
-
-        DEPENDPATH +=  $$quote($$BASEDIR/..//OData/public)
-
-        LIBS += -lOData
-
-        LIBS +=  $$quote(-L$$BASEDIR/..//OData/Device-Debug)
-
-        PRE_TARGETDEPS +=  $$quote($$BASEDIR/..//OData/Device-Debug)
-
         SOURCES +=  $$quote($$BASEDIR/src/applicationui.cpp) \
                  $$quote($$BASEDIR/src/main.cpp)
 
@@ -20,16 +10,6 @@ device {
     }
 
     CONFIG(release, debug|release) {
-        INCLUDEPATH +=  $$quote($$BASEDIR/..//OData/public)
-
-        DEPENDPATH +=  $$quote($$BASEDIR/..//OData/public)
-
-        LIBS += -lOData
-
-        LIBS +=  $$quote(-L$$BASEDIR/..//OData/Device-Release)
-
-        PRE_TARGETDEPS +=  $$quote($$BASEDIR/..//OData/Device-Release)
-
         SOURCES +=  $$quote($$BASEDIR/src/applicationui.cpp) \
                  $$quote($$BASEDIR/src/main.cpp)
 
@@ -39,16 +19,6 @@ device {
 
 simulator {
     CONFIG(debug, debug|release) {
-        INCLUDEPATH +=  $$quote($$BASEDIR/..//OData/public)
-
-        DEPENDPATH +=  $$quote($$BASEDIR/..//OData/public)
-
-        LIBS += -lOData
-
-        LIBS +=  $$quote(-L$$BASEDIR/..//OData/Simulator-Debug)
-
-        PRE_TARGETDEPS +=  $$quote($$BASEDIR/..//OData/Simulator-Debug)
-
         SOURCES +=  $$quote($$BASEDIR/src/applicationui.cpp) \
                  $$quote($$BASEDIR/src/main.cpp)
 
@@ -70,7 +40,19 @@ lupdate_inclusion {
              $$quote($$BASEDIR/../src/*.cxx) \
              $$quote($$BASEDIR/../assets/*.qml) \
              $$quote($$BASEDIR/../assets/*.js) \
-             $$quote($$BASEDIR/../assets/*.qs)
+             $$quote($$BASEDIR/../assets/*.qs) \
+             $$quote($$BASEDIR/../assets/icons/*.qml) \
+             $$quote($$BASEDIR/../assets/icons/*.js) \
+             $$quote($$BASEDIR/../assets/icons/*.qs) \
+             $$quote($$BASEDIR/../assets/pages/*.qml) \
+             $$quote($$BASEDIR/../assets/pages/*.js) \
+             $$quote($$BASEDIR/../assets/pages/*.qs) \
+             $$quote($$BASEDIR/../assets/pages/controls/*.qml) \
+             $$quote($$BASEDIR/../assets/pages/controls/*.js) \
+             $$quote($$BASEDIR/../assets/pages/controls/*.qs) \
+             $$quote($$BASEDIR/../assets/tabs/*.qml) \
+             $$quote($$BASEDIR/../assets/tabs/*.js) \
+             $$quote($$BASEDIR/../assets/tabs/*.qs)
 
     HEADERS +=  $$quote($$BASEDIR/../src/*.h) \
              $$quote($$BASEDIR/../src/*.h++) \

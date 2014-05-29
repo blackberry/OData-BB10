@@ -1,7 +1,11 @@
-APP_NAME = TestHarness
+TEMPLATE = lib
 
-CONFIG += qt warn_on cascades10 odata
-LIBS += -lbb
+CONFIG += qt warn_on qt_library
+CONFIG += hardening
+
+QT += network
+
+LIBS += -lbbdata
 
 include(config.pri)
 
