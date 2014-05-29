@@ -1,6 +1,7 @@
 APP_NAME = TestHarness
 
 CONFIG += qt warn_on cascades10 odata
+LIBS += -lbb
 
 include(config.pri)
 

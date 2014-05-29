@@ -1,12 +1,27 @@
+/* Copyright (c) 2014 BlackBerry Limited.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import bb.cascades 1.0
 import odata 1.0
 import "controls" 1.0
 
 Page {
+    id: productDetails
     property string dataSource
     property variant dataModel
     property variant supplierModel
-    property variant categoryModel
+    property variant categoriesModel
     
     actions: [
         ActionItem {
@@ -19,8 +34,9 @@ Page {
                 var createEditPage = createEditProductPage.createObject();
                 createEditPage.updateModel = dataModel;
                 createEditPage.create = false;
-                createEditPage.updateCategory = categoryModel.id;
-                createEditPage.updateSupplier = supplierModel.id;
+                createEditPage.updateCategory = productDetails.categoriesModel;
+                if(supplierModel)
+                    createEditPage.supplierID = supplierModel.ID === undefined ? -1 : supplierModel.ID;
                 activeTab.content.push(createEditPage);
             }
         },
@@ -32,7 +48,7 @@ Page {
                 toastMsg.body = "Refreshing";
                 toastMsg.show();
 
-                odataModel.refreshModel();
+                odataModel.readModel(dataSource);
             }
         },
         ActionItem {
@@ -40,8 +56,7 @@ Page {
             imageSource: "asset:///icons/ic_delete.png"
             ActionBar.placement: ActionBarPlacement.OnBar
             onTriggered: {
-            	odataModel.deleteModel();
-            	
+            	odataModel.deleteModel(dataSource);
             	toastMsg.body = "Deleting";
             	toastMsg.show();
             }
@@ -51,13 +66,15 @@ Page {
 	attachedObjects: [
 	    ODataObjectModel{
 	        id: odataModel
-	        source: dataSource
+            service: dataService
 	    },
         ODataObjectModel {
             id: supplierODataModel
+            service: dataService
         },
-        ODataObjectModel {
+        ODataListModel {
             id: categoryODataModel
+            service: dataService
         }
     ]
 
@@ -77,32 +94,28 @@ Page {
                     orientation: LayoutOrientation.TopToBottom
                 }
                 DetailsItemRow {
+                    id: name
                     label: qsTr("Product")
-                    data: dataModel.title[".data"]
                 }
                 DetailsItemRow {
+                    id: description
                     label: qsTr("")
-                    data: dataModel.summary[".data"]
                 }
                 DetailsItemRow {
+                    id: cost
                     label: qsTr("Cost")
-                    data: dataModel.content["m:properties"]["d:Price"][".data"]
                 }
                 DetailsItemRow {
+                    id: rating
                     label: qsTr("Rating")
-                    data: dataModel.content["m:properties"]["d:Rating"][".data"]
                 }
                 DetailsItemRow {
+                    id: released
                     label: qsTr("Released")
-                    data: dataModel.content["m:properties"]["d:ReleaseDate"][".data"]
                 }
                 DetailsItemRow {
+                    id: discontinued
                     label: qsTr("Discontinued")
-                    data: dataModel.content["m:properties"]["d:DiscontinuedDate"][".data"]
-                }
-                DetailsItemRow {
-                    label: qsTr("Updated")
-                    data: dataModel.updated
                 }
 
                 // Supplier Linked Row
@@ -114,7 +127,7 @@ Page {
                                 activeTab = tabPane.activeTab;
 
                                 var supplierDetails = supplierDetailsPage.createObject();
-                                supplierDetails.dataSource = supplierModel.id;
+                                supplierDetails.dataSource += "Suppliers(" + supplierModel.ID + ")";
                                 activeTab.content.push(supplierDetails);
                             }
                         }
@@ -136,7 +149,7 @@ Page {
                         }
                     }
                     Label {
-                        text: supplierModel.title[".data"]
+                        text: supplierModel ? supplierModel.Name : ""
                         textStyle.fontSize: FontSize.Medium
                         textStyle.color: Color.create("#FF8EC1DA")
                         verticalAlignment: VerticalAlignment.Top
@@ -152,26 +165,13 @@ Page {
                 Container {
                     topMargin: 30
 
-                    gestureHandlers: [
-                        TapHandler {
-                            onTapped: {
-                                var activeTab = tabPane.activeTab;
-
-                                var productList = productListPage.createObject();
-                                productList.title = categoryModel.title[".data"] + " - " + qsTr("Products");
-                                productList.dataSource = dataService.source + "/" + categoryModel.link[1]["href"];
-                                activeTab.content.push(productList);
-                            }
-                        }
-                    ]
-
                     layout: StackLayout {
                         orientation: LayoutOrientation.LeftToRight
                     }
                     horizontalAlignment: HorizontalAlignment.Fill
 
                     Label {
-                        text: qsTr("Category")
+                        text: qsTr("Categories")
                         textStyle.fontSize: FontSize.Medium
                         textStyle.fontWeight: FontWeight.W500
                         verticalAlignment: VerticalAlignment.Top
@@ -181,7 +181,7 @@ Page {
                         }
                     }
                     Label {
-                        text: categoryModel.title[".data"]
+                        id: categories
                         textStyle.fontSize: FontSize.Medium
                         textStyle.color: Color.create("#FF8EC1DA")
                         verticalAlignment: VerticalAlignment.Top
@@ -196,29 +196,57 @@ Page {
         }
     }
 
+    onDataSourceChanged: {
+        if(dataSource) {
+            odataModel.readModel(dataSource);
+        }
+    }
+
     onCreationCompleted: {
         odataModel.modelReady.connect(bindToDataModel);
         supplierODataModel.modelReady.connect(bindSupplier);
-        categoryODataModel.modelReady.connect(bindCategory);
+        categoryODataModel.itemsChanged.connect(setCategories);
+        categoryODataModel.childCount([]);
 
         odataModel.modelDeleted.connect(deleteSuccess);
     }
     
+    function setCategories() {
+        var categoriesStr;
+        var categoryNameList = [];
+        var categoryIDList = [];
+        for(var i = 0; i < categoryODataModel.childCount([]); ++i) {
+            categoryIDList[i] = categoryODataModel.data([i]).ID;
+            categoryNameList[i] = categoryODataModel.data([i]).Name;
+        }
+        if(categoryIDList)
+            categoriesModel = categoryIDList;
+        if(categoryNameList)
+            categories.text = categoryNameList.join(",");
+    }
+
+    onDataModelChanged: {
+        if(dataModel) {
+            name.data = dataModel.Name || "";
+            description.data = dataModel.Description || "";
+            cost.data = dataModel.Price || "";
+            rating.data = dataModel.Rating || "";
+            released.data = parseISO8601(dataModel.ReleaseDate) || "";
+            discontinued.data = parseISO8601(dataModel.DiscontinuedDate) || "";
+        }
+    }
+
     function bindToDataModel() {
         dataModel = odataModel.model;
 
-        supplierODataModel.source = dataService.source + "/" + dataModel.link[2]["href"];
-        categoryODataModel.source = dataService.source + "/" + dataModel.link[1]["href"];
+        supplierODataModel.readModel(dataSource + "/Supplier");
+        categoryODataModel.readModel(dataSource + "/Categories");
     }
-    
+
     function bindSupplier() {
         supplierModel = supplierODataModel.model;
     }
 
-    function bindCategory() {
-        categoryModel = categoryODataModel.model;
-    }
-    
     function deleteSuccess() {
         toastMsg.body = "Success";
         toastMsg.show();

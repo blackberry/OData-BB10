@@ -40,7 +40,19 @@ lupdate_inclusion {
              $$quote($$BASEDIR/../src/*.cxx) \
              $$quote($$BASEDIR/../assets/*.qml) \
              $$quote($$BASEDIR/../assets/*.js) \
-             $$quote($$BASEDIR/../assets/*.qs)
+             $$quote($$BASEDIR/../assets/*.qs) \
+             $$quote($$BASEDIR/../assets/icons/*.qml) \
+             $$quote($$BASEDIR/../assets/icons/*.js) \
+             $$quote($$BASEDIR/../assets/icons/*.qs) \
+             $$quote($$BASEDIR/../assets/pages/*.qml) \
+             $$quote($$BASEDIR/../assets/pages/*.js) \
+             $$quote($$BASEDIR/../assets/pages/*.qs) \
+             $$quote($$BASEDIR/../assets/pages/controls/*.qml) \
+             $$quote($$BASEDIR/../assets/pages/controls/*.js) \
+             $$quote($$BASEDIR/../assets/pages/controls/*.qs) \
+             $$quote($$BASEDIR/../assets/tabs/*.qml) \
+             $$quote($$BASEDIR/../assets/tabs/*.js) \
+             $$quote($$BASEDIR/../assets/tabs/*.qs)
 
     HEADERS +=  $$quote($$BASEDIR/../src/*.h) \
              $$quote($$BASEDIR/../src/*.h++) \

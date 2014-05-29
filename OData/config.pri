@@ -64,10 +64,7 @@ lupdate_inclusion {
              $$quote($$BASEDIR/../src/*.c++) \
              $$quote($$BASEDIR/../src/*.cc) \
              $$quote($$BASEDIR/../src/*.cpp) \
-             $$quote($$BASEDIR/../src/*.cxx) \
-             $$quote($$BASEDIR/../assets/*.qml) \
-             $$quote($$BASEDIR/../assets/*.js) \
-             $$quote($$BASEDIR/../assets/*.qs)
+             $$quote($$BASEDIR/../src/*.cxx)
 
     HEADERS +=  $$quote($$BASEDIR/../include/*.h) \
              $$quote($$BASEDIR/../include/*.h++) \

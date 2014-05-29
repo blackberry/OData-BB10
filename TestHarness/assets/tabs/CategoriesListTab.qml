@@ -1,3 +1,17 @@
+/* Copyright (c) 2014 BlackBerry Limited.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import bb.cascades 1.0
 import odata 1.0
 
@@ -17,7 +31,8 @@ NavigationPane {
             }
             ListView {
                 dataModel: ODataListModel {
-                    source: dataSource
+                    id: model
+                    service: dataService
                 }
                 onTriggered: {
                     
@@ -25,20 +40,27 @@ NavigationPane {
                     var activeTab = tabPane.activeTab;
 
                     var productList = productListPage.createObject();
-                    productList.title = selectedItem.title[".data"] + " - " + qsTr("Products");
-                    productList.dataSource = dataService.source + "/" + selectedItem.link[1]["href"];
+                    productList.title = selectedItem.Name + " - " + qsTr("Products");
+                    productList.dataSource = "/Categories(" + selectedItem.ID + ")/Products";
                     activeTab.content.push(productList);
                 }
                 listItemComponents: [
                     ListItemComponent {
                         StandardListItem {
-                            title: ListItemData.title[".data"]
+                            title: ListItemData.Name
                         }
                     }
                 ]
             }
         }
     }
+
+    onCreationCompleted: {
+        if(dataSource) {
+            model.readModel(dataSource);
+        }
+    }
+
     onPopTransitionEnded: {
         page.destroy();
     }
