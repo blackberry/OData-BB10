@@ -1,0 +1,62 @@
+.DS_Store
+.obj
+*.moc
+*.dylib
+*.so.*
+*.so
+*.so.debug
+*.o
+*.a
+*~
+*.device
+*.bar
+
+# Qmake Generated Makefiles
+*/arm/Makefile
+*/x86/Makefile
+
+# compiled Q translation files
+*.qm
+
+.cd.rc
+*.swp
+core
+moc_*.cpp
+*.Debug
+*.Release
+*.pdb
+*.idb
+*.ib_pdb_index
+build
+*/arm/*
+*/x86/*
+
+#Carbide project files
+*.settings
+plugin_commonU.def
+
+#Visual Studio files
+*.suo
+*.ncb
+*.user
+
+#QtCreator project files
+*.pro.user
+*.pro.user*
+*~
+
+# Failed patch
+*.orig
+*.rej
+
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+*.suo
+

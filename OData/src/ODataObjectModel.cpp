@@ -1,8 +1,16 @@
-/*
- * ODataObjectModel.cpp
+/* Copyright (c) 2014 BlackBerry Limited.
  *
- *  Created on: 2013-03-28
- *      Author: Daniel Baxter
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 #include "ODataObjectModel.h"
@@ -11,16 +19,29 @@
 #include "ODataNetworkManager.h"
 
 #include "stdio.h"
+#include <bb/data/JsonDataAccess>
+#include <QStringList>
+
+using namespace OData;
+using namespace bb::data;
 
 /*
  * CONSTRUCTORS / DESCTRUCTORS
  */
 
-ODataObjectModel::ODataObjectModel() {
-}
+ODataObjectModel::ODataObjectModel(QObject* parent)
+        : QObject(parent),
+          mService(NULL) {
+    mNetworkManager = new ODataNetworkManager(this);
+    mNetworkManager->setFormat(ODataService::JSON);
 
-ODataObjectModel::ODataObjectModel(QString source) {
-    setSource(source);
+    connect(mNetworkManager, SIGNAL(jsonReady(const QVariant&)), this, SLOT(jsonReadComplete(const QVariant&)));
+    connect(mNetworkManager, SIGNAL(atomReady(const QVariant&)), this, SLOT(atomReadComplete(const QVariant&)));
+    connect(mNetworkManager, SIGNAL(responseStatus(int, const QString&, const QString&)), this,
+            SLOT(responseStatus(int, const QString&, const QString&)));
+    connect(mNetworkManager, SIGNAL(deleteSuccessful()), this, SLOT(deleteComplete()));
+    connect(mNetworkManager, SIGNAL(createSuccessful()), this, SLOT(createComplete()));
+    connect(mNetworkManager, SIGNAL(updateSuccessful()), this, SLOT(updateComplete()));
 }
 
 ODataObjectModel::~ODataObjectModel() {
@@ -30,23 +51,11 @@ ODataObjectModel::~ODataObjectModel() {
  * PROPERTIES
  */
 
-QString ODataObjectModel::getSource(){
-    return mSource;
-}
-void ODataObjectModel::setSource(QString newSource){
-    mSource = newSource;
-
-    mModel.clear();
-    loadModel();
-
-    emit sourceChanged();
-}
-
-QVariant ODataObjectModel::getModel(){
+QVariant ODataObjectModel::getModel() {
     return mModel;
 }
 
-void ODataObjectModel::setModel(QVariant newModel){
+void ODataObjectModel::setModel(const QVariant& newModel) {
     mModel = newModel;
 
     emit modelChanged();
@@ -56,28 +65,23 @@ void ODataObjectModel::setModel(QVariant newModel){
  * FUNCTIONS
  */
 
-void ODataObjectModel::loadModel(){
-    ODataNetworkManager* manager = new ODataNetworkManager();
-    manager->read(mSource);
+void ODataObjectModel::deleteModel(const QString& resourcePath) {
+    if (!mService) {
+        qDebug() << "Data service isn't set";
+        return;
+    }
 
-    connect(manager, SIGNAL(jsonReady(QVariant)), this, SLOT(jsonReadComplete(QVariant)));
-    connect(manager, SIGNAL(atomReady(QVariant)), this, SLOT(atomReadComplete(QVariant)));
-    connect(manager, SIGNAL(networkError(int, QString)), this, SLOT(error(int, QString)));
+    QStringList urlTokens;
+    urlTokens << mService->getSource() << resourcePath;
+    QString url = urlTokens.join("/");
+
+    if (mNetworkManager) {
+        mNetworkManager->del(url);
+        mRequestUrls.push_back(url);
+    }
 }
 
-void ODataObjectModel::refreshModel() {
-    loadModel();
-}
-
-void ODataObjectModel::deleteModel() {
-    ODataNetworkManager* manager = new ODataNetworkManager();
-    manager->del(mSource);
-
-    connect(manager, SIGNAL(deleteSuccessful()), this, SLOT(deleteComplete()));
-    connect(manager, SIGNAL(networkError(int, QString)), this, SLOT(error(int, QString)));
-}
-
-QVariantList ODataObjectModel::getModelStructure(QString modelKey, QVariant metadata) {
+QVariantList ODataObjectModel::getModelStructure(const QString& modelKey, const QVariant& metadata) {
     mStructure = QVariantList();
 
     QVariantMap metaEntity;
@@ -115,7 +119,6 @@ QVariantList ODataObjectModel::getModelStructure(QString modelKey, QVariant meta
         if (entities.count() == 0) {
             entities.append(metaEntity[PROPERTY]);
         }
-
 
         for (int i = 0; i < entities.count(); i++) {
             QVariantMap entityData;
@@ -188,59 +191,112 @@ QVariantList ODataObjectModel::getModelStructure(QString modelKey, QVariant meta
     return mStructure;
 }
 
-void ODataObjectModel::createModel(QString postUrl, QString category, QVariant content, QByteArray links){
-    QByteArray model;
+void ODataObjectModel::readModel(const QString& resourcePath) {
+    if (!mService) {
+        qDebug() << "Data service isn't set";
+        return;
+    }
 
-    model.append(XML_TAG);
-    model.append(ENTRY_OPEN);
+    mModel.clear();
 
-    model.append(CATEGORY_OPEN);
-    model.append(category);
-    model.append(CATEGORY_CLOSE);
+    QStringList urlTokens;
+    urlTokens << mService->getSource() << resourcePath;
+    QString url = urlTokens.join("/");
 
-    model.append(links);
-
-    model.append(CONTENT_OPEN);
-    model.append(parseContent(content));
-    model.append(CONTENT_CLOSE);
-
-    model.append(ENTRY_CLOSE);
-
-
-    ODataNetworkManager* manager = new ODataNetworkManager();
-    manager->create(postUrl, model);
-
-    connect(manager, SIGNAL(createSuccessful()), this, SLOT(createComplete()));
-    connect(manager, SIGNAL(networkError(int, QString)), this, SLOT(error(int, QString)));
+    if (mNetworkManager) {
+        mNetworkManager->read(url);
+        mRequestUrls.push_back(url);
+    }
 }
 
-void ODataObjectModel::updateModel(QString putUrl, QString category, QVariant content, QByteArray links){
+void ODataObjectModel::createModel(QString resourcePath, QString category, QVariant content, QByteArray links) {
+    if (!mService) {
+        qDebug() << "Data service isn't set";
+        return;
+    }
+
     QByteArray model;
 
-    model.append(XML_TAG);
-    model.append(ENTRY_OPEN);
+    ODataService::Format format = mService->getFormat();
 
-    model.append(CATEGORY_OPEN);
-    model.append(category);
-    model.append(CATEGORY_CLOSE);
+    if (format == ODataService::JSON) {
+        model = buildJsonData(category, content, links);
+    }
+    if (format == ODataService::ATOM) {
+        model = buildAtomData(category, content, links);
+    }
 
-    model.append(links);
+    QStringList urlTokens;
+    urlTokens << mService->getSource() << resourcePath;
+    QString url = urlTokens.join("/");
 
-    model.append(CONTENT_OPEN);
-    model.append(parseContent(content));
-    model.append(CONTENT_CLOSE);
-
-    model.append(ENTRY_CLOSE);
-
-    ODataNetworkManager* manager = new ODataNetworkManager();
-    manager->update(putUrl, model);
-
-    connect(manager, SIGNAL(updateSuccessful()), this, SLOT(updateComplete()));
-    connect(manager, SIGNAL(networkError(int, QString)), this, SLOT(error(int, QString)));
+    if (mNetworkManager) {
+        mNetworkManager->create(url, model);
+        mRequestUrls.push_back(url);
+    }
 }
 
+void ODataObjectModel::updateModel(QString resourcePath, QString category, QVariant content, QByteArray links) {
+    if (!mService) {
+        qDebug() << "Data service isn't set";
+        return;
+    }
 
-QByteArray ODataObjectModel::parseContent(QVariant content) {
+    QByteArray model;
+
+    ODataService::Format format = mService->getFormat();
+
+    format = mService->getFormat();
+
+    if (format == ODataService::JSON) {
+        model = buildJsonData(category, content, links);
+    }
+    if (format == ODataService::ATOM) {
+        model = buildAtomData(category, content, links);
+    }
+
+    QStringList urlTokens;
+    urlTokens << mService->getSource() << resourcePath;
+    QString url = urlTokens.join("/");
+
+    if (mNetworkManager) {
+        mNetworkManager->update(url, model);
+        mRequestUrls.push_back(url);
+    }
+}
+
+void ODataObjectModel::filterModel(const QString& resourcePath, const QVariantMap& filters) {
+    if (!mService) {
+        qDebug() << "Data service isn't set";
+        return;
+    }
+
+    mModel.clear();
+
+    QUrl url = mService->getSource() + "/" + resourcePath;
+
+    for (QVariantMap::const_iterator i = filters.constBegin(); i != filters.constEnd(); i++) {
+        if (i.key() == "filter")
+            url.addQueryItem("$filter", i.value().toString());
+        else if (i.key() == "orderby")
+            url.addQueryItem("$orderby", i.value().toString());
+        else if (i.key() == "count")
+            url.addQueryItem("$count", i.value().toString());
+        else if (i.key() == "skip")
+            url.addQueryItem("$skip", QString::number(i.value().toInt()));
+        else if (i.key() == "top")
+            url.addQueryItem("$top", QString::number(i.value().toInt()));
+        else if (i.key() == "search")
+            url.addQueryItem("$search", i.value().toString());
+    }
+
+    if (mNetworkManager) {
+        mNetworkManager->read(url.toString());
+        mRequestUrls.push_back(url.toString());
+    }
+}
+
+QByteArray ODataObjectModel::parseContentAtom(const QVariant& content) {
     QByteArray parsedContent;
 
     QVariantList contentList = content.toList();
@@ -255,11 +311,10 @@ QByteArray ODataObjectModel::parseContent(QVariant content) {
                     parsedContent.append(createCloseTag(dataMap[NAME].toString()));
                 }
                 else { // open tag
-                    parsedContent.append(createOpenTag(dataMap[NAME].toString()
-                            .append(QString("m:type='"))
-                            .append(dataMap[TYPE].toString())
-                            .append(QString("'"))
-                        ));
+                    parsedContent.append(
+                            createOpenTag(
+                                    dataMap[NAME].toString().append(QString("m:type='")).append(
+                                            dataMap[TYPE].toString()).append(QString("'"))));
                 }
             }
             else {
@@ -278,6 +333,54 @@ QByteArray ODataObjectModel::parseContent(QVariant content) {
     return parsedContent;
 }
 
+QByteArray ODataObjectModel::buildJsonData(const QString& category, const QVariant& content, const QByteArray& links) {
+    QVariantMap data;
+    QVariantList contentList = content.toList();
+    QVariant item;
+    QVariantMap itemMap;
+
+    Q_FOREACH(item, contentList)
+    {
+        itemMap = item.toMap();
+        if (!itemMap[TYPE].toString().contains(NAVIGATION_PROPERTY)) {
+            if (itemMap[DATA].toString().isEmpty())
+                data[itemMap[NAME].toString()] = QVariant();
+            else
+                data[itemMap[NAME].toString()] = itemMap[DATA];
+        }
+    }
+
+    data[ODATA_TYPE] = category;
+
+    JsonDataAccess jda;
+    QByteArray model;
+    jda.saveToBuffer(data, &model);
+    model.insert(model.size() - 1, links);
+
+    return model;
+}
+
+QByteArray ODataObjectModel::buildAtomData(const QString& category, const QVariant& content, const QByteArray& links) {
+    QByteArray model;
+
+    model.append(XML_TAG);
+    model.append(ENTRY_OPEN);
+
+    model.append(CATEGORY_OPEN);
+    model.append(category);
+    model.append(CATEGORY_CLOSE);
+
+    model.append(links);
+
+    model.append(CONTENT_OPEN);
+    model.append(parseContentAtom(content));
+    model.append(CONTENT_CLOSE);
+
+    model.append(ENTRY_CLOSE);
+
+    return model;
+}
+
 QString ODataObjectModel::createOpenTag(QString tag) {
     return tag.prepend("<d:").append(">");
 }
@@ -294,13 +397,13 @@ QString ODataObjectModel::createNullTag(QString tag) {
  * SLOTS
  */
 
-void ODataObjectModel::jsonReadComplete(QVariant response){
-    mModel = response.toMap()["d"];
+void ODataObjectModel::jsonReadComplete(const QVariant& response) {
+    mModel = response.toMap();
 
     emit modelReady();
 }
 
-void ODataObjectModel::atomReadComplete(QVariant response){
+void ODataObjectModel::atomReadComplete(const QVariant& response) {
     mModel = response;
 
     emit modelReady();
@@ -318,6 +421,212 @@ void ODataObjectModel::updateComplete() {
     emit modelUpdated();
 }
 
-void ODataObjectModel::error(int code, QString message) {
-    emit modelError(code, message);
+void ODataObjectModel::responseStatus(int code, const QString& url, const QString& message) {
+    if (mRequestUrls.contains(url, Qt::CaseInsensitive)) {
+        if (code == 204) {
+            mModel.clear();
+            emit modelReady();
+        }
+
+        if (code >= 300)
+            emit modelError(code, message);
+        mRequestUrls.removeAll(url);
+    }
+}
+
+void ODataObjectModel::createLink(const QString& from, const QString& fromID, const QString& to, const QString& toID,
+        const QString& toPluralName) {
+    if (!mService) {
+        qDebug() << "Data service isn't set";
+        return;
+    }
+
+    ODataService::Format format = mService->getFormat();
+
+    if (format == ODataService::JSON) {
+        createLinkJSON(from, fromID, to, toID, toPluralName);
+    }
+
+    if (format == ODataService::ATOM) {
+        createLinkATOM(from, fromID, to, toID, toPluralName);
+    }
+}
+
+void ODataObjectModel::updateLink(const QString& from, const QString& fromID, const QString& to, const QString& toID,
+        const QString& toNamePlural) {
+    if (!mService) {
+        qDebug() << "Data service isn't set";
+        return;
+    }
+
+    ODataService::Format format = mService->getFormat();
+
+    if (format == ODataService::JSON) {
+        updateLinkJSON(from, fromID, to, toID, toNamePlural);
+    }
+
+    if (format == ODataService::ATOM) {
+        updateLinkATOM(from, fromID, to, toID, toNamePlural);
+    }
+}
+
+void ODataObjectModel::deleteLink(const QString& from, const QString& fromID, const QString& to, const QString& toID) {
+    if (!mService) {
+        qDebug() << "Data service isn't set";
+        return;
+    }
+
+    QString fromEntity = from + "(" + fromID + ")";
+    QString toEntitiy = toID.isEmpty() ? to : to + "(" + toID + ")";
+    QStringList urlTokens;
+    QString baseUrl = mService->getSource();
+    urlTokens << baseUrl << fromEntity << to;
+
+    if (!toID.isEmpty())
+        urlTokens << QString(REF) + QString("?") + QString(ID) + QString("=") + toEntitiy;
+    else
+        urlTokens << REF;
+
+    QString url = urlTokens.join("/");
+
+    if (mNetworkManager) {
+        mNetworkManager->del(url);
+        mRequestUrls.push_back(url);
+    }
+}
+
+void ODataObjectModel::createLinkJSON(const QString& from, const QString& fromID, const QString& to,
+        const QString& toID, const QString& toPluralName) {
+    if (!mService) {
+        qDebug() << "Data service isn't set";
+        return;
+    }
+
+    JsonDataAccess jda;
+    QByteArray model;
+
+    QString fromEntity = from + "(" + fromID + ")";
+    QStringList requestUrlTokens;
+    QString baseUrl = mService->getSource();
+    requestUrlTokens << baseUrl << fromEntity << to << REF;
+
+    QString toEntity = toPluralName.isEmpty() ? to + "(" + toID + ")" : toPluralName + "(" + toID + ")";
+    QStringList relationUrlTokens;
+    relationUrlTokens << baseUrl << toEntity;
+
+    QVariantMap data;
+    data[ODATA_ID] = relationUrlTokens.join("/");
+    jda.saveToBuffer(data, &model);
+    QString url = requestUrlTokens.join("/");
+
+    if (mNetworkManager) {
+        mNetworkManager->create(url, model);
+        mRequestUrls.push_back(url);
+    }
+
+}
+
+void ODataObjectModel::updateLinkJSON(const QString& from, const QString& fromID, const QString& to,
+        const QString& toID, const QString& toNamePlural) {
+    if (!mService) {
+        qDebug() << "Data service isn't set";
+        return;
+    }
+
+    QString fromEntity = from + "(" + fromID + ")";
+    QString toEntity = toNamePlural + "(" + toID + ")";
+    QString baseUrl = mService->getSource();
+
+    QStringList urlTokens;
+    urlTokens << baseUrl << fromEntity << to << REF;
+    QString url = urlTokens.join("/");
+
+    QStringList relationUrlTokens;
+    relationUrlTokens << baseUrl << toEntity;
+
+    QVariantMap data;
+    QByteArray body;
+    JsonDataAccess jda;
+    data[ODATA_ID] = relationUrlTokens.join("/");
+    jda.saveToBuffer(data, &body);
+
+    if (mNetworkManager) {
+        mNetworkManager->update(url, body, "PUT");
+        mRequestUrls.push_back(url);
+    }
+}
+
+void ODataObjectModel::createLinkATOM(const QString& from, const QString& fromID, const QString& to,
+        const QString& toID, const QString& toPluralName) {
+    if (!mService) {
+        qDebug() << "Data service isn't set";
+        return;
+    }
+
+    QByteArray body;
+
+    QString fromEntity = from + "(" + fromID + ")";
+    QStringList requestUrlTokens;
+    QString baseUrl = mService->getSource();
+    requestUrlTokens << baseUrl << fromEntity << to << REF;
+
+    QString toEntity = toPluralName.isEmpty() ? to + "(" + toID + ")" : toPluralName + "(" + toID + ")";
+    QStringList relationUrlTokens;
+    relationUrlTokens << baseUrl << toEntity;
+
+    QString entityReference = QString(ENTITY_REFERENCE_ATOM);
+    entityReference.replace("{{HOST_SERVICE}}", baseUrl);
+    entityReference.replace("{{ID}}", relationUrlTokens.join("/"));
+
+    body = entityReference.toAscii();
+    QString url = requestUrlTokens.join("/");
+
+    if (mNetworkManager) {
+        mNetworkManager->create(url, body);
+        mRequestUrls.push_back(url);
+    }
+}
+
+void ODataObjectModel::updateLinkATOM(const QString& from, const QString& fromID, const QString& to,
+        const QString& toID, const QString& toNamePlural) {
+    if (!mService) {
+        qDebug() << "Data service isn't set";
+        return;
+    }
+
+    QByteArray body;
+
+    QString fromEntity = from + "(" + fromID + ")";
+    QString toEntity = toNamePlural + "(" + toID + ")";
+    QString baseUrl = mService->getSource();
+
+    QStringList urlTokens;
+    urlTokens << baseUrl << fromEntity << to << REF;
+    QString url = urlTokens.join("/");
+
+    QStringList relationUrlTokens;
+    relationUrlTokens << baseUrl << toEntity;
+
+    QString entityReference = QString(ENTITY_REFERENCE_ATOM);
+    entityReference.replace("{{HOST_SERVICE}}", baseUrl);
+    entityReference.replace("{{ID}}", relationUrlTokens.join("/"));
+
+    body = entityReference.toAscii();
+
+    if (mNetworkManager) {
+        mNetworkManager->update(url, body, "PUT");
+        mRequestUrls.push_back(url);
+    }
+
+}
+
+ODataService* ODataObjectModel::service() const {
+    return mService;
+}
+
+void ODataObjectModel::setService(ODataService* service) {
+    if (service != mService) {
+        mService = service;
+        mNetworkManager->setFormat(mService->getFormat());
+    }
 }

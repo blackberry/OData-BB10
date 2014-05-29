@@ -1,11 +1,19 @@
-/*
- * ODataConstants.c
+/* Copyright (c) 2014 BlackBerry Limited.
  *
- *  Created on: 2013-04-01
- *      Author: Daniel Baxter
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-
+namespace OData{
 const char* METADATA = "$metadata";
 const char* FORMAT = "$format";
 
@@ -62,3 +70,12 @@ const char* CATEGORY_CLOSE = "' scheme='http://schemas.microsoft.com/ado/2007/08
 const char* CONTENT_OPEN = "<content type='application/xml'><m:properties>";
 const char* CONTENT_CLOSE = "</m:properties></content>";
 const char* LINK_TEMPLATE = "<link rel='{{schema}}' type='application/atom+xml;type=entry' title='{{title}}' href='{{link}}' />";
+
+const char* ODATA_TYPE = "@odata.type";
+const char* ODATA_ID = "@odata.id";
+const char* REF = "$ref";
+const char* ID = "$id";
+const char* ENTITY_REFERENCE_ATOM = "<metadata:ref xmlns:metadata=\"http://docs.oasis-open.org/odata/ns/metadata"
+        "\"metadata:context=\"{{HOST_SERVICE}}$metadata#$ref\""
+        "id=\"{{ID}}\" />";
+}

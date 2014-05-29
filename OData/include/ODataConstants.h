@@ -1,13 +1,22 @@
-/*
- * ODataConstants.h
+/* Copyright (c) 2014 BlackBerry Limited.
  *
- *  Created on: 2013-03-29
- *      Author: Daniel Baxter
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 #ifndef ODATACONSTANTS_H_
 #define ODATACONSTANTS_H_
 
+namespace OData {
 extern const char* METADATA;
 extern const char* FORMAT;
 
@@ -58,4 +67,10 @@ extern const char* CONTENT_OPEN;
 extern const char* CONTENT_CLOSE;
 extern const char* LINK_TEMPLATE;
 
+extern const char* ODATA_TYPE;
+extern const char* ODATA_ID;
+extern const char* REF;
+extern const char* ID;
+extern const char* ENTITY_REFERENCE_ATOM;
+}
 #endif /* ODATACONSTANTS_H_ */
