@@ -1,5 +1,6 @@
 1
-18
+21
+icons/ic_about.png
 icons/ic_add.png
 icons/ic_delete.png
 icons/ic_done.png
@@ -9,6 +10,8 @@ icons/ic_map.png
 icons/ic_rotate.png
 icons/ic_view_list.png
 main.qml
+pages/AboutPage.qml
+pages/controls/DateInputRow.qml
 pages/controls/DetailsItemRow.qml
 pages/controls/ItemInputRow.qml
 pages/CreateEditProduct.qml

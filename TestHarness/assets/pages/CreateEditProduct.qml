@@ -1,34 +1,69 @@
+/* Copyright (c) 2014 BlackBerry Limited.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import bb.cascades 1.0
 import odata 1.0
 import "controls" 1.0
 
 Page {
+    id: createEditProductPage
     property variant updateModel
-    property string updateCategory: ""
-    property string updateSupplier: ""
+    property variant updateCategory: ""
+    property int supplierID: -1
     property bool create: true
     property variant modelStructure
-    
+
     attachedObjects: [
         ODataObjectModel {
+            id: highestId
+            service: dataService
+            onModelReady: {
+                idRow.data = highestId.model.value[0].ID + 1;
+            }
+        },
+        ODataObjectModel {
             id: objectModel
+            service: dataService
+            onModelUpdated: {
+                success();
+            }
+            onModelCreated: {
+                createCategoryLinks();
+                createSupplierLink();
+                success();
+            }
         },
         ODataListModel {
             id: suppliersList
-            source: dataService.source + "/Suppliers"
+            service: dataService
         },
         ODataListModel {
             id: categoriesList
-            source: dataService.source + "/Categories"
+            service: dataService
         },
         ComponentDefinition {
             id: option
-
-            content: Option {
+            Option {
+            }
+        },
+        ComponentDefinition {
+            id: checkBoxDef
+            CheckBox {
             }
         }
     ]
-    
+
     actions: [
         ActionItem {
             title: qsTr("OK")
@@ -37,8 +72,7 @@ Page {
             onTriggered: {
                 if (create) {
                     createObject();
-                }
-                else {
+                } else {
                     updateObject();
                 }
             }
@@ -65,40 +99,35 @@ Page {
                 ItemInputRow {
                     id: idRow
                     label: qsTr("Id")
-                    data: updateModel.content["m:properties"]["d:ID"][".data"]
                     visible: create
+                    editable: ! create
                 }
                 ItemInputRow {
                     id: productRow
                     label: qsTr("Product")
-                    data: updateModel.title[".data"]
                 }
                 ItemInputRow {
                     id: descriptionRow
                     label: qsTr("Description")
-                    data: updateModel.summary[".data"]
                 }
                 ItemInputRow {
                     id: costRow
                     label: qsTr("Cost")
-                    data: updateModel.content["m:properties"]["d:Price"][".data"]
                 }
                 ItemInputRow {
                     id: ratingRow
                     label: qsTr("Rating")
-                    data: updateModel.content["m:properties"]["d:Rating"][".data"]
                 }
-                ItemInputRow {
+                DateInputRow {
                     id: releasedRow
                     label: qsTr("Released")
-                    data: updateModel.content["m:properties"]["d:ReleaseDate"][".data"]
                 }
-                ItemInputRow {
+                DateInputRow {
                     id: discontinuedRow
                     label: qsTr("Discontinued")
-                    data: updateModel.content["m:properties"]["d:DiscontinuedDate"][".data"]
+                    isNullable: true
                 }
-                
+
                 // Supplier List
                 Container {
                     layout: StackLayout {
@@ -118,16 +147,17 @@ Page {
                             spaceQuota: 3
                         }
                     }
-                    DropDown {
+                    RadioGroup {
                         id: supplierRow
-                        verticalAlignment: VerticalAlignment.Bottom
-
                         layoutProperties: StackLayoutProperties {
                             spaceQuota: 5
                         }
                     }
                 }
-                
+
+                Divider {
+                }
+
                 // Category list
                 Container {
                     layout: StackLayout {
@@ -138,7 +168,7 @@ Page {
                     bottomMargin: 10
 
                     Label {
-                        text: qsTr("Category")
+                        text: qsTr("Categories")
                         textStyle.fontSize: FontSize.Medium
                         textStyle.fontWeight: FontWeight.W500
                         verticalAlignment: VerticalAlignment.Center
@@ -147,13 +177,8 @@ Page {
                             spaceQuota: 3
                         }
                     }
-                    DropDown {
-                    	id: categoryRow
-                        verticalAlignment: VerticalAlignment.Bottom
-                        
-                        layoutProperties: StackLayoutProperties {
-                            spaceQuota: 5
-                        }
+                    Container {
+                        id: categories
                     }
                 }
             }
@@ -163,105 +188,168 @@ Page {
     onCreationCompleted: {
         modelStructure = objectModel.getModelStructure("Product", dataService.getMetadata());
 
-        // Get the lists for the drop downs
-        suppliersList.itemsChanged.connect(bindSuppliersDropDown);
-        suppliersList.childCount([]); // force the data hit
-        categoriesList.itemsChanged.connect(bindCategoriesDropDown);
-        categoriesList.childCount([]); // force the data hit
+        if (create) {
+            highestId.filterModel("Products", {'orderby' : 'ID desc', 'top' : 1});
+        }
 
-        _controller.createProductSuccess.connect(success);
-        _controller.updateProductSuccess.connect(success);
+        suppliersList.readModel("Suppliers");
+        categoriesList.readModel("Categories");
+
+        // Get the lists for the drop downs
+        suppliersList.itemsChanged.connect(bindSuppliers);
+        categoriesList.itemsChanged.connect(bindCategories);
     }
-    
-    function bindSuppliersDropDown() {
+
+    onUpdateModelChanged: {
+        if (updateModel) {
+            idRow.data = updateModel.ID || "";
+            productRow.data = updateModel.Name || "";
+            descriptionRow.data = updateModel.Description || "";
+            costRow.data = updateModel.Price || "";
+            ratingRow.data = updateModel.Rating || "";
+            releasedRow.data = updateModel.ReleaseDate || "";
+            discontinuedRow.data = updateModel.DiscontinuedDate || "";
+        }
+    }
+
+    function bindSuppliers() {
         supplierRow.removeAll();
 
-        for (var i = 0; i < suppliersList.childCount([]); i++) {
+        for (var i = 0; i < suppliersList.childCount([]); i ++) {
             var opt = option.createObject();
-            opt.text = suppliersList.data([ i ]).title[".data"];
-            opt.value = suppliersList.data([ i ]).id;
+            opt.text = suppliersList.data([ i ]).Name;
+            opt.value = suppliersList.data([ i ]).ID;
             supplierRow.add(opt);
-            
-            if (!create && suppliersList.data([ i ]).id === updateSupplier) {
+
+            if (! create && suppliersList.data([ i ]).ID == supplierID) {
                 supplierRow.setSelectedIndex(i);
             }
         }
-    } 
-    
-    function bindCategoriesDropDown() {
-        categoryRow.removeAll();
+    }
 
-        for (var i = 0; i < categoriesList.childCount([]); i ++) {
-            var opt = option.createObject();
-            opt.text = categoriesList.data([ i ]).title[".data"];
-            opt.value = categoriesList.data([ i ]).id;
-            categoryRow.add(opt);
-            
-            if (!create && categoriesList.data([ i ]).id === updateCategory) {
-                categoryRow.setSelectedIndex(i);
+    function bindCategories() {
+        categories.removeAll();
+        var checkBox;
+        for (var i = 0; i < categoriesList.childCount([]); ++ i) {
+            checkBox = checkBoxDef.createObject();
+            checkBox.text = categoriesList.data([ i ]).Name;
+            for (var j = 0; j < updateCategory.length; ++ j) {
+                if (updateCategory[j] == categoriesList.data([ i ]).ID) {
+                    checkBox.checked = true;
+                    break;
+                }
             }
+            categories.add(checkBox);
         }
     }
-    
+
     function createObject() {
         readForm();
 
-        _controller.createProduct(modelStructure);
-        
+        objectModel.createModel("Products", "ODataDemo.Product", modelStructure, "");
         toastMsg.body = "Creating";
         toastMsg.show();
     }
-    
+
     function updateObject() {
         readForm();
 
-        _controller.updateProduct(updateModel.id, modelStructure);
-    
+        objectModel.updateModel("Products(" + updateModel.ID + ")", "ODataDemo.Product", modelStructure, "");
+        removeCategoryLinks();
+        createCategoryLinks();
+        updateSupplierLink();
         toastMsg.body = "Updating";
         toastMsg.show();
     }
-    
+
+    function createCategoryLinks() {
+        var c = checkedCategories();
+        for (var i = 0; i < c.length; ++ i) {
+            if (updateCategory.indexOf(c[i]) == -1) {
+                objectModel.createLink("Products", create ? idRow.getData() : updateModel.ID, "Categories", c[i]);
+            }
+        }
+    }
+
+    function removeCategoryLinks() {
+        var c = checkedCategories();
+        for (var i = 0; i < updateCategory.length; ++ i) {
+            if (c.indexOf(updateCategory[i]) == -1) {
+                objectModel.deleteLink("Products", updateModel.ID, "Categories", updateCategory[i]);
+            }
+        }
+    }
+
+    function createSupplierLink() {
+        var option = supplierRow.selectedOption;
+        if (option.value != supplierID) {
+            if (option.value != -1) {
+                objectModel.updateLink("Products", idRow.getData(), "Supplier", option.value, "Suppliers");
+            }
+        }
+    }
+
+    function updateSupplierLink() {
+        var option = supplierRow.selectedOption;
+        if (option.value != supplierID) {
+            if (option.value == -1) {
+                objectModel.deleteLink("Products", updateModel.ID, "Supplier");
+            } else {
+                objectModel.updateLink("Products", updateModel.ID, "Supplier", option.value, "Suppliers");
+            }
+        }
+    }
+
     function readForm() {
         var model = modelStructure;
 
-        for (var i = 0; i < model.length; i++) {
+        for (var i = 0; i < model.length; i ++) {
             if (model[i].Name === "ID") {
                 model[i].Data = idRow.getData();
-            } 
-            else if (model[i].Name === "Name") {
+            } else if (model[i].Name === "Name") {
                 model[i].Data = productRow.getData();
-            } 
-            else if (model[i].Name === "Description") {
+            } else if (model[i].Name === "Description") {
                 model[i].Data = descriptionRow.getData();
-            } 
-            else if (model[i].Name === "ReleaseDate") {
+            } else if (model[i].Name === "ReleaseDate") {
                 model[i].Data = releasedRow.getData();
-            } 
-            else if (model[i].Name === "DiscontinuedDate") {
+            } else if (model[i].Name === "DiscontinuedDate") {
                 model[i].Data = discontinuedRow.getData();
-            } 
-            else if (model[i].Name === "Rating") {
+            } else if (model[i].Name === "Rating") {
                 model[i].Data = ratingRow.getData();
-            } 
-            else if (model[i].Name === "Price") {
+            } else if (model[i].Name === "Price") {
                 model[i].Data = costRow.getData();
-            } 
-            else if (model[i].Name === "Supplier") {
+            } else if (model[i].Name === "Supplier") {
                 model[i].Data = supplierRow.selectedValue;
-            } 
-            else if (model[i].Name === "Category") {
+            } else if (model[i].Name === "Category") {
                 model[i].Data = categoryRow.selectedValue;
             }
         }
-        
+
         modelStructure = model;
     }
-    
+
     function success() {
         toastMsg.body = "Success";
         toastMsg.show();
 
         var activeTab = tabPane.activeTab;
-        activeTab.content.pop();
+        if (activeTab.content.top == createEditProductPage)
+            activeTab.content.pop();
+    }
+
+    function checkedCategories() {
+        var list = [];
+        var controls = categories.controls;
+        for (var i = 0; i < controls.length; ++ i) {
+            if (controls[i].checked) {
+                for (var j = 0; j < categoriesList.childCount([]); ++ j) {
+                    if (controls[i].text == categoriesList.data([ i ]).Name) {
+                        list.push(categoriesList.data([ i ]).ID);
+                        break;
+                    }
+                }
+            }
+        }
+        return list;
     }
 }
